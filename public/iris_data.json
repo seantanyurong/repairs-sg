@@ -1,0 +1,752 @@
+[
+    {
+        "x": 5.1,
+        "y": 3.5,
+        "species": "setosa"
+    },
+    {
+        "x": 4.9,
+        "y": 3.0,
+        "species": "setosa"
+    },
+    {
+        "x": 4.7,
+        "y": 3.2,
+        "species": "setosa"
+    },
+    {
+        "x": 4.6,
+        "y": 3.1,
+        "species": "setosa"
+    },
+    {
+        "x": 5.0,
+        "y": 3.6,
+        "species": "setosa"
+    },
+    {
+        "x": 5.4,
+        "y": 3.9,
+        "species": "setosa"
+    },
+    {
+        "x": 4.6,
+        "y": 3.4,
+        "species": "setosa"
+    },
+    {
+        "x": 5.0,
+        "y": 3.4,
+        "species": "setosa"
+    },
+    {
+        "x": 4.4,
+        "y": 2.9,
+        "species": "setosa"
+    },
+    {
+        "x": 4.9,
+        "y": 3.1,
+        "species": "setosa"
+    },
+    {
+        "x": 5.4,
+        "y": 3.7,
+        "species": "setosa"
+    },
+    {
+        "x": 4.8,
+        "y": 3.4,
+        "species": "setosa"
+    },
+    {
+        "x": 4.8,
+        "y": 3.0,
+        "species": "setosa"
+    },
+    {
+        "x": 4.3,
+        "y": 3.0,
+        "species": "setosa"
+    },
+    {
+        "x": 5.8,
+        "y": 4.0,
+        "species": "setosa"
+    },
+    {
+        "x": 5.7,
+        "y": 4.4,
+        "species": "setosa"
+    },
+    {
+        "x": 5.4,
+        "y": 3.9,
+        "species": "setosa"
+    },
+    {
+        "x": 5.1,
+        "y": 3.5,
+        "species": "setosa"
+    },
+    {
+        "x": 5.7,
+        "y": 3.8,
+        "species": "setosa"
+    },
+    {
+        "x": 5.1,
+        "y": 3.8,
+        "species": "setosa"
+    },
+    {
+        "x": 5.4,
+        "y": 3.4,
+        "species": "setosa"
+    },
+    {
+        "x": 5.1,
+        "y": 3.7,
+        "species": "setosa"
+    },
+    {
+        "x": 4.6,
+        "y": 3.6,
+        "species": "setosa"
+    },
+    {
+        "x": 5.1,
+        "y": 3.3,
+        "species": "setosa"
+    },
+    {
+        "x": 4.8,
+        "y": 3.4,
+        "species": "setosa"
+    },
+    {
+        "x": 5.0,
+        "y": 3.0,
+        "species": "setosa"
+    },
+    {
+        "x": 5.0,
+        "y": 3.4,
+        "species": "setosa"
+    },
+    {
+        "x": 5.2,
+        "y": 3.5,
+        "species": "setosa"
+    },
+    {
+        "x": 5.2,
+        "y": 3.4,
+        "species": "setosa"
+    },
+    {
+        "x": 4.7,
+        "y": 3.2,
+        "species": "setosa"
+    },
+    {
+        "x": 4.8,
+        "y": 3.1,
+        "species": "setosa"
+    },
+    {
+        "x": 5.4,
+        "y": 3.4,
+        "species": "setosa"
+    },
+    {
+        "x": 5.2,
+        "y": 4.1,
+        "species": "setosa"
+    },
+    {
+        "x": 5.5,
+        "y": 4.2,
+        "species": "setosa"
+    },
+    {
+        "x": 4.9,
+        "y": 3.1,
+        "species": "setosa"
+    },
+    {
+        "x": 5.0,
+        "y": 3.2,
+        "species": "setosa"
+    },
+    {
+        "x": 5.5,
+        "y": 3.5,
+        "species": "setosa"
+    },
+    {
+        "x": 4.9,
+        "y": 3.6,
+        "species": "setosa"
+    },
+    {
+        "x": 4.4,
+        "y": 3.0,
+        "species": "setosa"
+    },
+    {
+        "x": 5.1,
+        "y": 3.4,
+        "species": "setosa"
+    },
+    {
+        "x": 5.0,
+        "y": 3.5,
+        "species": "setosa"
+    },
+    {
+        "x": 4.5,
+        "y": 2.3,
+        "species": "setosa"
+    },
+    {
+        "x": 4.4,
+        "y": 3.2,
+        "species": "setosa"
+    },
+    {
+        "x": 5.0,
+        "y": 3.5,
+        "species": "setosa"
+    },
+    {
+        "x": 5.1,
+        "y": 3.8,
+        "species": "setosa"
+    },
+    {
+        "x": 4.8,
+        "y": 3.0,
+        "species": "setosa"
+    },
+    {
+        "x": 5.1,
+        "y": 3.8,
+        "species": "setosa"
+    },
+    {
+        "x": 4.6,
+        "y": 3.2,
+        "species": "setosa"
+    },
+    {
+        "x": 5.3,
+        "y": 3.7,
+        "species": "setosa"
+    },
+    {
+        "x": 5.0,
+        "y": 3.3,
+        "species": "setosa"
+    },
+    {
+        "x": 7.0,
+        "y": 3.2,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.4,
+        "y": 3.2,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.9,
+        "y": 3.1,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.5,
+        "y": 2.3,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.5,
+        "y": 2.8,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.7,
+        "y": 2.8,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.3,
+        "y": 3.3,
+        "species": "versicolor"
+    },
+    {
+        "x": 4.9,
+        "y": 2.4,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.6,
+        "y": 2.9,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.2,
+        "y": 2.7,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.0,
+        "y": 2.0,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.9,
+        "y": 3.0,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.0,
+        "y": 2.2,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.1,
+        "y": 2.9,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.6,
+        "y": 2.9,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.7,
+        "y": 3.1,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.6,
+        "y": 3.0,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.8,
+        "y": 2.7,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.2,
+        "y": 2.2,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.6,
+        "y": 2.5,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.9,
+        "y": 3.2,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.1,
+        "y": 2.8,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.3,
+        "y": 2.5,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.1,
+        "y": 2.8,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.4,
+        "y": 2.9,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.6,
+        "y": 3.0,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.8,
+        "y": 2.8,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.7,
+        "y": 3.0,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.0,
+        "y": 2.9,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.7,
+        "y": 2.6,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.5,
+        "y": 2.4,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.5,
+        "y": 2.4,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.8,
+        "y": 2.7,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.0,
+        "y": 2.7,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.4,
+        "y": 3.0,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.0,
+        "y": 3.4,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.7,
+        "y": 3.1,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.3,
+        "y": 2.3,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.6,
+        "y": 3.0,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.5,
+        "y": 2.5,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.5,
+        "y": 2.6,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.1,
+        "y": 3.0,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.8,
+        "y": 2.6,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.0,
+        "y": 2.3,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.6,
+        "y": 2.7,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.7,
+        "y": 3.0,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.7,
+        "y": 2.9,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.2,
+        "y": 2.9,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.1,
+        "y": 2.5,
+        "species": "versicolor"
+    },
+    {
+        "x": 5.7,
+        "y": 2.8,
+        "species": "versicolor"
+    },
+    {
+        "x": 6.3,
+        "y": 3.3,
+        "species": "virginica"
+    },
+    {
+        "x": 5.8,
+        "y": 2.7,
+        "species": "virginica"
+    },
+    {
+        "x": 7.1,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 6.3,
+        "y": 2.9,
+        "species": "virginica"
+    },
+    {
+        "x": 6.5,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 7.6,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 4.9,
+        "y": 2.5,
+        "species": "virginica"
+    },
+    {
+        "x": 7.3,
+        "y": 2.9,
+        "species": "virginica"
+    },
+    {
+        "x": 6.7,
+        "y": 2.5,
+        "species": "virginica"
+    },
+    {
+        "x": 7.2,
+        "y": 3.6,
+        "species": "virginica"
+    },
+    {
+        "x": 6.5,
+        "y": 3.2,
+        "species": "virginica"
+    },
+    {
+        "x": 6.4,
+        "y": 2.7,
+        "species": "virginica"
+    },
+    {
+        "x": 6.8,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 5.7,
+        "y": 2.5,
+        "species": "virginica"
+    },
+    {
+        "x": 5.8,
+        "y": 2.8,
+        "species": "virginica"
+    },
+    {
+        "x": 6.4,
+        "y": 3.2,
+        "species": "virginica"
+    },
+    {
+        "x": 6.5,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 7.7,
+        "y": 3.8,
+        "species": "virginica"
+    },
+    {
+        "x": 7.7,
+        "y": 2.6,
+        "species": "virginica"
+    },
+    {
+        "x": 6.0,
+        "y": 2.2,
+        "species": "virginica"
+    },
+    {
+        "x": 6.9,
+        "y": 3.2,
+        "species": "virginica"
+    },
+    {
+        "x": 5.6,
+        "y": 2.8,
+        "species": "virginica"
+    },
+    {
+        "x": 7.7,
+        "y": 2.8,
+        "species": "virginica"
+    },
+    {
+        "x": 6.3,
+        "y": 2.7,
+        "species": "virginica"
+    },
+    {
+        "x": 6.7,
+        "y": 3.3,
+        "species": "virginica"
+    },
+    {
+        "x": 7.2,
+        "y": 3.2,
+        "species": "virginica"
+    },
+    {
+        "x": 6.2,
+        "y": 2.8,
+        "species": "virginica"
+    },
+    {
+        "x": 6.1,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 6.4,
+        "y": 2.8,
+        "species": "virginica"
+    },
+    {
+        "x": 7.2,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 7.4,
+        "y": 2.8,
+        "species": "virginica"
+    },
+    {
+        "x": 7.9,
+        "y": 3.8,
+        "species": "virginica"
+    },
+    {
+        "x": 6.4,
+        "y": 2.8,
+        "species": "virginica"
+    },
+    {
+        "x": 6.3,
+        "y": 2.8,
+        "species": "virginica"
+    },
+    {
+        "x": 6.1,
+        "y": 2.6,
+        "species": "virginica"
+    },
+    {
+        "x": 7.7,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 6.3,
+        "y": 3.4,
+        "species": "virginica"
+    },
+    {
+        "x": 6.4,
+        "y": 3.1,
+        "species": "virginica"
+    },
+    {
+        "x": 6.0,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 6.9,
+        "y": 3.1,
+        "species": "virginica"
+    },
+    {
+        "x": 6.7,
+        "y": 3.1,
+        "species": "virginica"
+    },
+    {
+        "x": 6.9,
+        "y": 3.1,
+        "species": "virginica"
+    },
+    {
+        "x": 5.8,
+        "y": 2.7,
+        "species": "virginica"
+    },
+    {
+        "x": 6.8,
+        "y": 3.2,
+        "species": "virginica"
+    },
+    {
+        "x": 6.7,
+        "y": 3.3,
+        "species": "virginica"
+    },
+    {
+        "x": 6.7,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 6.3,
+        "y": 2.5,
+        "species": "virginica"
+    },
+    {
+        "x": 6.5,
+        "y": 3.0,
+        "species": "virginica"
+    },
+    {
+        "x": 6.2,
+        "y": 3.4,
+        "species": "virginica"
+    },
+    {
+        "x": 5.9,
+        "y": 3.0,
+        "species": "virginica"
+    }
+]
