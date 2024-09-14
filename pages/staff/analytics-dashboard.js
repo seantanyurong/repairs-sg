@@ -52,7 +52,7 @@ export default function AnalyticsDashboard() {
               <Label value="Sepal Width (cm)" angle={-90} position="insideLeft" />
             </YAxis>
             <Tooltip
-              content={({ payload, label }) => {
+              content={({ payload }) => {
                 if (payload && payload.length) {
                   const { x, y, species } = payload[0].payload;
                   return (
