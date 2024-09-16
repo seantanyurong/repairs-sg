@@ -1,4 +1,5 @@
-import "../css/globals.css";
+import UserButtonCustom from "@/app/(public)/_components/account/userButtonCustom";
+import "../../css/globals.css";
 import {
   ClerkProvider,
   SignInButton,
@@ -6,9 +7,8 @@ import {
   SignedOut,
 } from "@clerk/nextjs";
 import Link from "next/link";
-import UserButtonCustom from "./_components/account/userButtonCustom";
 
-export default async function PublicLayout({
+export default async function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
