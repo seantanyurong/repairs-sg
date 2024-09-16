@@ -1,18 +1,8 @@
-import { getServices } from '@/lib/actions/services';
+import { addService } from '@/lib/actions/services';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  Home,
-  LineChart,
-  Package,
-  Package2,
-  PanelLeft,
-  PlusCircle,
-  Search,
-  Settings,
-  ShoppingCart,
-  Users2,
-} from 'lucide-react';
+import { Home, LineChart, Package, Package2, PanelLeft, Search, Settings, ShoppingCart, Users2 } from 'lucide-react';
 
 import {
   Breadcrumb,
@@ -23,7 +13,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,14 +24,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import ServiceRow from './_components/ServiceRow';
 
-export default async function Services() {
-  const services = await getServices();
-
+export default async function CreateService() {
   return (
     <div className='flex min-h-screen w-full flex-col bg-muted/40'>
       <aside className='fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex'>
@@ -212,78 +197,13 @@ export default async function Services() {
           </DropdownMenu>
         </header>
         <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
-          <Tabs defaultValue='all'>
-            <div className='flex items-center'>
-              <TabsList>
-                <TabsTrigger value='all'>All</TabsTrigger>
-                {/* <TabsTrigger value='active'>Active</TabsTrigger>
-                <TabsTrigger value='draft'>Draft</TabsTrigger>
-                <TabsTrigger value='archived' className='hidden sm:flex'>
-                  Archived
-                </TabsTrigger> */}
-              </TabsList>
-              <div className='ml-auto flex items-center gap-2'>
-                {/* <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant='outline' size='sm' className='h-8 gap-1'>
-                      <ListFilter className='h-3.5 w-3.5' />
-                      <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Filter</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align='end'>
-                    <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuCheckboxItem checked>Active</DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem>Draft</DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem>Archived</DropdownMenuCheckboxItem>
-                  </DropdownMenuContent>
-                </DropdownMenu> */}
-                {/* <Button size='sm' variant='outline' className='h-8 gap-1'>
-                  <File className='h-3.5 w-3.5' />
-                  <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Export</span>
-                </Button> */}
-                <Button size='sm' className='h-8 gap-1'>
-                  <PlusCircle className='h-3.5 w-3.5' />
-                  <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Add Product</span>
-                </Button>
-              </div>
+          <form action={addService}>
+            <div>
+              <label>Name</label>
+              <input name='name' type='text' />
             </div>
-            <TabsContent value='all'>
-              <Card x-chunk='dashboard-06-chunk-0'>
-                <CardHeader>
-                  <CardTitle>Services</CardTitle>
-                  <CardDescription>Manage your services and edit their details.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className='hidden w-[100px] sm:table-cell'>
-                          <span className='sr-only'>Image</span>
-                        </TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className='hidden md:table-cell'>Created at</TableHead>
-                        <TableHead>
-                          <span className='sr-only'>Actions</span>
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {services.map((service) => {
-                        return <ServiceRow key={service.name} {...service} />;
-                      })}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-                <CardFooter>
-                  <div className='text-xs text-muted-foreground'>
-                    Showing <strong>1-5</strong> of <strong>5</strong> services
-                  </div>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-          </Tabs>
+            <button>Submit</button>
+          </form>
         </main>
       </div>
     </div>
