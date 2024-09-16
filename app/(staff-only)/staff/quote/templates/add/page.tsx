@@ -74,7 +74,7 @@ const Page = () => {
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
         Add Quote Template
       </h1>
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-row flex-end gap-2">
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="basePdf">Change Base PDF</Label>
           <Input
