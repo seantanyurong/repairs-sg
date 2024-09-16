@@ -1,4 +1,5 @@
 import { getServices } from '@/lib/actions/services';
+import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -61,10 +62,12 @@ export default async function Services() {
             <File className='h-3.5 w-3.5' />
             <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Export</span>
           </Button> */}
-          <Button size='sm' className='h-8 gap-1'>
-            <PlusCircle className='h-3.5 w-3.5' />
-            <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Add Product</span>
-          </Button>
+          <Link href='/staff/services/createService'>
+            <Button size='sm' className='h-8 gap-1'>
+              <PlusCircle className='h-3.5 w-3.5' />
+              <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Create Service</span>
+            </Button>
+          </Link>
         </div>
       </div>
       <TabsContent value='all'>

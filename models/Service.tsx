@@ -6,6 +6,10 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       maxlength: [32, 'First Name Can Have At Most 32 Characters'],
     },
+    description: {
+      type: String,
+      maxlength: [255, 'Description Can Have At Most 255 Characters'],
+    },
     status: {
       type: String,
       enum: ['Draft', 'Active', 'Disabled'],
