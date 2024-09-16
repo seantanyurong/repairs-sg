@@ -9,11 +9,13 @@ import { Button } from '@/components/ui/button';
 import { addService } from '@/lib/actions/services';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-// import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@/components/ui/select';
 
 const formSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
+  status: z.enum(['Draft', 'Active', 'Disabled']),
 });
 
 export default function CreateService() {
@@ -41,9 +43,8 @@ export default function CreateService() {
       setMessage(result.message);
       router.refresh();
       form.reset(form.getValues());
+      router.push('/staff/services');
     }
-
-    console.log(form.getValues());
   };
 
   return (
@@ -77,15 +78,39 @@ export default function CreateService() {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input placeholder='Description' {...field} />
+                  <Textarea placeholder='Description' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             );
           }}
         />
+        <FormField
+          control={form.control}
+          name='status'
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Service Status</FormLabel>
+                <Select onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select a service status' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='Draft'>Draft</SelectItem>
+                    <SelectItem value='Active'>Active</SelectItem>
+                    <SelectItem value='Disabled'>Disabled</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
         <Button type='submit' className='w-full'>
-          Submit
+          Create Service
         </Button>
         {message ? <h2>{message}</h2> : null}
         {errors ? (
