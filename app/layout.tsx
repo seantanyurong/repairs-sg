@@ -7,8 +7,7 @@ import {
   SignedIn,
   SignedOut,
 } from "@clerk/nextjs";
-import Link from "next/link";
-import UserButtonCustom from "./account/userButtonCustom";
+import StaffSignInNavbar from "@/components/staff/staffSignInNavbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,19 +26,7 @@ export const metadata: Metadata = {
 };
 
 function Header() {
-  return (
-    <header
-      style={{ display: "flex", justifyContent: "space-between", padding: 20 }}
-    >
-      <Link href="/">Repairs.sg</Link>
-      <SignedIn>
-        <UserButtonCustom />
-      </SignedIn>
-      <SignedOut>
-        <SignInButton />
-      </SignedOut>
-    </header>
-  );
+  return <StaffSignInNavbar />;
 }
 
 export default function RootLayout({
