@@ -3,6 +3,7 @@ import React from "react";
 import { columns, QuoteTemplate } from "./columns";
 import { Button } from "@/components/ui/button";
 import { Template } from "@pdfme/common";
+import Link from "next/link";
 
 const templates: QuoteTemplate[] = [
   {
@@ -28,7 +29,12 @@ const page = () => {
         multiple templates and select the one you want to use when creating a
         quote.{" "}
       </p>
-      <Button className="self-end">Add Template</Button>
+      <Link
+        className="self-end"
+        href="/staff/quote/templates/edit"
+      >
+        <Button>Add Template</Button>
+      </Link>
       <DataTable
         columns={columns}
         data={templates}
