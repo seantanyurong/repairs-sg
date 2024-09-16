@@ -42,6 +42,26 @@ import ServiceRow from './_components/ServiceRow';
 export default async function Services() {
   const services = await getServices();
 
+  const serviceDisplay = () => {
+    if (services.length === 0) {
+      return <div>No services found</div>;
+    }
+    return (
+      <>
+        {services.map((service) => {
+          return (
+            <ServiceRow
+              key={service._id}
+              name={service.name}
+              status={service.status}
+              createdAt={service.createdAt.toString()}
+            />
+          );
+        })}
+      </>
+    );
+  };
+
   return (
     <div className='flex min-h-screen w-full flex-col bg-muted/40'>
       <aside className='fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex'>
@@ -269,18 +289,7 @@ export default async function Services() {
                         </TableHead>
                       </TableRow>
                     </TableHeader>
-                    <TableBody>
-                      {services.map((service) => {
-                        return (
-                          <ServiceRow
-                            key={service._id}
-                            name={service.name}
-                            status={service.status}
-                            createdAt={service.createdAt.toString()}
-                          />
-                        );
-                      })}
-                    </TableBody>
+                    <TableBody>{serviceDisplay()}</TableBody>
                   </Table>
                 </CardContent>
                 <CardFooter>
