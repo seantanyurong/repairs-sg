@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connectToMongoDB } from "@/lib/db";
 import localFont from "next/font/local";
 import "./globals.css";
 import {
@@ -47,6 +48,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  connectToMongoDB();
   return (
     <ClerkProvider>
       <html lang="en">
