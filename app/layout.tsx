@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { connectToMongoDB } from "@/lib/db";
 import localFont from "next/font/local";
-import { connectToMongoDB } from "@/lib/db";
 import "./css/globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
