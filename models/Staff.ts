@@ -18,23 +18,28 @@ const staffSchema = new mongoose.Schema({
         required: [true, "Email Is Required"],
         unique: true,
         trim: true,
-        lowercase: true
+        lowercase: true,
+        match: [/^\S+@\S+\.\S+$/, 'Please Provide A Valid Email Address!']
     },
     password: {
         type: String,
         required: [true, "Password Is Required"]
     },
     fullName: {
-        type: String
+        type: String,
+        maxlength: [64, 'Full Name Can Have At Most 64 Characters']
     },
     firstName: {
-        type: String
+        type: String,
+        maxlength: [32, 'First Name Can Have At Most 32 Characters']
     },
     lastName: {
-        type: String
+        type: String,
+        maxlength: [32, 'Last Name Can Have At Most 32 Characters']
     },
     status: {
-        type: String
+        type: String,
+        required: [true, "Status Is Required!"],
     }
 }, { versionKey: false, timestamps: true });
 

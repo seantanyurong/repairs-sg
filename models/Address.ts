@@ -86,7 +86,8 @@ const addressSchema = new mongoose.Schema({
         required: [true, "Verification Status Is Required!"]
     },
     label: {
-        type: String
+        type: String,
+        maxlength: [32, 'Label Can Have At Most 32 Characters']
     }
 }, { versionKey: false, timestamps: true });
 

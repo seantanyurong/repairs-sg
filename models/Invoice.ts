@@ -8,7 +8,11 @@ const invoiceSchema = new mongoose.Schema({
     },
     lineItems: [{
         type: String,
-        required: [true, "Line Items Are Required!"]
+        required: [true, "Line Items Are Required!"],
+        validate: {
+            validator: (v: String[]) => v.length >= 1, 
+            message: "Line Items Should Have At Least 1 Item!"
+        }
     }],
     dateIssued: {
         type: Date,
@@ -16,18 +20,26 @@ const invoiceSchema = new mongoose.Schema({
     },
     dateDue: {
         type: Date,
-        required: [true, "Date Due Is Required!"]
+        required: [true, "Date Due Is Required!"],
+        validate: {
+            validator: function (value: Date) {
+                return value > new Date();
+            },
+            message: "Date Must Be In The Future!"
+        }
     },
     totalAmount: {
         type: Number,
-        required: [true, "Total Amount Is Required!"]
+        required: [true, "Total Amount Is Required!"],
+        min: [0.01, 'Total Amount Must Be Greater Than 0!'],
     },
     remainingDue: {
         type: Number,
         required: [true, "Remaining Due Is Required!"]
     },
     publicNote: {
-        type: String
+        type: String,
+        maxlength: [500, 'Public Note Can Have At Most 500 Characters']
     },
     secret: {
         type: String

@@ -12,14 +12,16 @@ const jobSchema = new mongoose.Schema({
         required: [true, "Category Type Is Required"]
     }],
 	description: {
-		type: String
+		type: String,
+        maxlength: [500, 'Description Can Have At Most 500 Characters']
 	},
-    quick_quotation: {
+    quickQuotation: {
         type: Array
     },
     status: {
         type: String,
-        default: "Draft"
+        default: "Draft",
+        required: [true, "Job Status Is Required!"]
     },
     is_first_job: {
         type: Boolean,

@@ -15,36 +15,44 @@ const customerSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, "Email Is Required"],
+        required: [true, "Email Is Required!"],
         unique: true,
         trim: true,
-        lowercase: true
+        lowercase: true,
+        match: [/^\S+@\S+\.\S+$/, 'Please Provide A Valid Email Address!']
     },
     password: {
         type: String,
-        required: [true, "Password Is Required"]
+        required: [true, "Password Is Required!"]
     },
     fullName: {
         type: String,
+        maxlength: [64, 'Full Name Can Have At Most 64 Characters']
     },
     firstName: {
         type: String,
+        maxlength: [32, 'First Name Can Have At Most 32 Characters']
     },
     lastName: {
-        type: String
+        type: String,
+        maxlength: [32, 'Last Name Can Have At Most 32 Characters']
     },
     fullNameWithCompany: {
         type: String,
+        maxlength: [128, 'Full Name With Company Can Have At Most 128 Characters']
     },
     companyName: {
-        type: String
+        type: String,
+        maxlength: [64, 'Company Name Can Have At Most 64 Characters']
     },
     callingCode: {
         type: String,
         default: '65',
+        maxlength: [4, 'Calling Code Can Have At Most 4 Characters']
     },
-    phone: {
-        type: String
+    phoneNumber: {
+        type: String,
+        maxlength: [16, 'Phone Number Can Have At Most 16 Characters']
     },
     notes: {
         type: Array

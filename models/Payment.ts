@@ -8,11 +8,18 @@ const paymentSchema = new mongoose.Schema({
     },
     paymentDate: {
         type: Date,
-        required: [true, "Payment Date Is Required"]
+        required: [true, "Payment Date Is Required"],
+        validate: {
+            validator: function (value: Date) {
+                return value >= new Date();
+            },
+            message: "Date Must Be Now/In The Future!"
+        }
     },
     amount: {
         type: Number,
-        required: [true, "Amount Is Required"]
+        required: [true, "Amount Is Required"],
+        min: [0.01, 'Total Amount Must Be Greater Than 0!']
     },
     paymentMethod: {
         type: String,
@@ -20,7 +27,8 @@ const paymentSchema = new mongoose.Schema({
         required: [true, "Payment Method Is Required"]
     },
     note: {
-        type: String
+        type: String,
+        maxlength: [500, 'Note Can Have At Most 500 Characters']
     },
     invoice: {
         type: mongoose.Schema.Types.ObjectId,

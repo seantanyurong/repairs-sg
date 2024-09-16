@@ -13,16 +13,23 @@ const quotationSchema = new mongoose.Schema({
     lineItems: {
         type: Array,
         required: [true, "Line Items Are Required!"],
+        validate: {
+            validator: (v: String[]) => v.length >= 1, 
+            message: "Line Items Should Have At Least 1 Item!"
+        }
     },
     totalAmount: {
         type: Number,
         required: [true, "Total Amount Is Required!"],
+        min: [0.01, 'Total Amount Must Be Greater Than 0!']
     },
     public_note: {
-        type: String
+        type: String,
+        maxlength: [500, 'Public Note Can Have At Most 500 Characters']
     },
     private_notes: {
-        type: Array
+        type: String,
+        maxlength: [500, 'Private Note Can Have At Most 500 Characters']
     },
     filesWithURL: {
         type: Array
@@ -33,6 +40,7 @@ const quotationSchema = new mongoose.Schema({
     status: {
         type: String,
         default: "Draft",
+        required: [true, "Quotation Status Is Required!"]
     },
     customer: {
         type: mongoose.Schema.Types.ObjectId,
@@ -40,7 +48,7 @@ const quotationSchema = new mongoose.Schema({
     },
     job: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Job"
+        ref: "Job",
     },
     jobAddress: {
         type: mongoose.Schema.Types.ObjectId,
