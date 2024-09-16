@@ -1,5 +1,6 @@
 'use server';
 
+import { connectToMongoDB } from '@/lib/db';
 import Service from '@/models/Service';
 
 const addService = async (service: FormData) => {
@@ -10,6 +11,7 @@ const addService = async (service: FormData) => {
 };
 
 const getServices = async () => {
+  connectToMongoDB();
   return Service.find();
 };
 
