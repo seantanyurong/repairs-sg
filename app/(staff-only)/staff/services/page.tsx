@@ -271,7 +271,14 @@ export default async function Services() {
                     </TableHeader>
                     <TableBody>
                       {services.map((service) => {
-                        return <ServiceRow key={service.name} {...service} />;
+                        return (
+                          <ServiceRow
+                            key={service._id}
+                            name={service.name}
+                            status={service.status}
+                            createdAt={service.createdAt.toString()}
+                          />
+                        );
                       })}
                     </TableBody>
                   </Table>
