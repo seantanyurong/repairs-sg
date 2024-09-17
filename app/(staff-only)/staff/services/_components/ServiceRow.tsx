@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { deleteService } from '@/lib/actions/services';
+import { useRouter } from 'next/navigation';
 
 export default function ServiceRow({
   id,
@@ -25,6 +26,8 @@ export default function ServiceRow({
   status: string;
   createdAt: string;
 }) {
+  const router = useRouter();
+
   return (
     <TableRow>
       <TableCell className='hidden sm:table-cell'>
@@ -51,7 +54,11 @@ export default function ServiceRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => router.push(`/staff/services/edit-service/${id}`)}
+              className='cursor-pointer'>
+              Edit
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => deleteService(id)} className='cursor-pointer'>
               Delete
             </DropdownMenuItem>
