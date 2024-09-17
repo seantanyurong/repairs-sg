@@ -3,6 +3,7 @@ import { connectToMongoDB } from "@/lib/db";
 import localFont from "next/font/local";
 import "./css/globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,6 +32,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {" "}
+        <Toaster />
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>
