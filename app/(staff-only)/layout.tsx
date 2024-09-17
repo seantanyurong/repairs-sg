@@ -46,6 +46,49 @@ import {
 import { NAVIGATION_LABELS } from "./constants";
 import { usePathname } from "next/navigation";
 
+export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
+  if (!pathname) return null;
+
+  if (pathname === "/staff") {
+    return (
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link href="/staff">{NAVIGATION_LABELS.HOME}</Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    );
+  }
+
+  const pathSegments = pathname
+    .split("/")
+    .filter((segment) => segment !== "" && segment !== "staff");
+
+  return (
+    <BreadcrumbList>
+      {pathSegments.map((segment, index) => (
+        <BreadcrumbItem key={index}>
+          <BreadcrumbLink asChild>
+            <Link
+              href={`/${["staff", ...pathSegments.slice(0, index + 1)].join(
+                "/"
+              )}`}
+            >
+              {capitalise(segment)}
+            </Link>
+          </BreadcrumbLink>
+          {index < pathSegments.length - 1 && <BreadcrumbSeparator />}
+        </BreadcrumbItem>
+      ))}
+    </BreadcrumbList>
+  );
+}
+
+function capitalise(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export default function PublicLayout({
   children,
 }: Readonly<{
@@ -313,23 +356,7 @@ export default function PublicLayout({
             </SheetContent>
           </Sheet>
           <Breadcrumb className="hidden md:flex">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#">Dashboard</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#">Products</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>All Products</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
+            {generateBreadcrumbs(pathname)}
           </Breadcrumb>
           <div className="relative ml-auto flex-1 md:grow-0">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
