@@ -2,6 +2,7 @@
 
 import Service from '@/models/Service';
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 
 const addService = async (service: {
   name: string;
@@ -24,16 +25,21 @@ const addService = async (service: {
     return { message: 'Error', errors: response.error.flatten().fieldErrors };
   }
 
-  console.log(response.data);
-
   const newService = new Service(response.data);
   newService.save();
 
   return { message: 'Service added successfully' };
 };
 
+const deleteService = async (serviceId: string) => {
+  await Service.findByIdAndDelete(serviceId);
+
+  // Revalidate the home page to remove the deleted post
+  revalidatePath('/staff/services');
+};
+
 const getServices = async () => {
   return Service.find();
 };
 
-export { addService, getServices };
+export { addService, deleteService, getServices };
