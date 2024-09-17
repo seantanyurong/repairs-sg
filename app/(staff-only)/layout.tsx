@@ -42,7 +42,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { NAVIGATION_LABELS } from "./constants";
+import { NAVIGATION_LABELS } from "../constants";
 import { usePathname } from "next/navigation";
 
 export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
