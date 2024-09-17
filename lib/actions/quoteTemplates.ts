@@ -31,8 +31,17 @@ const getQuoteTemplates = async () => {
   return QuoteTemplate.find();
 };
 
+const getOneQuoteTemplate = async (id: string) => {
+  return QuoteTemplate.findById(id);
+};
+
 const setQuoteTemplateInactive = async (id: string) => {
   return QuoteTemplate.findByIdAndUpdate(id, { status: "Inactive" });
 };
 
-export { addQuoteTemplate, getQuoteTemplates, setQuoteTemplateInactive };
+export {
+  addQuoteTemplate,
+  getQuoteTemplates,
+  getOneQuoteTemplate,
+  setQuoteTemplateInactive,
+};
