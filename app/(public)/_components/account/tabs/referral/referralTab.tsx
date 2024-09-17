@@ -1,6 +1,6 @@
 import React from "react";
-import ReferralInfoSection from "./sections/referralInfoSection";
-import RewardSection from "./sections/rewardSection";
+import ReferralInfoSection from "./sections/ReferralInfoSection";
+import RewardSection from "./sections/RewardSection";
 import Divider from "@/components/ui/divider";
 
 export default function ReferralTab() {
