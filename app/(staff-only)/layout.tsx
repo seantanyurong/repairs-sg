@@ -23,7 +23,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
@@ -85,6 +84,7 @@ export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
   );
 }
 
+// Capitalise the first letter of a string
 function capitalise(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -98,6 +98,7 @@ export default function PublicLayout({
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
+      {/* Sidebar */}
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
         <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
           <Link
@@ -264,10 +265,12 @@ export default function PublicLayout({
                 } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <Settings className="h-5 w-5" />
-                <span className="sr-only">Settings</span>
+                <span className="sr-only">{NAVIGATION_LABELS.SETTINGS}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Settings</TooltipContent>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.SETTINGS}
+            </TooltipContent>
           </Tooltip>
         </nav>
       </aside>
@@ -291,56 +294,88 @@ export default function PublicLayout({
                 </Link>
                 <Link
                   href="/staff/services"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/services"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
-                  <Home className="h-5 w-5" />
+                  <Hammer className="h-5 w-5" />
                   {NAVIGATION_LABELS.SERVICES}
                 </Link>
                 <Link
                   href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/schedule"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <CalendarDays className="h-5 w-5" />
                   {NAVIGATION_LABELS.SCHEDULE}
                 </Link>
                 <Link
                   href="#"
-                  className="flex items-center gap-4 px-2.5 text-foreground"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/jobs"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <BriefcaseBusiness className="h-5 w-5" />
                   {NAVIGATION_LABELS.JOBS}
                 </Link>
                 <Link
                   href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/invocies"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <NotepadText className="h-5 w-5" />
                   {NAVIGATION_LABELS.INVOICES}
                 </Link>
                 <Link
                   href="/staff/quote/templates"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/quote/templates"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <Quote className="h-5 w-5" />
                   {NAVIGATION_LABELS.QUOTATIONS}
                 </Link>
                 <Link
                   href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/customers"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <UserRound className="h-5 w-5" />
                   {NAVIGATION_LABELS.CUSTOMERS}
                 </Link>
                 <Link
                   href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/vehicles"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <Truck className="h-5 w-5" />
                   {NAVIGATION_LABELS.VEHICLES}
                 </Link>
                 <Link
                   href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/analytics"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
                   <LineChart className="h-5 w-5" />
                   {NAVIGATION_LABELS.ANALYTICS}
@@ -349,8 +384,8 @@ export default function PublicLayout({
                   href="#"
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
-                  <LineChart className="h-5 w-5" />
-                  Settings
+                  <Settings className="h-5 w-5" />
+                  {NAVIGATION_LABELS.SETTINGS}
                 </Link>
               </nav>
             </SheetContent>
