@@ -3,23 +3,82 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { addQuoteTemplate } from "@/lib/actions/quoteTemplates";
+import {
+  addQuoteTemplate,
+  getOneQuoteTemplate,
+  updateQuoteTemplate,
+} from "@/lib/actions/quoteTemplates";
 import { BLANK_PDF, cloneDeep, type Template } from "@pdfme/common";
 import { Designer } from "@pdfme/ui";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+export interface QuoteTemplateType {
+  name: string;
+  pdfTemplate: Template;
+}
+
 const Page = ({ params }: { params: { templateId?: string } }) => {
   const [templateName, setTemplateName] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [existingTemplate, setExistingTemplate] =
+    useState<QuoteTemplateType | null>(null);
   const designerRef = useRef<HTMLDivElement | null>(null);
   const designer = useRef<Designer | null>(null);
   const router = useRouter();
 
   if (params.templateId) {
-    console.log(params.templateId);
+    console.log(params.templateId[0]);
   }
+
+  useEffect(() => {
+    const getTemplate = async () => {
+      if (params.templateId) {
+        try {
+          const template = JSON.parse(
+            JSON.stringify(await getOneQuoteTemplate(params.templateId))
+          );
+          setExistingTemplate(template);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+
+    if (designerRef.current) {
+      getTemplate();
+
+      if (existingTemplate) setTemplateName(existingTemplate.name);
+
+      const template: Template = existingTemplate
+        ? existingTemplate.pdfTemplate
+        : {
+            basePdf: BLANK_PDF,
+            schemas: [
+              {
+                name: {
+                  type: "text",
+                  content: "Pet Name",
+                  position: {
+                    x: 25.06,
+                    y: 26.35,
+                  },
+                  width: 77.77,
+                  height: 18.7,
+                  fontSize: 36,
+                  fontColor: "#14b351",
+                },
+              },
+            ],
+          };
+
+      designer.current = new Designer({
+        domContainer: designerRef.current,
+        template,
+      });
+    }
+  }, [params.templateId, existingTemplate]);
 
   const onChangeBasePDF = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target && e.target.files) {
@@ -51,48 +110,24 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
         JSON.stringify(template || designer.current.getTemplate())
       );
 
-      const result = await addQuoteTemplate({
+      const templateParams = {
         name: templateName,
         pdfTemplate: template || designer.current.getTemplate(),
-      });
-      if (result?.errors) {
-        setErrorMsg("Enter a template name");
+      };
+
+      const result =
+        existingTemplate && params.templateId
+          ? await updateQuoteTemplate(params.templateId[0], templateParams)
+          : await addQuoteTemplate(templateParams);
+      if (result.message === "Enter a template name") {
+        setErrorMsg(result.message);
         return;
       } else {
         router.push("/staff/quote/templates");
+        toast.success(result.message);
       }
-      toast.success(result.message);
     }
   };
-
-  useEffect(() => {
-    if (designerRef.current) {
-      const template: Template = {
-        basePdf: BLANK_PDF,
-        schemas: [
-          {
-            name: {
-              type: "text",
-              content: "Pet Name",
-              position: {
-                x: 25.06,
-                y: 26.35,
-              },
-              width: 77.77,
-              height: 18.7,
-              fontSize: 36,
-              fontColor: "#14b351",
-            },
-          },
-        ],
-      };
-
-      designer.current = new Designer({
-        domContainer: designerRef.current,
-        template,
-      });
-    }
-  }, []);
 
   return (
     <div className="flex flex-col gap-2">
