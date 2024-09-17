@@ -1,6 +1,6 @@
 "use server";
 
-import { z } from "zod";
+import { QuoteTemplateType } from "@/app/(staff-only)/staff/quote/templates/edit/[[...templateId]]/page";
 import QuoteTemplate from "@/models/QuoteTemplate";
 import { Template } from "@pdfme/common";
 
@@ -9,30 +9,31 @@ const addQuoteTemplate = async (quoteTemplate: {
   pdfTemplate: Template;
 }): Promise<{
   message: string;
-  errors?: string | Record<string, unknown>;
 }> => {
-  const quoteTemplateSchema = z.object({
-    name: z.string().min(1),
-    pdfTemplate: z.object({}),
-  });
-
-  const response = quoteTemplateSchema.passthrough().safeParse(quoteTemplate);
-
-  if (!response.success) {
-    return { message: "Error", errors: response.error.flatten().fieldErrors };
-  } else {
-    const newQuoteTemplate = new QuoteTemplate(response.data);
-    newQuoteTemplate.save();
-    return { message: "Quote Template added successfully" };
+  if (quoteTemplate.name.length === 0) {
+    return { message: "Enter a template name" };
   }
+  const newQuoteTemplate = new QuoteTemplate(quoteTemplate);
+  newQuoteTemplate.save();
+  return { message: "Quote Template added successfully" };
 };
 
 const getQuoteTemplates = async () => {
-  return QuoteTemplate.find();
+  return await QuoteTemplate.find();
 };
 
 const getOneQuoteTemplate = async (id: string) => {
-  return QuoteTemplate.findById(id);
+  const template = await QuoteTemplate.findById(id).exec();
+  console.log(template);
+  return template;
+};
+
+const updateQuoteTemplate = async (
+  id: string,
+  templateParams: QuoteTemplateType
+) => {
+  console.log(id, templateParams);
+  return QuoteTemplate.findByIdAndUpdate(id, templateParams);
 };
 
 const setQuoteTemplateInactive = async (id: string) => {
@@ -41,7 +42,8 @@ const setQuoteTemplateInactive = async (id: string) => {
 
 export {
   addQuoteTemplate,
-  getQuoteTemplates,
   getOneQuoteTemplate,
+  getQuoteTemplates,
   setQuoteTemplateInactive,
+  updateQuoteTemplate,
 };
