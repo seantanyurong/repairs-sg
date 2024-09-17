@@ -2,8 +2,8 @@
 import { UserButton } from "@clerk/nextjs";
 import React from "react";
 import { BookUser, Phone } from "lucide-react";
-import ReferralTab from "./tabs/referral/ReferralTab";
-import PhoneTab from "./tabs/phone/PhoneTab";
+import ReferralTab from "./tabs/referral/referralTab";
+import PhoneTab from "./tabs/phone/phoneTab";
 
 export default function UserButtonCustom() {
   return (
