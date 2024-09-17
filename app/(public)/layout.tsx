@@ -1,12 +1,7 @@
-import "../css/globals.css";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-} from "@clerk/nextjs";
-import Link from "next/link";
-import UserButtonCustom from "./_components/account/UserButtonCustom";
+import '../css/globals.css';
+import { ClerkProvider, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
+import Link from 'next/link';
+import UserButtonCustom from './_components/account/UserButtonCustom';
 
 export default async function PublicLayout({
   children,
@@ -15,8 +10,8 @@ export default async function PublicLayout({
 }>) {
   function Header() {
     return (
-      <header className="flex justify-between p-4">
-        <Link href="/">Repairs.sg</Link>
+      <header className='flex justify-between p-4'>
+        <Link href='/'>Repairs.sg</Link>
         <SignedIn>
           <UserButtonCustom />
         </SignedIn>
