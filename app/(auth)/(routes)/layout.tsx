@@ -1,4 +1,4 @@
-import UserButtonCustom from "@/app/(public)/_components/account/userButtonCustom";
+import UserButtonCustom from "@/app/(public)/_components/account/UserButtonCustom";
 import "../../css/globals.css";
 import {
   ClerkProvider,
