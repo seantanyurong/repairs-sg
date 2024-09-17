@@ -42,7 +42,7 @@ const page = async () => {
         <CardContent>
           <DataTable
             columns={columns}
-            data={templates}
+            data={JSON.parse(JSON.stringify(templates))}
           />
         </CardContent>
       </Card>
