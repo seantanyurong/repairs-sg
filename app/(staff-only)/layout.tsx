@@ -11,6 +11,7 @@ import {
   Package,
   Package2,
   PanelLeft,
+  Quote,
   Search,
   Settings,
   ShoppingCart,
@@ -44,6 +45,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { NAVIGATION_LABELS } from "./constants";
+import Quotation from "@/models/Quotation";
+
 export default async function PublicLayout({
   children,
 }: Readonly<{
@@ -58,7 +62,7 @@ export default async function PublicLayout({
             className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
           >
             <Home className="h-4 w-4 transition-all group-hover:scale-110" />
-            <span className="sr-only">Home</span>
+            <span className="sr-only">{NAVIGATION_LABELS.HOME}</span>
           </Link>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -67,10 +71,12 @@ export default async function PublicLayout({
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <Hammer className="h-5 w-5" />
-                <span className="sr-only">Services</span>
+                <span className="sr-only">{NAVIGATION_LABELS.SERVICES}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Services</TooltipContent>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.SERVICES}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -79,10 +85,12 @@ export default async function PublicLayout({
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <CalendarDays className="h-5 w-5" />
-                <span className="sr-only">Schedule</span>
+                <span className="sr-only">{NAVIGATION_LABELS.SCHEDULE}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Schedule</TooltipContent>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.SCHEDULE}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -91,10 +99,12 @@ export default async function PublicLayout({
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <BriefcaseBusiness className="h-5 w-5" />
-                <span className="sr-only">Jobs</span>
+                <span className="sr-only">{NAVIGATION_LABELS.JOBS}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Jobs</TooltipContent>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.JOBS}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -103,10 +113,12 @@ export default async function PublicLayout({
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <NotepadText className="h-5 w-5" />
-                <span className="sr-only">Invoices</span>
+                <span className="sr-only">{NAVIGATION_LABELS.INVOICES}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Invoices</TooltipContent>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.INVOICES}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -114,11 +126,13 @@ export default async function PublicLayout({
                 href="#"
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
-                <LineChart className="h-5 w-5" />
-                <span className="sr-only">Quotations</span>
+                <Quote className="h-5 w-5" />
+                <span className="sr-only">{NAVIGATION_LABELS.QUOTATIONS}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Quotations</TooltipContent>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.QUOTATIONS}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -127,10 +141,12 @@ export default async function PublicLayout({
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <UserRound className="h-5 w-5" />
-                <span className="sr-only">Customers</span>
+                <span className="sr-only">{NAVIGATION_LABELS.CUSTOMERS}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Customers</TooltipContent>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.CUSTOMERS}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -139,10 +155,12 @@ export default async function PublicLayout({
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <Truck className="h-5 w-5" />
-                <span className="sr-only">Vehicles</span>
+                <span className="sr-only">{NAVIGATION_LABELS.VEHICLES}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Vehicles</TooltipContent>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.VEHICLES}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -151,10 +169,12 @@ export default async function PublicLayout({
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <LineChart className="h-5 w-5" />
-                <span className="sr-only">Analytics</span>
+                <span className="sr-only">{NAVIGATION_LABELS.ANALYTICS}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Analytics</TooltipContent>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.ANALYTICS}
+            </TooltipContent>
           </Tooltip>
         </nav>
         <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
@@ -184,39 +204,67 @@ export default async function PublicLayout({
             <SheetContent side="left" className="sm:max-w-xs">
               <nav className="grid gap-6 text-lg font-medium">
                 <Link
-                  href="#"
+                  href="/staff"
                   className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
                 >
-                  <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
-                  <span className="sr-only">Acme Inc</span>
+                  <Home className="h-5 w-5 transition-all group-hover:scale-110" />
+                  <span className="sr-only">{NAVIGATION_LABELS.HOME}</span>
                 </Link>
                 <Link
-                  href="#"
+                  href="/staff/services"
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
                   <Home className="h-5 w-5" />
-                  Dashboard
+                  {NAVIGATION_LABELS.SERVICES}
                 </Link>
                 <Link
                   href="#"
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
-                  <ShoppingCart className="h-5 w-5" />
-                  Orders
+                  <CalendarDays className="h-5 w-5" />
+                  {NAVIGATION_LABELS.SCHEDULE}
                 </Link>
                 <Link
                   href="#"
                   className="flex items-center gap-4 px-2.5 text-foreground"
                 >
-                  <Package className="h-5 w-5" />
-                  Products
+                  <BriefcaseBusiness className="h-5 w-5" />
+                  {NAVIGATION_LABELS.JOBS}
                 </Link>
                 <Link
                   href="#"
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
-                  <Users2 className="h-5 w-5" />
-                  Customers
+                  <NotepadText className="h-5 w-5" />
+                  {NAVIGATION_LABELS.INVOICES}
+                </Link>
+                <Link
+                  href="#"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                >
+                  <Quote className="h-5 w-5" />
+                  {NAVIGATION_LABELS.QUOTATIONS}
+                </Link>
+                <Link
+                  href="#"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                >
+                  <UserRound className="h-5 w-5" />
+                  {NAVIGATION_LABELS.CUSTOMERS}
+                </Link>
+                <Link
+                  href="#"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                >
+                  <Truck className="h-5 w-5" />
+                  {NAVIGATION_LABELS.VEHICLES}
+                </Link>
+                <Link
+                  href="#"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                >
+                  <LineChart className="h-5 w-5" />
+                  {NAVIGATION_LABELS.ANALYTICS}
                 </Link>
                 <Link
                   href="#"
