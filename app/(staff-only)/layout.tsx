@@ -1,3 +1,5 @@
+"use client";
+
 import "../css/globals.css";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,16 +10,12 @@ import {
   Home,
   LineChart,
   NotepadText,
-  Package,
-  Package2,
   PanelLeft,
   Quote,
   Search,
   Settings,
-  ShoppingCart,
   Truck,
   UserRound,
-  Users2,
 } from "lucide-react";
 
 import {
@@ -46,13 +44,15 @@ import {
 } from "@/components/ui/tooltip";
 
 import { NAVIGATION_LABELS } from "./constants";
-import Quotation from "@/models/Quotation";
+import { usePathname } from "next/navigation";
 
-export default async function PublicLayout({
+export default function PublicLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -68,7 +68,11 @@ export default async function PublicLayout({
             <TooltipTrigger asChild>
               <Link
                 href="/staff/services"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/services"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <Hammer className="h-5 w-5" />
                 <span className="sr-only">{NAVIGATION_LABELS.SERVICES}</span>
@@ -82,7 +86,11 @@ export default async function PublicLayout({
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/schedule"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <CalendarDays className="h-5 w-5" />
                 <span className="sr-only">{NAVIGATION_LABELS.SCHEDULE}</span>
@@ -96,7 +104,11 @@ export default async function PublicLayout({
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/jobs"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <BriefcaseBusiness className="h-5 w-5" />
                 <span className="sr-only">{NAVIGATION_LABELS.JOBS}</span>
@@ -110,7 +122,11 @@ export default async function PublicLayout({
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/invoices"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <NotepadText className="h-5 w-5" />
                 <span className="sr-only">{NAVIGATION_LABELS.INVOICES}</span>
@@ -123,8 +139,12 @@ export default async function PublicLayout({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                href="/staff/quote/templates"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/quote/templates"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <Quote className="h-5 w-5" />
                 <span className="sr-only">{NAVIGATION_LABELS.QUOTATIONS}</span>
@@ -138,7 +158,11 @@ export default async function PublicLayout({
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/customers"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <UserRound className="h-5 w-5" />
                 <span className="sr-only">{NAVIGATION_LABELS.CUSTOMERS}</span>
@@ -152,7 +176,11 @@ export default async function PublicLayout({
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/vehicles"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <Truck className="h-5 w-5" />
                 <span className="sr-only">{NAVIGATION_LABELS.VEHICLES}</span>
@@ -166,7 +194,11 @@ export default async function PublicLayout({
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/analytics"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <LineChart className="h-5 w-5" />
                 <span className="sr-only">{NAVIGATION_LABELS.ANALYTICS}</span>
@@ -182,7 +214,11 @@ export default async function PublicLayout({
             <TooltipTrigger asChild>
               <Link
                 href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/schedule"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <Settings className="h-5 w-5" />
                 <span className="sr-only">Settings</span>
@@ -239,7 +275,7 @@ export default async function PublicLayout({
                   {NAVIGATION_LABELS.INVOICES}
                 </Link>
                 <Link
-                  href="#"
+                  href="/staff/quote/templates"
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
                   <Quote className="h-5 w-5" />
