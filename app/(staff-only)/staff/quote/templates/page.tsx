@@ -1,24 +1,13 @@
-import { DataTable } from "@/components/ui/data-table";
-import React from "react";
-import { columns, QuoteTemplate } from "./columns";
 import { Button } from "@/components/ui/button";
-import { Template } from "@pdfme/common";
+import { DataTable } from "@/components/ui/data-table";
+import { getQuoteTemplates } from "@/lib/actions/quoteTemplates";
 import Link from "next/link";
+import { columns } from "./columns";
 
-const templates: QuoteTemplate[] = [
-  {
-    id: "",
-    status: "active",
-    name: "Template 1",
-    pdfTemplate: {
-      id: "",
-      name: "",
-      content: "",
-    } as unknown as Template, //TODO: Remove mock data
-  },
-];
+const page = async () => {
+  const templates = await getQuoteTemplates();
+  console.log(templates);
 
-const page = () => {
   return (
     <div className="flex flex-col gap-2">
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
