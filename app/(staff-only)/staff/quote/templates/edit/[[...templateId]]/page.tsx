@@ -1,15 +1,21 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { addQuoteTemplate } from "@/lib/actions/quoteTemplates";
 import { BLANK_PDF, cloneDeep, type Template } from "@pdfme/common";
 import { Designer } from "@pdfme/ui";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 const Page = ({ params }: { params: { templateId?: string } }) => {
+  const [templateName, setTemplateName] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const designerRef = useRef<HTMLDivElement | null>(null);
   const designer = useRef<Designer | null>(null);
+  const router = useRouter();
 
   if (params.templateId) {
     console.log(params.templateId);
@@ -33,14 +39,29 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
     }
   };
 
-  const onSaveTemplate = (template?: Template) => {
+  const onSaveTemplate = async (template?: Template) => {
+    if (!templateName || templateName.length === 0) {
+      setErrorMsg("Enter a template name");
+      return;
+    } else setErrorMsg("");
+
     if (designer.current) {
-      // TODO: Save to MongoDB
       localStorage.setItem(
         "template",
         JSON.stringify(template || designer.current.getTemplate())
       );
-      alert("Saved!");
+
+      const result = await addQuoteTemplate({
+        name: templateName,
+        pdfTemplate: template || designer.current.getTemplate(),
+      });
+      if (result?.errors) {
+        setErrorMsg("Enter a template name");
+        return;
+      } else {
+        router.push("/staff/quote/templates");
+      }
+      toast.success(result.message);
     }
   };
 
@@ -78,8 +99,19 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
         Add Quote Template
       </h1>
-      <div className="flex flex-row justify-end gap-2 items-end">
-        <div className="grid w-full max-w-sm items-center gap-1.5">
+      <div className="flex flex-row gap-2 items-start">
+        <div className="grid max-w-sm items-center gap-1.5">
+          <Label htmlFor="templateName">Template Name</Label>
+          <Input
+            id="templateName"
+            type="text"
+            value={templateName}
+            onChange={(e) => setTemplateName(e.target.value)}
+            className={errorMsg ? "border-red-500" : ""}
+          />
+          {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
+        </div>
+        <div className="grid max-w-sm items-center gap-1.5">
           <Label htmlFor="basePdf">Change Base PDF</Label>
           <Input
             id="basePdf"
@@ -88,7 +120,12 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
             onChange={onChangeBasePDF}
           />
         </div>
-        <Button onClick={() => onSaveTemplate()}>Save Template</Button>
+        <Button
+          className="self-center ml-auto"
+          onClick={() => onSaveTemplate()}
+        >
+          Save Template
+        </Button>
       </div>
       <div
         id="container"
