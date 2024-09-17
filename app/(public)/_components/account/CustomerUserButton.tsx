@@ -2,12 +2,12 @@
 import { UserButton } from "@clerk/nextjs";
 import React from "react";
 import { BookUser, Phone } from "lucide-react";
-import ReferralTab from "./tabs/referral/referralTab";
-import PhoneTab from "./tabs/phone/phoneTab";
+import ReferralTab from "./tabs/referral/ReferralTabD";
+import PhoneTab from "./tabs/phone/PhoneTabD";
 
-export default function UserButtonCustom() {
+export default function CustomUserButton() {
   return (
-    <UserButton>
+    <UserButton appearance={{ elements: {userButtonAvatarBox: "h-10 w-10" } }}>
       <UserButton.MenuItems>
         <UserButton.Action label="signOut" />
       </UserButton.MenuItems>

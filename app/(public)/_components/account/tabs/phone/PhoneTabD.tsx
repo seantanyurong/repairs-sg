@@ -1,7 +1,7 @@
 import React from "react";
 import Divider from "@/components/ui/divider";
 
-import PhoneSection from "./sections/phoneSection";
+import PhoneSection from "./sections/PhoneSectionD";
 
 export default function PhoneTab() {
   return (
