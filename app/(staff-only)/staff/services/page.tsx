@@ -20,7 +20,8 @@ export default async function Services() {
         {services.map((service) => {
           return (
             <ServiceRow
-              key={service._id}
+              key={service._id.toString()}
+              id={service._id.toString()}
               name={service.name}
               status={service.status}
               createdAt={service.createdAt.toString()}
@@ -62,7 +63,7 @@ export default async function Services() {
             <File className='h-3.5 w-3.5' />
             <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Export</span>
           </Button> */}
-          <Link href='/staff/services/createService'>
+          <Link href='/staff/services/create-service'>
             <Button size='sm' className='h-8 gap-1'>
               <PlusCircle className='h-3.5 w-3.5' />
               <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Create Service</span>
@@ -96,7 +97,7 @@ export default async function Services() {
           </CardContent>
           <CardFooter>
             <div className='text-xs text-muted-foreground'>
-              Showing <strong>1-5</strong> of <strong>5</strong> services
+              Showing <strong>1-{services.length}</strong> of <strong>{services.length}</strong> services
             </div>
           </CardFooter>
         </Card>

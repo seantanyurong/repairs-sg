@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -10,8 +12,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { deleteService } from '@/lib/actions/services';
 
-export default function ServiceRow({ name, status, createdAt }: { name: string; status: string; createdAt: string }) {
+export default function ServiceRow({
+  id,
+  name,
+  status,
+  createdAt,
+}: {
+  id: string;
+  name: string;
+  status: string;
+  createdAt: string;
+}) {
   return (
     <TableRow>
       <TableCell className='hidden sm:table-cell'>
@@ -39,7 +52,9 @@ export default function ServiceRow({ name, status, createdAt }: { name: string; 
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => deleteService(id)} className='cursor-pointer'>
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>
