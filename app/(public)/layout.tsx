@@ -6,7 +6,7 @@ import {
   SignedOut,
 } from "@clerk/nextjs";
 import Link from "next/link";
-import UserButtonCustom from "./_components/account/userButtonCustom";
+import UserButtonCustom from "./_components/account/UserButtonCustom";
 
 export default async function PublicLayout({
   children,
