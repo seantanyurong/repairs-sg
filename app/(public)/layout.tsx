@@ -6,7 +6,7 @@ import {
   SignedOut,
 } from "@clerk/nextjs";
 import Link from "next/link";
-import UserButtonCustom from "./_components/account/userButtonCustom";
+import CustomUserButton from "./_components/account/CustomerUserButton";
 
 export default async function PublicLayout({
   children,
@@ -18,7 +18,7 @@ export default async function PublicLayout({
       <header className="flex justify-between p-4">
         <Link href="/">Repairs.sg</Link>
         <SignedIn>
-          <UserButtonCustom />
+          <CustomUserButton />
         </SignedIn>
         <SignedOut>
           <SignInButton />
