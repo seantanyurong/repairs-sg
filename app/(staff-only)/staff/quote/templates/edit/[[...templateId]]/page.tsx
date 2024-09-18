@@ -28,57 +28,55 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
   const designer = useRef<Designer | null>(null);
   const router = useRouter();
 
-  if (params.templateId) {
-    console.log(params.templateId[0]);
-  }
+  const getTemplate = async () => {
+    if (params.templateId) {
+      try {
+        const template = JSON.parse(
+          await getOneQuoteTemplate(params.templateId)
+        );
+        setExistingTemplate(template);
+        setTemplateName(template.name);
+        if (designer.current) {
+          designer.current.updateTemplate(template.pdfTemplate);
+        }
+      } catch (e) {
+        console.error(e);
+        router.push("/staff/quote/templates");
+        toast.error("Error fetching template: Please  try again.");
+      }
+    }
+  };
 
   useEffect(() => {
-    const getTemplate = async () => {
-      if (params.templateId) {
-        try {
-          const template = JSON.parse(
-            JSON.stringify(await getOneQuoteTemplate(params.templateId))
-          );
-          setExistingTemplate(template);
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    };
-
     if (designerRef.current) {
       getTemplate();
 
-      if (existingTemplate) setTemplateName(existingTemplate.name);
-
-      const template: Template = existingTemplate
-        ? existingTemplate.pdfTemplate
-        : {
-            basePdf: BLANK_PDF,
-            schemas: [
-              {
-                name: {
-                  type: "text",
-                  content: "Pet Name",
-                  position: {
-                    x: 25.06,
-                    y: 26.35,
-                  },
-                  width: 77.77,
-                  height: 18.7,
-                  fontSize: 36,
-                  fontColor: "#14b351",
-                },
+      const template: Template = {
+        basePdf: BLANK_PDF,
+        schemas: [
+          {
+            name: {
+              type: "text",
+              content: "Pet Name",
+              position: {
+                x: 25.06,
+                y: 26.35,
               },
-            ],
-          };
+              width: 77.77,
+              height: 18.7,
+              fontSize: 36,
+              fontColor: "#14b351",
+            },
+          },
+        ],
+      };
 
       designer.current = new Designer({
         domContainer: designerRef.current,
         template,
       });
     }
-  }, [params.templateId, existingTemplate]);
+  });
 
   const onChangeBasePDF = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target && e.target.files) {
@@ -105,11 +103,6 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
     } else setErrorMsg("");
 
     if (designer.current) {
-      localStorage.setItem(
-        "template",
-        JSON.stringify(template || designer.current.getTemplate())
-      );
-
       const templateParams = {
         name: templateName,
         pdfTemplate: template || designer.current.getTemplate(),
