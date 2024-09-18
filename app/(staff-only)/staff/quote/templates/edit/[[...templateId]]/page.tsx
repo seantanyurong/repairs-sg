@@ -76,7 +76,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
         template,
       });
     }
-  });
+  }, []);
 
   const onChangeBasePDF = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target && e.target.files) {
