@@ -78,6 +78,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
         template,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onChangeBasePDF = (e: React.ChangeEvent<HTMLInputElement>) => {
