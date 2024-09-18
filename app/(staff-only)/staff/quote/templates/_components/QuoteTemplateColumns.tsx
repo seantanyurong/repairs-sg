@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { setQuoteTemplateInactive } from "@/lib/actions/quoteTemplates";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
@@ -53,24 +53,27 @@ export const columns: ColumnDef<QuoteTemplate>[] = [
     },
   },
   {
-    id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const router = useRouter();
-      if (row.original.status === "Active")
-        return (
-          <div className="flex gap-2">
-            <Link href={`/staff/quote/templates/edit/${row.original._id}`}>
-              <Button variant="ghost">Edit</Button>
-            </Link>
-            <Button
-              variant="destructive"
-              onClick={() => deleteQuoteTemplate(row.original._id, router)}
-            >
-              Deactivate
-            </Button>
-          </div>
-        );
+      <ActionColumn row={row} />;
     },
   },
 ];
+
+function ActionColumn({ row }: { row: Row<QuoteTemplate> }) {
+  const router = useRouter();
+  if (row.original.status === "Active")
+    return (
+      <div className="flex gap-2">
+        <Link href={`/staff/quote/templates/edit/${row.original._id}`}>
+          <Button variant="ghost">Edit</Button>
+        </Link>
+        <Button
+          variant="destructive"
+          onClick={() => deleteQuoteTemplate(row.original._id, router)}
+        >
+          Deactivate
+        </Button>
+      </div>
+    );
+}
