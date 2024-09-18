@@ -4,9 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { setQuoteTemplateInactive } from "@/lib/actions/quoteTemplates";
 import { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
-import { toast } from "sonner";
 import dayjs from "dayjs";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type QuoteTemplate = {
   _id: string;
@@ -15,10 +17,11 @@ type QuoteTemplate = {
   createdAt: string;
 };
 
-const deleteQuoteTemplate = async (id: string) => {
+const deleteQuoteTemplate = async (id: string, router: AppRouterInstance) => {
   try {
     const result = await setQuoteTemplateInactive(id);
     toast.success(result.message);
+    router.refresh();
   } catch (err) {
     toast.error("An error has occurred, please try again.");
   }
@@ -53,6 +56,7 @@ export const columns: ColumnDef<QuoteTemplate>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
+      const router = useRouter();
       if (row.original.status === "Active")
         return (
           <div className="flex gap-2">
@@ -61,7 +65,7 @@ export const columns: ColumnDef<QuoteTemplate>[] = [
             </Link>
             <Button
               variant="destructive"
-              onClick={() => deleteQuoteTemplate(row.original._id)}
+              onClick={() => deleteQuoteTemplate(row.original._id, router)}
             >
               Deactivate
             </Button>

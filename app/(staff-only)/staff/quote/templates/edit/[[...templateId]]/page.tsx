@@ -119,6 +119,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
         return;
       } else {
         router.push("/staff/quote/templates");
+        router.refresh();
         toast.success(result.message);
       }
     }
