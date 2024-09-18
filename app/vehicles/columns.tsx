@@ -1,8 +1,7 @@
 "use client"
-
+import { useRouter } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-import { MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -25,7 +24,7 @@ export type Vehicle = {
 export const columns: ColumnDef<Vehicle>[] = [
     {
         accessorKey: "plateNumber",
-        header: "Car Plate Number",
+        header: "Vehicle Plate Number",
     },
     {
         accessorKey: "gpsAPI",
@@ -45,6 +44,7 @@ export const columns: ColumnDef<Vehicle>[] = [
         id: "actions",
         cell: ({ row }) => {
             const vehicle = row.original
+            const router = useRouter(); // Hook to use router
 
             return (
                 <DropdownMenu>
@@ -59,10 +59,14 @@ export const columns: ColumnDef<Vehicle>[] = [
                         <DropdownMenuItem
                             onClick={() => navigator.clipboard.writeText(vehicle.plateNumber)}
                         >
-                            Copy Car Plate Number
+                            Copy Vehicle Plate Number
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Edit Vehicle details</DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => router.push(`/vehicles/edit/${vehicle.id}`)}
+                        >
+                            Edit Vehicle Details
+                        </DropdownMenuItem>
                         <DropdownMenuItem>Delete Vehicle</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
