@@ -48,7 +48,9 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
   };
 
   useEffect(() => {
-    if (designerRef.current) {
+    // Designer requires Path2D, browser-specific API
+    // Check to ensure NextJS does not pre render
+    if (typeof window !== "undefined" && designerRef.current) {
       getTemplate();
 
       const template: Template = {
@@ -57,7 +59,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
           {
             name: {
               type: "text",
-              content: "Pet Name",
+              content: "Quotation",
               position: {
                 x: 25.06,
                 y: 26.35,
@@ -65,7 +67,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
               width: 77.77,
               height: 18.7,
               fontSize: 36,
-              fontColor: "#14b351",
+              fontColor: "#000000",
             },
           },
         ],
