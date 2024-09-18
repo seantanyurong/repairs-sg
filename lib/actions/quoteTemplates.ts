@@ -32,7 +32,7 @@ const updateQuoteTemplate = async (
   templateParams: QuoteTemplateType
 ) => {
   try {
-    QuoteTemplate.findByIdAndUpdate(id, templateParams);
+    QuoteTemplate.findByIdAndUpdate(id, templateParams).exec();
     return { message: "Quote Template updated successfully" };
   } catch (err) {
     return { message: "An error has occurred, please try again." };
@@ -40,7 +40,7 @@ const updateQuoteTemplate = async (
 };
 
 const setQuoteTemplateInactive = async (id: string) => {
-  QuoteTemplate.findByIdAndUpdate(id, { status: "Inactive" });
+  QuoteTemplate.findByIdAndUpdate(id, { status: "Inactive" }).exec();
   return { message: "Quote Template set to inactive" };
 };
 
