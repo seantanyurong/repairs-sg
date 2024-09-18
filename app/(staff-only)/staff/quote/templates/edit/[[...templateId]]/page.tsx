@@ -11,7 +11,7 @@ import {
 import { BLANK_PDF, cloneDeep, type Template } from "@pdfme/common";
 import { Designer } from "@pdfme/ui";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export interface QuoteTemplateType {
@@ -28,7 +28,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
   const designer = useRef<Designer | null>(null);
   const router = useRouter();
 
-  const getTemplate = async () => {
+  const getTemplate = useCallback(async () => {
     if (params.templateId) {
       try {
         const template = JSON.parse(
@@ -45,7 +45,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
         toast.error("Error fetching template: Please  try again.");
       }
     }
-  };
+  }, [params.templateId, router]);
 
   useEffect(() => {
     // Designer requires Path2D, browser-specific API
@@ -78,8 +78,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
         template,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getTemplate]);
 
   const onChangeBasePDF = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target && e.target.files) {
