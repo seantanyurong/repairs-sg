@@ -24,16 +24,19 @@ const getQuoteTemplates = async () => {
 
 const getOneQuoteTemplate = async (id: string) => {
   const template = await QuoteTemplate.findById(id).exec();
-  console.log(template);
-  return template;
+  return JSON.stringify(template);
 };
 
 const updateQuoteTemplate = async (
   id: string,
   templateParams: QuoteTemplateType
 ) => {
-  console.log(id, templateParams);
-  return QuoteTemplate.findByIdAndUpdate(id, templateParams);
+  try {
+    QuoteTemplate.findByIdAndUpdate(id, templateParams);
+    return { message: "Quote Template updated successfully" };
+  } catch (err) {
+    return { message: "An error has occurred, please try again." };
+  }
 };
 
 const setQuoteTemplateInactive = async (id: string) => {
