@@ -10,7 +10,7 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import Link from "next/link";
-import UserButtonCustom from "./_components/account/userButtonCustom";
+import CustomUserButton from "./_components/account/CustomerUserButton";
 
 import {
   BriefcaseBusiness,
@@ -32,14 +32,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export default function PublicLayout({
   children,
@@ -51,16 +43,6 @@ export default function PublicLayout({
   function Header() {
     const { isSignedIn } = useUser();
     return (
-      // <header className="flex justify-between p-4">
-      //   <Link href="/">Repairs.sg</Link>
-      //   <SignedIn>
-      //     <UserButtonCustom />
-      //   </SignedIn>
-      //   <SignedOut>
-      //     <SignInButton />
-      //   </SignedOut>
-      // </header>
-
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         {/* Sidebar */}
         {isSignedIn && (
@@ -223,8 +205,6 @@ export default function PublicLayout({
             )}
 
             <SignedIn>
-              <UserButtonCustom />
-
               {/* Top Nav Bar */}
               {/* <Breadcrumb className="hidden md:flex">
               {generateBreadcrumbs(pathname)}
@@ -237,9 +217,13 @@ export default function PublicLayout({
                   className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
                 />
               </div>
+
+              <CustomUserButton />
             </SignedIn>
             <SignedOut>
-              <SignInButton />
+              <div className="ml-auto">
+                <SignInButton />
+              </div>
             </SignedOut>
           </header>
 

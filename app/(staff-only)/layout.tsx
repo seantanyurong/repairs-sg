@@ -1,7 +1,6 @@
 "use client";
 
 import "../css/globals.css";
-import Image from "next/image";
 import Link from "next/link";
 import {
   BriefcaseBusiness,
@@ -26,14 +25,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -44,6 +35,8 @@ import {
 
 import { NAVIGATION_LABELS } from "../constants";
 import { usePathname } from "next/navigation";
+import { ClerkProvider } from '@clerk/clerk-react';
+import StaffUserButton from "./_components/account/StaffUserButton";
 
 export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
   if (!pathname) return null;
@@ -95,8 +88,13 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  if (!clerkPublishableKey) {
+    throw new Error("Missing Clerk publishable key. Please add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to your environment variables.");
+  }
 
   return (
+    <ClerkProvider publishableKey={clerkPublishableKey}>
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       {/* Sidebar */}
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -401,36 +399,13 @@ export default function PublicLayout({
               className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
             />
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="overflow-hidden rounded-full"
-              >
-                <Image
-                  src="/images/placeholder.svg"
-                  width={36}
-                  height={36}
-                  alt="Avatar"
-                  className="overflow-hidden rounded-full"
-                />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <StaffUserButton />
         </header>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           {children}
         </main>
       </div>
     </div>
+    </ClerkProvider>
   );
 }
