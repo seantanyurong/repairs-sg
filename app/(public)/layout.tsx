@@ -1,7 +1,6 @@
 "use client";
 
 import "../css/globals.css";
-import Image from "next/image";
 import {
   ClerkProvider,
   SignInButton,
