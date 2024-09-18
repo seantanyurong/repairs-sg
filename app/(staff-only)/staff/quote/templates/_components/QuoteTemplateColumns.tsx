@@ -6,6 +6,7 @@ import { setQuoteTemplateInactive } from "@/lib/actions/quoteTemplates";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { toast } from "sonner";
+import dayjs from "dayjs";
 
 type QuoteTemplate = {
   _id: string;
@@ -42,8 +43,11 @@ export const columns: ColumnDef<QuoteTemplate>[] = [
     },
   },
   {
-    accessorKey: "createdAt",
+    id: "createdAt",
     header: "Created At",
+    cell: ({ row }) => {
+      return dayjs(row.original.createdAt).format("DD-MMM-YYYY HH:mm ");
+    },
   },
   {
     id: "actions",
