@@ -40,7 +40,8 @@ const updateQuoteTemplate = async (
 };
 
 const setQuoteTemplateInactive = async (id: string) => {
-  return QuoteTemplate.findByIdAndUpdate(id, { status: "Inactive" });
+  QuoteTemplate.findByIdAndUpdate(id, { status: "Inactive" });
+  return { message: "Quote Template set to inactive" };
 };
 
 export {

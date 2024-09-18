@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { setQuoteTemplateInactive } from "@/lib/actions/quoteTemplates";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type QuoteTemplate = {
   _id: string;
@@ -14,7 +15,12 @@ type QuoteTemplate = {
 };
 
 const deleteQuoteTemplate = async (id: string) => {
-  await setQuoteTemplateInactive(id);
+  try {
+    const result = await setQuoteTemplateInactive(id);
+    toast.success(result.message);
+  } catch (err) {
+    toast.error("An error has occurred, please try again.");
+  }
 };
 
 export const columns: ColumnDef<QuoteTemplate>[] = [
@@ -43,19 +49,20 @@ export const columns: ColumnDef<QuoteTemplate>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      return (
-        <div className="flex gap-2">
-          <Link href={`/staff/quote/templates/edit/${row.original._id}`}>
-            <Button variant="ghost">Edit</Button>
-          </Link>
-          <Button
-            variant="destructive"
-            onClick={() => deleteQuoteTemplate(row.original._id)}
-          >
-            Delete
-          </Button>
-        </div>
-      );
+      if (row.original.status === "Active")
+        return (
+          <div className="flex gap-2">
+            <Link href={`/staff/quote/templates/edit/${row.original._id}`}>
+              <Button variant="ghost">Edit</Button>
+            </Link>
+            <Button
+              variant="destructive"
+              onClick={() => deleteQuoteTemplate(row.original._id)}
+            >
+              Deactivate
+            </Button>
+          </div>
+        );
     },
   },
 ];
