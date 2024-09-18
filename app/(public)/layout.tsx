@@ -69,7 +69,7 @@ export default function PublicLayout({
         <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
           <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
             <Link
-              href="/staff"
+              href="/"
               className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
             >
               <Home className="h-4 w-4 transition-all group-hover:scale-110" />
@@ -78,45 +78,9 @@ export default function PublicLayout({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/staff/services"
+                  href="/jobs"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname === "/staff/services"
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground"
-                  } transition-colors hover:text-foreground md:h-8 md:w-8`}
-                >
-                  <Hammer className="h-5 w-5" />
-                  <span className="sr-only">{NAVIGATION_LABELS.SERVICES}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                {NAVIGATION_LABELS.SERVICES}
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname === "/staff/schedule"
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground"
-                  } transition-colors hover:text-foreground md:h-8 md:w-8`}
-                >
-                  <CalendarDays className="h-5 w-5" />
-                  <span className="sr-only">{NAVIGATION_LABELS.SCHEDULE}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                {NAVIGATION_LABELS.SCHEDULE}
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname === "/staff/jobs"
+                    pathname === "/jobs"
                       ? "bg-accent text-accent-foreground"
                       : "text-muted-foreground"
                   } transition-colors hover:text-foreground md:h-8 md:w-8`}
@@ -132,9 +96,9 @@ export default function PublicLayout({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/invoices"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname === "/staff/invoices"
+                    pathname === "/invoices"
                       ? "bg-accent text-accent-foreground"
                       : "text-muted-foreground"
                   } transition-colors hover:text-foreground md:h-8 md:w-8`}
@@ -150,9 +114,9 @@ export default function PublicLayout({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/staff/quote/templates"
+                  href="/quote"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname === "/staff/quote/templates"
+                    pathname === "/quote"
                       ? "bg-accent text-accent-foreground"
                       : "text-muted-foreground"
                   } transition-colors hover:text-foreground md:h-8 md:w-8`}
@@ -167,60 +131,6 @@ export default function PublicLayout({
                 {NAVIGATION_LABELS.QUOTATIONS}
               </TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname === "/staff/customers"
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground"
-                  } transition-colors hover:text-foreground md:h-8 md:w-8`}
-                >
-                  <UserRound className="h-5 w-5" />
-                  <span className="sr-only">{NAVIGATION_LABELS.CUSTOMERS}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                {NAVIGATION_LABELS.CUSTOMERS}
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname === "/staff/vehicles"
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground"
-                  } transition-colors hover:text-foreground md:h-8 md:w-8`}
-                >
-                  <Truck className="h-5 w-5" />
-                  <span className="sr-only">{NAVIGATION_LABELS.VEHICLES}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                {NAVIGATION_LABELS.VEHICLES}
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname === "/staff/analytics"
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground"
-                  } transition-colors hover:text-foreground md:h-8 md:w-8`}
-                >
-                  <LineChart className="h-5 w-5" />
-                  <span className="sr-only">{NAVIGATION_LABELS.ANALYTICS}</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                {NAVIGATION_LABELS.ANALYTICS}
-              </TooltipContent>
-            </Tooltip>
           </nav>
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
             <Tooltip>
@@ -228,7 +138,7 @@ export default function PublicLayout({
                 <Link
                   href="#"
                   className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    pathname === "/staff/schedule"
+                    pathname === "/settings"
                       ? "bg-accent text-accent-foreground"
                       : "text-muted-foreground"
                   } transition-colors hover:text-foreground md:h-8 md:w-8`}
@@ -243,6 +153,8 @@ export default function PublicLayout({
             </Tooltip>
           </nav>
         </aside>
+
+        {/* Side Toggle Menu */}
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <Sheet>
@@ -255,38 +167,16 @@ export default function PublicLayout({
               <SheetContent side="left" className="sm:max-w-xs">
                 <nav className="grid gap-6 text-lg font-medium">
                   <Link
-                    href="/staff"
+                    href="/"
                     className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
                   >
                     <Home className="h-5 w-5 transition-all group-hover:scale-110" />
                     <span className="sr-only">{NAVIGATION_LABELS.HOME}</span>
                   </Link>
                   <Link
-                    href="/staff/services"
+                    href="/jobs"
                     className={`flex items-center gap-4 px-2.5 ${
-                      pathname === "/staff/services"
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Hammer className="h-5 w-5" />
-                    {NAVIGATION_LABELS.SERVICES}
-                  </Link>
-                  <Link
-                    href="#"
-                    className={`flex items-center gap-4 px-2.5 ${
-                      pathname === "/staff/schedule"
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <CalendarDays className="h-5 w-5" />
-                    {NAVIGATION_LABELS.SCHEDULE}
-                  </Link>
-                  <Link
-                    href="#"
-                    className={`flex items-center gap-4 px-2.5 ${
-                      pathname === "/staff/jobs"
+                      pathname === "/jobs"
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
@@ -295,9 +185,9 @@ export default function PublicLayout({
                     {NAVIGATION_LABELS.JOBS}
                   </Link>
                   <Link
-                    href="#"
+                    href="/invoices"
                     className={`flex items-center gap-4 px-2.5 ${
-                      pathname === "/staff/invocies"
+                      pathname === "/invoices"
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
@@ -306,48 +196,15 @@ export default function PublicLayout({
                     {NAVIGATION_LABELS.INVOICES}
                   </Link>
                   <Link
-                    href="/staff/quote/templates"
+                    href="/quote"
                     className={`flex items-center gap-4 px-2.5 ${
-                      pathname === "/staff/quote/templates"
+                      pathname === "/quote"
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     <Quote className="h-5 w-5" />
                     {NAVIGATION_LABELS.QUOTATIONS}
-                  </Link>
-                  <Link
-                    href="#"
-                    className={`flex items-center gap-4 px-2.5 ${
-                      pathname === "/staff/customers"
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <UserRound className="h-5 w-5" />
-                    {NAVIGATION_LABELS.CUSTOMERS}
-                  </Link>
-                  <Link
-                    href="#"
-                    className={`flex items-center gap-4 px-2.5 ${
-                      pathname === "/staff/vehicles"
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Truck className="h-5 w-5" />
-                    {NAVIGATION_LABELS.VEHICLES}
-                  </Link>
-                  <Link
-                    href="#"
-                    className={`flex items-center gap-4 px-2.5 ${
-                      pathname === "/staff/analytics"
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <LineChart className="h-5 w-5" />
-                    {NAVIGATION_LABELS.ANALYTICS}
                   </Link>
                   <Link
                     href="#"
