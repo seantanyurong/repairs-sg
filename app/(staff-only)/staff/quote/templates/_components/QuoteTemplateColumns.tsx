@@ -55,25 +55,25 @@ export const columns: ColumnDef<QuoteTemplate>[] = [
   {
     header: "Actions",
     cell: ({ row }) => {
-      <ActionColumn row={row} />;
+      if (row.original.status === "Active") return <ActionColumn row={row} />;
     },
   },
 ];
 
 function ActionColumn({ row }: { row: Row<QuoteTemplate> }) {
   const router = useRouter();
-  if (row.original.status === "Active")
-    return (
-      <div className="flex gap-2">
-        <Link href={`/staff/quote/templates/edit/${row.original._id}`}>
-          <Button variant="ghost">Edit</Button>
-        </Link>
-        <Button
-          variant="destructive"
-          onClick={() => deleteQuoteTemplate(row.original._id, router)}
-        >
-          Deactivate
-        </Button>
-      </div>
-    );
+
+  return (
+    <div className="flex gap-2">
+      <Link href={`/staff/quote/templates/edit/${row.original._id}`}>
+        <Button variant="ghost">Edit</Button>
+      </Link>
+      <Button
+        variant="destructive"
+        onClick={() => deleteQuoteTemplate(row.original._id, router)}
+      >
+        Deactivate
+      </Button>
+    </div>
+  );
 }
