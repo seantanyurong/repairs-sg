@@ -14,7 +14,6 @@ import { columns } from "./_components/QuoteTemplateColumns";
 
 const page = async () => {
   const templates = await getQuoteTemplates();
-  console.log(templates);
 
   return (
     <div className="flex flex-col gap-2">
