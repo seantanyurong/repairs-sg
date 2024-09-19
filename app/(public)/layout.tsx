@@ -28,6 +28,7 @@ import {
 import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function PublicLayout({
   children,
@@ -35,6 +36,12 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+
+  // Closing of the side panel when a link is clicked
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const handleLinkClick = (): void => {
+    setIsOpen(false);
+  };
 
   function Header() {
     const { isSignedIn } = useUser();
@@ -139,18 +146,22 @@ export default function PublicLayout({
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             {/* Side Toggle Menu */}
             {isSignedIn && (
-              <Sheet>
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
                   <Button size="icon" variant="outline" className="sm:hidden">
                     <PanelLeft className="h-5 w-5" />
                     <span className="sr-only">Toggle Menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="sm:max-w-xs bg-secondary border-0">
+                <SheetContent
+                  side="left"
+                  className="sm:max-w-xs bg-secondary border-0"
+                >
                   <nav className="grid gap-6 text-lg font-medium">
                     <Link
                       href="/"
                       className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
+                      onClick={handleLinkClick}
                     >
                       <Home className="h-5 w-5 transition-all group-hover:scale-110" />
                       <span className="sr-only">{NAVIGATION_LABELS.HOME}</span>
@@ -162,6 +173,7 @@ export default function PublicLayout({
                           ? "text-foreground"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
+                      onClick={handleLinkClick}
                     >
                       <BriefcaseBusiness className="h-5 w-5" />
                       {NAVIGATION_LABELS.JOBS}
@@ -173,6 +185,7 @@ export default function PublicLayout({
                           ? "text-foreground"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
+                      onClick={handleLinkClick}
                     >
                       <NotepadText className="h-5 w-5" />
                       {NAVIGATION_LABELS.INVOICES}
@@ -184,6 +197,7 @@ export default function PublicLayout({
                           ? "text-foreground"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
+                      onClick={handleLinkClick}
                     >
                       <Quote className="h-5 w-5" />
                       {NAVIGATION_LABELS.QUOTATIONS}
@@ -191,6 +205,7 @@ export default function PublicLayout({
                     <Link
                       href="#"
                       className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                      onClick={handleLinkClick}
                     >
                       <Settings className="h-5 w-5" />
                       {NAVIGATION_LABELS.SETTINGS}
