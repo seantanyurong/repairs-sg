@@ -4,6 +4,7 @@ import Vehicle from '@/models/Vehicle';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { ObjectId } from 'mongodb';
+import mongoose from 'mongoose';
 
 const fieldFriendlyNames: Record<string, string> = {
   licencePlate: 'Licence Plate',
@@ -45,8 +46,8 @@ const addVehicle = async (vehicle: {
     await newVehicle.save();
 
     return { message: 'Vehicle added successfully' };
-  } catch (error: any) {
-    if (error.name === 'ValidationError' && error.errors) {
+  } catch (error: unknown) {
+    if (error instanceof mongoose.Error.ValidationError && error.errors) {
       // Mongoose validation errors (including unique-validator errors)
       const mongooseErrors = Object.keys(error.errors).reduce((acc, key) => {
         const friendlyKey = fieldFriendlyNames[key] || key; // Map to friendly name if available
@@ -58,8 +59,7 @@ const addVehicle = async (vehicle: {
       return { message: 'Validation error', errors: mongooseErrors };
     }
 
-    // Handle other types of errors (optional)
-    return { message: 'An unexpected error occurred', errors: error.message };
+    return { message: 'An unexpected error occurred' };
   }
 };
 
@@ -101,8 +101,8 @@ const updateVehicle = async (vehicle: {
     await Vehicle.findOneAndUpdate(filter, update, context);
     revalidatePath('/staff/vehicles');
     return { message: 'Vehicle updated successfully' };
-  } catch (error: any) {
-    if (error.name === 'ValidationError' && error.errors) {
+  } catch (error: unknown) {
+    if (error instanceof mongoose.Error.ValidationError && error.errors) {
       // Mongoose validation errors (including unique-validator errors)
       const mongooseErrors = Object.keys(error.errors).reduce((acc, key) => {
         const friendlyKey = fieldFriendlyNames[key] || key; // Map to friendly name if available
@@ -115,7 +115,7 @@ const updateVehicle = async (vehicle: {
     }
 
     // Handle other types of errors (optional)
-    return { message: 'An unexpected error occurred', errors: error.message };
+    return { message: 'An unexpected error occurred' };
   }
 
 };

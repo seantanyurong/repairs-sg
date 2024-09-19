@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { updateVehicle } from '@/lib/actions/vehicles';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Textarea } from '@/components/ui/textarea';
 import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@/components/ui/select';
 
 const formSchema = z.object({
