@@ -45,7 +45,7 @@ export default function ServiceRow({
       <TableCell>
         <Badge variant='outline'>{status}</Badge>
       </TableCell>
-      <TableCell className='font-medium'>{price}</TableCell>
+      <TableCell className='hidden md:table-cell font-medium'>{price}</TableCell>
       <TableCell className='hidden md:table-cell'>{createdAt}</TableCell>
       <TableCell>
         <DropdownMenu>
