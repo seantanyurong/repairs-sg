@@ -24,7 +24,8 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+  noResultsMessage,
+}: DataTableProps<TData, TValue> & { noResultsMessage?: string }) {
   const table = useReactTable({
     data,
     columns,
@@ -72,7 +73,7 @@ export function DataTable<TData, TValue>({
                 colSpan={columns.length}
                 className="h-24 text-center"
               >
-                No results.
+                {noResultsMessage ?? "No results found."}
               </TableCell>
             </TableRow>
           )}
