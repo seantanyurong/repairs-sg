@@ -5,7 +5,7 @@ import { BookUser, Phone } from "lucide-react";
 import ReferralTab from "./tabs/referral/ReferralTab";
 import PhoneTab from "./tabs/phone/PhoneTab";
 
-export default function CustomUserButton() {
+export default function CustomerUserButton() {
   return (
     <UserButton appearance={{ elements: {userButtonAvatarBox: "h-10 w-10" } }}>
       <UserButton.MenuItems>

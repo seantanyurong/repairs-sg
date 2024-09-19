@@ -1,15 +1,8 @@
 "use client";
 
-import "../css/globals.css";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  useUser,
-} from "@clerk/nextjs";
+import "../../css/globals.css";
+import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import CustomUserButton from "./_components/account/CustomerUserButton";
 
 import {
   BriefcaseBusiness,
@@ -19,7 +12,7 @@ import {
   Quote,
   Settings,
 } from "lucide-react";
-import { NAVIGATION_LABELS } from "../constants";
+import { NAVIGATION_LABELS } from "../../constants";
 import {
   Tooltip,
   TooltipContent,
@@ -214,20 +207,6 @@ export default function PublicLayout({
                 </SheetContent>
               </Sheet>
             )}
-
-            {/* Sign In View */}
-            <SignedIn>
-              {/* Top Nav Bar */}
-              <div className="relative ml-auto flex-1 md:grow-0" />
-              <CustomUserButton />
-            </SignedIn>
-
-            {/* Sign Out View */}
-            <SignedOut>
-              <div className="ml-auto">
-                <SignInButton />
-              </div>
-            </SignedOut>
           </header>
 
           <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -238,10 +217,5 @@ export default function PublicLayout({
     );
   }
 
-  return (
-    <ClerkProvider>
-      <Header />
-      {children}
-    </ClerkProvider>
-  );
+  return <Header />;
 }

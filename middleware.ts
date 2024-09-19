@@ -1,56 +1,63 @@
-import { clerkMiddleware, createRouteMatcher, clerkClient } from "@clerk/nextjs/server";
-import { NextResponse } from 'next/server';
-
-// Documentations: https://clerk.com/docs/references/nextjs/clerk-middleware
+import {
+  clerkMiddleware,
+  createRouteMatcher,
+  clerkClient,
+} from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 // Protected Routes
-const isCustomerRoute = createRouteMatcher([
-  '/customer(.*)'
-])
+const isCustomerRoute = createRouteMatcher(["/customer(.*)"]);
 const isTechnicianRoute = createRouteMatcher([
   // To Be Updated When More Features Arrives In SR2 and Beyond
-  '/staff'
-])
+  "/staff",
+]);
 const isAdminRoute = createRouteMatcher([
   // To Be Updated When More Features Arrives In SR2 and Beyond
-  '/staff(.*)'
-])
-const isSuperAdminRoute = createRouteMatcher([
-  '/staff(.*)'
-])
+  "/staff(.*)",
+]);
+const isSuperAdminRoute = createRouteMatcher(["/staff(.*)"]);
+const isHomeRoute = createRouteMatcher(["/"]);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (!auth().userId && (isCustomerRoute(req) || isTechnicianRoute(req) || isAdminRoute(req) || isSuperAdminRoute(req))) {
-    return NextResponse.redirect(new URL('/sign-in', req.url));
+  if (
+    !auth().userId &&
+    (isCustomerRoute(req) ||
+      isTechnicianRoute(req) ||
+      isAdminRoute(req) ||
+      isSuperAdminRoute(req))
+  ) {
+    return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 
-  const userId = auth().userId
+  const userId = auth().userId;
   console.log(userId);
-  if (typeof userId === 'string') {
+  if (typeof userId === "string") {
     const user = await clerkClient().users.getUser(userId as string);
     const role = user.publicMetadata.role;
     if (!role && isSuperAdminRoute(req)) {
       // Is A Customer
-      return NextResponse.redirect(new URL('/', req.url));   
+      return NextResponse.redirect(new URL("/customer", req.url));
     }
-    if ((role === 'technician' && !isTechnicianRoute(req)) || (role === 'admin' && !isAdminRoute(req))) {
-      return NextResponse.redirect(new URL('/staff', req.url));
+    if (role && isCustomerRoute(req)) {
+      // Is A Staff
+      return NextResponse.redirect(new URL("/staff", req.url));
+    }
+    if (
+      (role === "technician" && !isTechnicianRoute(req)) ||
+      (role === "admin" && !isAdminRoute(req))
+    ) {
+      return NextResponse.redirect(new URL("/staff", req.url));
+    }
+
+    if (isHomeRoute(req)) {
+      if (!role) {
+        return NextResponse.redirect(new URL("/customer", req.url));
+      } else {
+        return NextResponse.redirect(new URL("/staff", req.url));
+      }
     }
   }
-})
-
-// Restrict admin routes to users with specific permissions
-// export default clerkMiddleware((auth, req) => {
-//   // Restrict admin routes to users with specific permissions
-//   if (isProtectedRoute(req)) {
-//     auth().protect((has) => {
-//       return (
-//         has({ permission: 'org:sys_memberships:manage' }) ||
-//         has({ permission: 'org:sys_domains_manage' })
-//       )
-//     })
-//   }
-// })
+});
 
 export const config = {
   matcher: [
