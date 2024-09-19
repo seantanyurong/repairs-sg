@@ -5,6 +5,14 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { ObjectId } from 'mongodb';
 
+const fieldFriendlyNames: Record<string, string> = {
+  licencePlate: 'Licence Plate',
+  gpsApi: 'GPS API',
+  make: 'Make',
+  model: 'Model',
+  status: 'Status',
+};
+
 const addVehicle = async (vehicle: {
   licencePlate: string;
   gpsApi: string;
@@ -29,13 +37,30 @@ const addVehicle = async (vehicle: {
   });
 
   if (!response.success) {
-    return { message: 'Error', errors: response.error.flatten().fieldErrors };
+    return { message: '', errors: response.error.flatten().fieldErrors };
   }
 
-  const newVehicle = new Vehicle(response.data);
-  newVehicle.save();
+  try {
+    const newVehicle = new Vehicle(response.data);
+    await newVehicle.save();
 
-  return { message: 'Vehicle added successfully' };
+    return { message: 'Vehicle added successfully' };
+  } catch (error: any) {
+    if (error.name === 'ValidationError' && error.errors) {
+      // Mongoose validation errors (including unique-validator errors)
+      const mongooseErrors = Object.keys(error.errors).reduce((acc, key) => {
+        const friendlyKey = fieldFriendlyNames[key] || key; // Map to friendly name if available
+        const errorMessage = error.errors[key].message.replace(key, friendlyKey); // Replace field name in the message
+        acc[friendlyKey] = [errorMessage]; // Structure as an array to match Zod format
+        return acc;
+      }, {} as Record<string, string[]>);
+
+      return { message: 'Validation error', errors: mongooseErrors };
+    }
+
+    // Handle other types of errors (optional)
+    return { message: 'An unexpected error occurred', errors: error.message };
+  }
 };
 
 const updateVehicle = async (vehicle: {
@@ -65,15 +90,34 @@ const updateVehicle = async (vehicle: {
   });
 
   if (!response.success) {
-    return { message: 'Error', errors: response.error.flatten().fieldErrors };
+    return { message: '', errors: response.error.flatten().fieldErrors };
   }
 
   const filter = { _id: new ObjectId(response.data._id) };
   const update = { licencePlate: response.data.licencePlate, gpsApi: response.data.gpsApi, make: response.data.make, model: response.data.model, status: response.data.status };
-  await Vehicle.findOneAndUpdate(filter, update);
-  revalidatePath('/staff/vehicles');
+  const context = { runValidators: true, context: 'query' };
 
-  return { message: 'Vehicle updated successfully' };
+  try {
+    await Vehicle.findOneAndUpdate(filter, update, context);
+    revalidatePath('/staff/vehicles');
+    return { message: 'Vehicle updated successfully' };
+  } catch (error: any) {
+    if (error.name === 'ValidationError' && error.errors) {
+      // Mongoose validation errors (including unique-validator errors)
+      const mongooseErrors = Object.keys(error.errors).reduce((acc, key) => {
+        const friendlyKey = fieldFriendlyNames[key] || key; // Map to friendly name if available
+        const errorMessage = error.errors[key].message.replace(key, friendlyKey); // Replace field name in the message
+        acc[friendlyKey] = [errorMessage]; // Structure as an array to match Zod format
+        return acc;
+      }, {} as Record<string, string[]>);
+
+      return { message: 'Validation error', errors: mongooseErrors };
+    }
+
+    // Handle other types of errors (optional)
+    return { message: 'An unexpected error occurred', errors: error.message };
+  }
+
 };
 
 const deleteVehicle = async (vehicleId: string) => {

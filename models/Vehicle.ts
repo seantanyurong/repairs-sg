@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+const uniqueValidator = require('mongoose-unique-validator');
 
 const vehicleSchema = new mongoose.Schema({
     licencePlate: {
@@ -29,5 +30,7 @@ const vehicleSchema = new mongoose.Schema({
         default: Date.now,
     }
 }, { versionKey: false, timestamps: true });
+
+vehicleSchema.plugin(uniqueValidator, { message: '{VALUE} already exists' });
 
 export default mongoose.models.Vehicle || mongoose.model('Vehicle', vehicleSchema);
