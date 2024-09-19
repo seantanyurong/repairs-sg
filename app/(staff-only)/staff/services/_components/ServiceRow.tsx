@@ -18,11 +18,13 @@ import { useRouter } from 'next/navigation';
 export default function ServiceRow({
   id,
   name,
+  price,
   status,
   createdAt,
 }: {
   id: string;
   name: string;
+  price: number;
   status: string;
   createdAt: string;
 }) {
@@ -43,6 +45,7 @@ export default function ServiceRow({
       <TableCell>
         <Badge variant='outline'>{status}</Badge>
       </TableCell>
+      <TableCell className='font-medium'>{price}</TableCell>
       <TableCell className='hidden md:table-cell'>{createdAt}</TableCell>
       <TableCell>
         <DropdownMenu>

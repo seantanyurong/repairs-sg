@@ -10,6 +10,14 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       maxlength: [255, 'Description Can Have At Most 255 Characters'],
     },
+    price: {
+      type: Number,
+      required: [true, 'Amount Is Required'],
+    },
+    volumeDiscountPercentage: {
+      type: Number,
+      required: [true, 'Amount Is Required'],
+    },
     status: {
       type: String,
       enum: ['Draft', 'Active', 'Disabled'],

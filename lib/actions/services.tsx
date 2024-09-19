@@ -8,17 +8,23 @@ import { ObjectId } from 'mongodb';
 const addService = async (service: {
   name: string;
   description: string;
+  price: number;
+  volumeDiscountPercentage: number;
   status: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const serviceSchema = z.object({
     name: z.string().min(1),
     description: z.string().min(1),
+    price: z.number(),
+    volumeDiscountPercentage: z.number(),
     status: z.enum(['Draft', 'Active', 'Disabled']),
   });
 
   const response = serviceSchema.safeParse({
     name: service.name,
     description: service.description,
+    price: service.price,
+    volumeDiscountPercentage: service.volumeDiscountPercentage,
     status: service.status,
   });
 
@@ -36,12 +42,16 @@ const updateService = async (service: {
   _id: string;
   name: string;
   description: string;
+  price: number;
+  volumeDiscountPercentage: number;
   status: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const serviceSchema = z.object({
     _id: z.string().min(1),
     name: z.string().min(1),
     description: z.string().min(1),
+    price: z.number(),
+    volumeDiscountPercentage: z.number(),
     status: z.enum(['Draft', 'Active', 'Disabled']),
   });
 
@@ -49,6 +59,8 @@ const updateService = async (service: {
     _id: service._id,
     name: service.name,
     description: service.description,
+    price: service.price,
+    volumeDiscountPercentage: service.volumeDiscountPercentage,
     status: service.status,
   });
 
