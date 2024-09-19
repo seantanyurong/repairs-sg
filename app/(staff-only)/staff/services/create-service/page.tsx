@@ -30,8 +30,8 @@ export default function CreateService() {
     defaultValues: {
       name: '',
       description: '',
-      price: undefined,
-      volumeDiscountPercentage: undefined,
+      price: 0,
+      volumeDiscountPercentage: 0,
     },
   });
 

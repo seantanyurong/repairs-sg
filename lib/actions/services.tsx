@@ -64,12 +64,20 @@ const updateService = async (service: {
     status: service.status,
   });
 
+  console.log(response.data);
+
   if (!response.success) {
     return { message: 'Error', errors: response.error.flatten().fieldErrors };
   }
 
   const filter = { _id: new ObjectId(response.data._id) };
-  const update = { name: response.data.name, description: response.data.description, status: response.data.status };
+  const update = {
+    name: response.data.name,
+    description: response.data.description,
+    price: response.data.price,
+    volumeDiscountPercentage: response.data.volumeDiscountPercentage,
+    status: response.data.status,
+  };
   await Service.findOneAndUpdate(filter, update);
   revalidatePath('/staff/services');
 

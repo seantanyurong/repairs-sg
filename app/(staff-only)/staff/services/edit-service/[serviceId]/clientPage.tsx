@@ -16,13 +16,22 @@ const formSchema = z.object({
   _id: z.string().min(1),
   name: z.string().min(1),
   description: z.string().min(1),
+  price: z.number(),
+  volumeDiscountPercentage: z.number(),
   status: z.enum(['Draft', 'Active', 'Disabled']),
 });
 
 export default function EditServiceClient({
   service,
 }: {
-  service: { _id: string; name: string; description: string; status: 'Draft' | 'Active' | 'Disabled' | undefined };
+  service: {
+    _id: string;
+    name: string;
+    description: string;
+    price: number;
+    volumeDiscountPercentage: number;
+    status: 'Draft' | 'Active' | 'Disabled' | undefined;
+  };
 }) {
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
@@ -36,6 +45,8 @@ export default function EditServiceClient({
       _id: service._id,
       name: service.name,
       description: service.description,
+      price: service.price,
+      volumeDiscountPercentage: service.volumeDiscountPercentage,
       status: service.status,
     },
   });
@@ -43,6 +54,7 @@ export default function EditServiceClient({
   const onSubmit = async () => {
     setMessage('');
     setErrors({});
+    console.log(form.getValues());
     const result = await updateService(form.getValues());
     if (result?.errors) {
       setMessage(result.message);
@@ -103,6 +115,46 @@ export default function EditServiceClient({
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea placeholder='Description' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name='price'
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Price</FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    placeholder='Price'
+                    {...field}
+                    onChange={(event) => field.onChange(+event.target.value)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name='volumeDiscountPercentage'
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Volume Discount Percentage (%)</FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    placeholder='Volume Discount Percentage (%)'
+                    {...field}
+                    onChange={(event) => field.onChange(+event.target.value)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
