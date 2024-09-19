@@ -12,10 +12,6 @@ export default async function Services() {
   const services = await getServices();
 
   const serviceDisplay = (status?: string) => {
-    if (services.length === 0) {
-      return <div>No services found</div>;
-    }
-
     if (status === 'all') {
       return services.map((service) => {
         return (
@@ -23,6 +19,7 @@ export default async function Services() {
             key={service._id.toString()}
             id={service._id.toString()}
             name={service.name}
+            price={service.price}
             status={service.status}
             createdAt={service.createdAt.toString()}
           />
@@ -39,6 +36,7 @@ export default async function Services() {
             key={service._id.toString()}
             id={service._id.toString()}
             name={service.name}
+            price={service.price}
             status={service.status}
             createdAt={service.createdAt.toString()}
           />
@@ -55,6 +53,10 @@ export default async function Services() {
   };
 
   const cardDisplay = (status?: string) => {
+    if (services.length === 0) {
+      return <div className='mt-4'>No services found</div>;
+    }
+
     return (
       <Card x-chunk='dashboard-06-chunk-0'>
         <CardHeader>
@@ -70,6 +72,7 @@ export default async function Services() {
                 </TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className='hidden md:table-cell'>Price</TableHead>
                 <TableHead className='hidden md:table-cell'>Created at</TableHead>
                 <TableHead>
                   <span className='sr-only'>Actions</span>

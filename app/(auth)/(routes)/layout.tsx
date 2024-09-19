@@ -1,5 +1,5 @@
-import { ClerkProvider } from "@clerk/nextjs";
-import Link from "next/link";
+import { ClerkProvider } from '@clerk/nextjs';
+import Link from 'next/link';
 
 export default async function AuthLayout({
   children,
@@ -8,8 +8,8 @@ export default async function AuthLayout({
 }>) {
   function Header() {
     return (
-      <header className="flex justify-between p-4">
-        <Link href="/">Repairs.sg</Link>
+      <header className='flex justify-between p-4'>
+        <Link href='/'>Repairs.sg</Link>
       </header>
     );
   }

@@ -8,17 +8,23 @@ import { ObjectId } from 'mongodb';
 const addService = async (service: {
   name: string;
   description: string;
+  price: number;
+  volumeDiscountPercentage: number;
   status: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const serviceSchema = z.object({
     name: z.string().min(1),
     description: z.string().min(1),
+    price: z.number(),
+    volumeDiscountPercentage: z.number(),
     status: z.enum(['Draft', 'Active', 'Disabled']),
   });
 
   const response = serviceSchema.safeParse({
     name: service.name,
     description: service.description,
+    price: service.price,
+    volumeDiscountPercentage: service.volumeDiscountPercentage,
     status: service.status,
   });
 
@@ -36,12 +42,16 @@ const updateService = async (service: {
   _id: string;
   name: string;
   description: string;
+  price: number;
+  volumeDiscountPercentage: number;
   status: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const serviceSchema = z.object({
     _id: z.string().min(1),
     name: z.string().min(1),
     description: z.string().min(1),
+    price: z.number(),
+    volumeDiscountPercentage: z.number(),
     status: z.enum(['Draft', 'Active', 'Disabled']),
   });
 
@@ -49,15 +59,25 @@ const updateService = async (service: {
     _id: service._id,
     name: service.name,
     description: service.description,
+    price: service.price,
+    volumeDiscountPercentage: service.volumeDiscountPercentage,
     status: service.status,
   });
+
+  console.log(response.data);
 
   if (!response.success) {
     return { message: 'Error', errors: response.error.flatten().fieldErrors };
   }
 
   const filter = { _id: new ObjectId(response.data._id) };
-  const update = { name: response.data.name, description: response.data.description, status: response.data.status };
+  const update = {
+    name: response.data.name,
+    description: response.data.description,
+    price: response.data.price,
+    volumeDiscountPercentage: response.data.volumeDiscountPercentage,
+    status: response.data.status,
+  };
   await Service.findOneAndUpdate(filter, update);
   revalidatePath('/staff/services');
 

@@ -15,6 +15,8 @@ import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@
 const formSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
+  price: z.number(),
+  volumeDiscountPercentage: z.number(),
   status: z.enum(['Draft', 'Active', 'Disabled']),
 });
 
@@ -28,6 +30,8 @@ export default function CreateService() {
     defaultValues: {
       name: '',
       description: '',
+      price: 0,
+      volumeDiscountPercentage: 0,
     },
   });
 
@@ -79,6 +83,46 @@ export default function CreateService() {
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Textarea placeholder='Description' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name='price'
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Price</FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    placeholder='Price'
+                    {...field}
+                    onChange={(event) => field.onChange(+event.target.value)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name='volumeDiscountPercentage'
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Volume Discount Percentage (%)</FormLabel>
+                <FormControl>
+                  <Input
+                    type='number'
+                    placeholder='Volume Discount Percentage (%)'
+                    {...field}
+                    onChange={(event) => field.onChange(+event.target.value)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

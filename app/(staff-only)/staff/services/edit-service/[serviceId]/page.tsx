@@ -10,6 +10,8 @@ export default async function EditService({ params }: { params: { serviceId: str
         _id: service._id.toString(),
         name: service.name,
         description: service.description,
+        price: service.price,
+        volumeDiscountPercentage: service.volumeDiscountPercentage,
         status: service.status,
       }}
     />
