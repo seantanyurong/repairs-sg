@@ -17,7 +17,6 @@ import {
   NotepadText,
   PanelLeft,
   Quote,
-  Search,
   Settings,
 } from "lucide-react";
 import { NAVIGATION_LABELS } from "../constants";
@@ -29,8 +28,6 @@ import {
 import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
 
 export default function PublicLayout({
   children,
@@ -149,7 +146,7 @@ export default function PublicLayout({
                     <span className="sr-only">Toggle Menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="sm:max-w-xs">
+                <SheetContent side="left" className="sm:max-w-xs bg-secondary border-0">
                   <nav className="grid gap-6 text-lg font-medium">
                     <Link
                       href="/"
@@ -203,22 +200,14 @@ export default function PublicLayout({
               </Sheet>
             )}
 
+            {/* Sign In View */}
             <SignedIn>
               {/* Top Nav Bar */}
-              {/* <Breadcrumb className="hidden md:flex">
-              {generateBreadcrumbs(pathname)}
-            </Breadcrumb> */}
-              <div className="relative ml-auto flex-1 md:grow-0">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search..."
-                  className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-                />
-              </div>
-
+              <div className="relative ml-auto flex-1 md:grow-0" />
               <CustomUserButton />
             </SignedIn>
+
+            {/* Sign Out View */}
             <SignedOut>
               <div className="ml-auto">
                 <SignInButton />
