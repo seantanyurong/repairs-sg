@@ -65,7 +65,7 @@ export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
                 "/"
               )}`}
             >
-              {capitalise(segment)}
+              {kebabToTitleCase(segment)}
             </Link>
           </BreadcrumbLink>
           {index < pathSegments.length - 1 && <BreadcrumbSeparator />}
@@ -75,9 +75,14 @@ export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
   );
 }
 
-// Capitalise the first letter of a string
-function capitalise(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+// Convert kebab-case to title case
+function kebabToTitleCase(str: string): string {
+  return str
+    .split('-')
+    .map(word =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    )
+    .join(' ');
 }
 
 export default function PublicLayout({
