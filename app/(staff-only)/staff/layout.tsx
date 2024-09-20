@@ -61,7 +61,7 @@ export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
           <BreadcrumbLink asChild>
             <Link
               href={`/${["staff", ...pathSegments.slice(0, index + 1)].join(
-                "/"
+                "/",
               )}`}
             >
               {kebabToTitleCase(segment)}
@@ -91,7 +91,7 @@ export default function PublicLayout({
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   if (!clerkPublishableKey) {
     throw new Error(
-      "Missing Clerk publishable key. Please add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to your environment variables."
+      "Missing Clerk publishable key. Please add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to your environment variables.",
     );
   }
 
@@ -224,7 +224,7 @@ export default function PublicLayout({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
+                href="/staff/vehicles"
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${
                   pathname === "/staff/vehicles"
                     ? "bg-accent text-accent-foreground"
@@ -376,7 +376,7 @@ export default function PublicLayout({
                   {NAVIGATION_LABELS.CUSTOMERS}
                 </Link>
                 <Link
-                  href="#"
+                  href="/staff/vehicles"
                   className={`flex items-center gap-4 px-2.5 ${
                     pathname === "/staff/vehicles"
                       ? "text-foreground"
