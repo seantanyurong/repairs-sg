@@ -50,7 +50,7 @@ export default function RootLayout({
             role === "technician") && <StaffUserButton />}
         </SignedIn>
         <SignedOut>
-          <Link href="/">Repairs.sg</Link>
+          <Link href="/">Repair.sg</Link>
           <div className="ml-auto">
             <SignInButton />
           </div>
