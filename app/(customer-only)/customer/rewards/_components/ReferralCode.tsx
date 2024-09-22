@@ -47,7 +47,10 @@ export default function ReferralCode({
       }}
       className="w-full h-auto"
     >
-      <p className="text-wrap">Copy Referral Code {referralCode as string}</p>
+      <div className="flex flex-row lg:flex-col 2xl:flex-row items-center justify-between w-full">
+        <p className="flex font-bold text-lg">{referralCode as string}</p>
+        <p className="flex text-xs text-muted-foreground">Click to copy</p>
+      </div>
     </Button>
   ) : (
     <Button

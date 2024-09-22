@@ -2,27 +2,22 @@
 
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { useRouter } from "next/navigation";
+import RewardDetail from "./RewardDetail";
 
 export default function RewardRow({
-  id,
+  // id,
   rewardCode,
   status,
-  // type,
   amount,
   expiryDate,
 }: {
-  id: string;
+  // id: string;
   rewardCode: string;
   status: string;
-  // type: string;
   amount: number;
   expiryDate: string;
 }) {
-  const router = useRouter();
-
   return (
     <TableRow>
       <TableCell className="hidden sm:table-cell">
@@ -43,16 +38,13 @@ export default function RewardRow({
       </TableCell>
       <TableCell className="hidden md:table-cell">{expiryDate}</TableCell>
       <TableCell>
-        <Button
-          onClick={() => {
-            router.push(`/customer/booking/${id}`);
-            console.log("Clicked claim");
-          }}
-          className="cursor-pointer"
-          disabled={true}
-        >
-          Details / Claim
-        </Button>
+        {status === "ACTIVE" && (
+          <RewardDetail
+            rewardCode={rewardCode}
+            amount={amount}
+            expiryDate={expiryDate}
+          />
+        )}
       </TableCell>
     </TableRow>
   );
