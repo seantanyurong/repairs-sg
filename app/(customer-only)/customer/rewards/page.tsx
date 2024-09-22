@@ -1,9 +1,6 @@
 import { getRewardsByUserId } from "@/lib/actions/rewards";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-// import Link from 'next/link';
-// import { PlusCircle } from 'lucide-react';
 
-// import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -28,7 +25,9 @@ export default async function Rewards() {
   const userId = sessionClaims?.userId;
   const rewards = await getRewardsByUserId(userId as string);
   const users = await clerkClient().users.getUserList();
-  const referralCodes = users.data.map((user) => user.unsafeMetadata.referralCode);
+  const referralCodes = users.data.map(
+    (user) => user.unsafeMetadata.referralCode
+  );
 
   const rewardDisplay = (status?: string) => {
     if (status === "all") {
@@ -36,7 +35,7 @@ export default async function Rewards() {
         return (
           <RewardRow
             key={reward._id.toString()}
-            id={reward._id.toString()}
+            // id={reward._id.toString()}
             rewardCode={reward.rewardCode}
             status={reward.status}
             // type={reward.type}
@@ -54,7 +53,7 @@ export default async function Rewards() {
         return (
           <RewardRow
             key={reward._id.toString()}
-            id={reward._id.toString()}
+            // id={reward._id.toString()}
             rewardCode={reward.rewardCode}
             status={reward.status}
             // type={reward.type}
