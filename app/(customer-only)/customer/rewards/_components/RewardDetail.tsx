@@ -92,7 +92,7 @@ export default function RewardDetail({
               console.log("Clicked book now");
             }}
           >
-            Book Now
+            Claim Now
           </Button>
         </DialogFooter>
       </DialogContent>
