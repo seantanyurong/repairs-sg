@@ -9,6 +9,15 @@ import {
   updateQuoteTemplate,
 } from "@/lib/actions/quoteTemplates";
 import { BLANK_PDF, cloneDeep, type Template } from "@pdfme/common";
+import {
+  barcodes,
+  image,
+  text,
+  line,
+  rectangle,
+  ellipse,
+  table,
+} from "@pdfme/schemas";
 import { Designer } from "@pdfme/ui";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -76,6 +85,15 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
       designer.current = new Designer({
         domContainer: designerRef.current,
         template,
+        plugins: {
+          Text: text,
+          Table: table,
+          Line: line,
+          Rectangle: rectangle,
+          Ellipse: ellipse,
+          Image: image,
+          QR: barcodes.qrcode,
+        },
       });
     }
   }, [getTemplate]);
