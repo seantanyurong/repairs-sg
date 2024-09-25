@@ -27,7 +27,7 @@ const deleteQuoteTemplate = async (id: string, router: AppRouterInstance) => {
   }
 };
 
-export const columns: ColumnDef<QuoteTemplate>[] = [
+export const quoteTemplateColumns: ColumnDef<QuoteTemplate>[] = [
   {
     accessorKey: "name",
     header: "Name",
