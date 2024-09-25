@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { setQuotationInactive } from "@/lib/actions/quotations";
 import { setQuoteTemplateInactive } from "@/lib/actions/quoteTemplates";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import dayjs from "dayjs";
@@ -18,9 +19,9 @@ type Quotation = {
   createdAt: string;
 };
 
-const deleteQuoteTemplate = async (id: string, router: AppRouterInstance) => {
+const deleteQuotation = async (id: string, router: AppRouterInstance) => {
   try {
-    const result = await setQuoteTemplateInactive(id);
+    const result = await setQuotationInactive(id);
     toast.success(result.message);
     router.refresh();
   } catch (err) {
@@ -79,7 +80,7 @@ function ActionColumn({ row }: { row: Row<Quotation> }) {
       </Link>
       <Button
         variant="destructive"
-        onClick={() => deleteQuoteTemplate(row.original._id, router)}
+        onClick={() => deleteQuotation(row.original._id, router)}
       >
         Deactivate
       </Button>

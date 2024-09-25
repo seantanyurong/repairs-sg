@@ -10,8 +10,11 @@ import { DataTable } from "@/components/ui/data-table";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { quotationColumns } from "./edit/_components/QuotationColumns";
+import { getQuotations } from "@/lib/actions/quotations";
 
-const Page = () => {
+const Page = async () => {
+  const quotations = await getQuotations();
+
   return (
     <div className="flex flex-col gap-2">
       <h1 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-5xl">
@@ -38,7 +41,7 @@ const Page = () => {
         <CardContent>
           <DataTable
             columns={quotationColumns}
-            data={[]}
+            data={JSON.parse(JSON.stringify(quotations))}
             noResultsMessage="No quotations found."
           />
         </CardContent>
