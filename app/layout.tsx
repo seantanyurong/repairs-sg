@@ -11,9 +11,7 @@ import {
   SignInButton,
 } from "@clerk/nextjs";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
-import CustomerUserButton from "./(customer-only)/_components/account/CustomerUserButton";
-import StaffUserButton from "./(staff-only)/_components/account/StaffUserButton";
+import StaffUserButton from "./(protected)/_components/account/StaffUserButton";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,16 +36,11 @@ export default function RootLayout({
 }>) {
   connectToMongoDB();
   async function Header() {
-    const { sessionClaims } = auth();
-    const role = sessionClaims?.role;
 
     return (
       <header className="flex justify-end p-4 bg-muted/40">
         <SignedIn>
-          {role == null && <CustomerUserButton />}
-          {(role === "superadmin" ||
-            role === "admin" ||
-            role === "technician") && <StaffUserButton />}
+          <StaffUserButton />
         </SignedIn>
         <SignedOut>
           <Link href="/">Repair.sg</Link>

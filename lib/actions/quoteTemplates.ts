@@ -1,6 +1,6 @@
 "use server";
 
-import { QuoteTemplateType } from "@/app/(staff-only)/staff/quote/templates/edit/[[...templateId]]/page";
+import { QuoteTemplateType } from "@/app/(protected)/staff/quote/templates/edit/[[...templateId]]/page";
 import QuoteTemplate from "@/models/QuoteTemplate";
 import { Template } from "@pdfme/common";
 
