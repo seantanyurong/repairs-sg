@@ -6,7 +6,6 @@ import {
 import { NextResponse } from "next/server";
 
 // Protected Routes
-const isCustomerRoute = createRouteMatcher(["/customer(.*)"]);
 const isTechnicianRoute = createRouteMatcher([
   // To Be Updated When More Features Arrives In SR2 and Beyond
   "/staff",
@@ -21,10 +20,7 @@ const isHomeRoute = createRouteMatcher(["/"]);
 export default clerkMiddleware(async (auth, req) => {
   if (
     !auth().userId &&
-    (isCustomerRoute(req) ||
-      isTechnicianRoute(req) ||
-      isAdminRoute(req) ||
-      isSuperAdminRoute(req))
+    (isTechnicianRoute(req) || isAdminRoute(req) || isSuperAdminRoute(req))
   ) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
@@ -34,12 +30,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (typeof userId === "string") {
     const user = await clerkClient().users.getUser(userId as string);
     const role = user.publicMetadata.role;
-    if (!role && isSuperAdminRoute(req)) {
-      // Is A Customer
-      return NextResponse.redirect(new URL("/customer", req.url));
-    }
-    if (role && isCustomerRoute(req)) {
-      // Is A Staff
+    if (user && isHomeRoute(req)) {
       return NextResponse.redirect(new URL("/staff", req.url));
     }
     if (
@@ -47,14 +38,6 @@ export default clerkMiddleware(async (auth, req) => {
       (role === "admin" && !isAdminRoute(req))
     ) {
       return NextResponse.redirect(new URL("/staff", req.url));
-    }
-
-    if (isHomeRoute(req)) {
-      if (!role) {
-        return NextResponse.redirect(new URL("/customer", req.url));
-      } else {
-        return NextResponse.redirect(new URL("/staff", req.url));
-      }
     }
   }
 });
