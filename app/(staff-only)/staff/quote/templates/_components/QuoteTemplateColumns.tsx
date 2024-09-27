@@ -22,7 +22,7 @@ const deleteQuoteTemplate = async (id: string, router: AppRouterInstance) => {
     const result = await setQuoteTemplateInactive(id);
     toast.success(result.message);
     router.refresh();
-  } catch (err) {
+  } catch {
     toast.error("An error has occurred, please try again.");
   }
 };
