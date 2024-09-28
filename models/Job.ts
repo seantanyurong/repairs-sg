@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 
 const jobSchema = new mongoose.Schema({
-    jobId: {
-        type: Number,
-        required: [true, "Job ID Is Required!"],
-        unique: true
-    },
 	categoryType: [{
         type: String,
         enum: ['ELECTRICIAN', 'VENTILATION', 'PLUMBER', 'HANDYMAN', 'AIRCON'],
@@ -35,10 +30,11 @@ const jobSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Address"
     },
-    schedules: [{
+    // removed array for simplicity. will add back
+    schedules: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Schedule"
-    }],
+    },
     quotations: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Quotation"
