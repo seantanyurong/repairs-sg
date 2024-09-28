@@ -23,6 +23,7 @@ import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { PhoneInput } from "@/components/ui/phoneInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   phone: z
@@ -53,6 +54,7 @@ export default function PhoneForm({
     setIsEditing(false);
     const result = await user.update({
       unsafeMetadata: {
+        ...user.unsafeMetadata,
         phone: form.getValues().phone,
       },
     });
@@ -93,11 +95,15 @@ export default function PhoneForm({
               }}
             />
           </CardContent>
-          <CardFooter className="flex justify-end">
+          <CardFooter className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setIsEditing(false)}>
               Cancel
             </Button>
-            <Button variant="default" type="submit">
+            <Button
+              variant="default"
+              type="submit"
+              onClick={() => toast("Phone number successfully updated")}
+            >
               Save
             </Button>
             {errors ? (
