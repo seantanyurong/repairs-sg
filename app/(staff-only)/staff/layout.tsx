@@ -242,7 +242,7 @@ export default function PublicLayout({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
+                href="/staff/analytics"
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${
                   pathname === "/staff/analytics"
                     ? "bg-accent text-accent-foreground"
@@ -388,7 +388,7 @@ export default function PublicLayout({
                   {NAVIGATION_LABELS.VEHICLES}
                 </Link>
                 <Link
-                  href="#"
+                  href="/staff/analytics"
                   className={`flex items-center gap-4 px-2.5 ${
                     pathname === "/staff/analytics"
                       ? "text-foreground"
