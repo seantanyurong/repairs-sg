@@ -41,9 +41,9 @@ export default function JobAnalytics() {
             onClick={() => {
               console.log('Graph Selected:', graph.id);
               setSelectedGraph(graph.id);
-              if (graph.id === 'graph1') {
+              if (['graph1', 'graph2', 'graph3', 'graph4'].includes(selectedGraph)) {
                 setTimePeriod('1Month');
-                setSummaryType('Total') 
+                setSummaryType('Total'); 
               }
             }}
             className={`flex-1 mx-2 px-4 py-2 rounded-md transition ${
@@ -64,7 +64,7 @@ export default function JobAnalytics() {
         </div>
 
         {/* Dropdowns for Time Period and Summary Type */}
-        {selectedGraph === 'graph1' && (
+        {['graph1', 'graph2', 'graph3', 'graph4'].includes(selectedGraph) && (
           <div className="ml-0 md:ml-6 flex flex-col space-y-4">
             {/* Time Period Dropdown */}
             <div>
@@ -84,21 +84,23 @@ export default function JobAnalytics() {
             </div>
 
             {/* Summary Type Dropdown */}
-            <div>
-              <label htmlFor="summary-type" className="mr-2">Summary Type:</label>
-              <select
-                id="summary-type"
-                value={summaryType}
-                onChange={(e) => setSummaryType(e.target.value)}
-                className="p-2 border rounded-md"
-              >
-                {summaryTypes.map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {!['graph2', 'graph4'].includes(selectedGraph) && (
+              <div>
+                <label htmlFor="summary-type" className="mr-2">Summary Type:</label>
+                <select
+                  id="summary-type"
+                  value={summaryType}
+                  onChange={(e) => setSummaryType(e.target.value)}
+                  className="p-2 border rounded-md"
+                >
+                  {summaryTypes.map((type) => (
+                    <option key={type.id} value={type.id}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         )}
       </div>

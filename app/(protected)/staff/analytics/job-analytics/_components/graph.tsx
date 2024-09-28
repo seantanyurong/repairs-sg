@@ -53,7 +53,7 @@ const GraphDisplay: React.FC<GraphDisplayProps> = ({ selectedGraph, timePeriod, 
       let label = '';
 
       if (selectedGraph === 'graph1') {
-        label = 'Job Type Distribution';
+        label = 'Job Type Distribution (Count)';
         switch (timePeriod) {
           case '1Month':
             if (summaryType === 'Total') {
@@ -87,14 +87,75 @@ const GraphDisplay: React.FC<GraphDisplayProps> = ({ selectedGraph, timePeriod, 
             dataUrl = '/analytics/job-type-dist-one-month-total.json';
         }
       } else if (selectedGraph === 'graph2') {
-        dataUrl = '/analytics/job-duration-dist.json';
-        label = 'Job Duration Distribution';
+        label = 'Average Job Duration Distribution (Minutes)';
+        switch (timePeriod) {
+          case '1Month':
+            dataUrl = '/analytics/job-duration-dist-one-month.json';
+            break;
+          case '3Months':
+            dataUrl = '/analytics/job-duration-dist-three-month.json';
+            break;
+          case '6Months':
+            dataUrl = '/analytics/job-duration-dist-six-month.json';
+            break;
+          case '12Months':
+            dataUrl = '/analytics/job-duration-dist-twelve-month.json';
+            break;
+          default:
+            dataUrl = '/analytics/job-duration-dist-one-month.json';
+        }
       } else if (selectedGraph === 'graph3') {
-        dataUrl = '/analytics/job-duration-dist.json';
-        label = 'Job Revenue Distribution';
+        label = 'Job Revenue Distribution ($)';
+        switch (timePeriod) {
+          case '1Month':
+            if (summaryType === 'Total') {
+              dataUrl = '/analytics/job-revenue-dist-one-month-total.json';
+            } else {
+              dataUrl = '/analytics/job-revenue-dist-one-month-average.json';
+            }
+            break;
+          case '3Months':
+            if (summaryType === 'Total') {
+              dataUrl = '/analytics/job-revenue-dist-three-month-total.json';
+            } else {
+              dataUrl = '/analytics/job-revenue-dist-three-month-average.json';
+            }
+            break;
+          case '6Months':
+            if (summaryType === 'Total') {
+              dataUrl = '/analytics/job-revenue-dist-six-month-total.json';
+            } else {
+              dataUrl = '/analytics/job-revenue-dist-six-month-average.json';
+            }
+            break;
+          case '12Months':
+            if (summaryType === 'Total') {
+              dataUrl = '/analytics/job-revenue-dist-twelve-month-total.json';
+            } else {
+              dataUrl = '/analytics/job-revenue-dist-twelve-month-average.json';
+            }
+            break;
+          default:
+            dataUrl = '/analytics/job-revenue-dist-one-month-total.json';
+        }
       } else if (selectedGraph === 'graph4') {
-        dataUrl = '/analytics/job-duration-dist.json';
-        label = 'Job Delay Distribution';
+        label = 'Average Job Delay Distribution (Minutes)';
+        switch (timePeriod) {
+          case '1Month':
+            dataUrl = '/analytics/job-delay-dist-one-month.json';
+            break;
+          case '3Months':
+            dataUrl = '/analytics/job-delay-dist-three-month.json';
+            break;
+          case '6Months':
+            dataUrl = '/analytics/job-delay-dist-six-month.json';
+            break;
+          case '12Months':
+            dataUrl = '/analytics/job-delay-dist-twelve-month.json';
+            break;
+          default:
+            dataUrl = '/analytics/job-delay-dist-one-month.json';
+        }
       } else if (selectedGraph === 'graph5') {
         dataUrl = '/analytics/job-duration-forecast.json';
         label = 'Job Duration Forecast';
