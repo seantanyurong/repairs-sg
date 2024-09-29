@@ -1,4 +1,12 @@
 import mongoose from "mongoose";
+const Customer = require('./Customer');
+const Address = require('./Address');
+const Schedule = require('./Schedule');
+const Quotation = require('./Quotation');
+const Invoice = require('./Invoice');
+const File = require('./File');
+const Staff = require('./Staff');
+
 
 const jobSchema = new mongoose.Schema({
 	categoryType: [{
@@ -10,21 +18,21 @@ const jobSchema = new mongoose.Schema({
 		type: String,
         maxlength: [500, 'Description Can Have At Most 500 Characters']
 	},
-    quickQuotation: {
-        type: Array
-    },
+    // quickQuotation: {
+    //     type: Array
+    // },
     status: {
         type: String,
         default: "Draft",
         required: [true, "Job Status Is Required!"]
     },
-    is_first_job: {
-        type: Boolean,
-        default: false
-    },  
+    // is_first_job: {
+    //     type: Boolean,
+    //     default: false
+    // },  
     customer: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Customer"
+        ref: 'Customer'
     },
     jobAddress: {
         type: mongoose.Schema.Types.ObjectId,
@@ -35,28 +43,28 @@ const jobSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Schedule"
     },
-    quotations: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Quotation"
-    }],
-    invoices: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Invoice"
-    }],
-	files: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "File"
-    }],
-    createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Staff",
-        required: [true, "Created By Is Required!"]
-    },
-    lastUpdatedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Staff",
-        required: [true, "Last Updated By Is Required!"]
-    }
+    // quotations: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Quotation"
+    // }],
+    // invoices: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Invoice"
+    // }],
+	// files: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "File"
+    // }],
+    // createdBy: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Staff",
+    //     required: [true, "Created By Is Required!"]
+    // },
+    // lastUpdatedBy: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Staff",
+    //     required: [true, "Last Updated By Is Required!"]
+    // }
 }, { versionKey: false, timestamps: true });
 
-export default mongoose.models.Job || mongoose.model('Job', jobSchema);
+export default mongoose.models.Job || mongoose.model('Job', jobSchema, 'jobs');

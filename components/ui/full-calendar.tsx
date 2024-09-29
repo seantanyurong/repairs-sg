@@ -86,10 +86,11 @@ type ContextType = {
 const Context = createContext<ContextType>({} as ContextType);
 
 export type CalendarEvent = {
-  id: string;
-  start: Date;
-  end: Date;
+  _id: string;
+  timeStart: Date;
+  timeEnd: Date;
   title: string;
+  staff: string;
   color?: VariantProps<typeof monthEventVariants>['variant'];
 };
 
@@ -197,15 +198,15 @@ const EventGroup = ({
   return (
     <div className="h-20 border-t last:border-b">
       {events
-        .filter((event) => isSameHour(event.start, hour))
+        .filter((event) => isSameHour(event.timeStart, hour))
         .map((event) => {
           const hoursDifference =
-            differenceInMinutes(event.end, event.start) / 60;
-          const startPosition = event.start.getMinutes() / 60;
+            differenceInMinutes(event.timeEnd, event.timeStart) / 60;
+          const startPosition = event.timeStart.getMinutes() / 60;
 
           return (
             <div
-              key={event.id}
+              key={event._id}
               className={cn(
                 'relative',
                 dayEventVariants({ variant: event.color })
@@ -214,7 +215,7 @@ const EventGroup = ({
                 top: `${startPosition * 100}%`,
                 height: `${hoursDifference * 100}%`,
               }}
-            >
+            > 
               {event.title}
             </div>
           );
@@ -350,7 +351,7 @@ const CalendarMonthView = () => {
       <div className="grid overflow-hidden -mt-px flex-1 auto-rows-fr p-px grid-cols-7 gap-px">
         {monthDates.map((_date) => {
           const currentEvents = events.filter((event) =>
-            isSameDay(event.start, _date)
+            isSameDay(event.timeStart, _date)
           );
 
           return (
@@ -373,7 +374,7 @@ const CalendarMonthView = () => {
               {currentEvents.map((event) => {
                 return (
                   <div
-                    key={event.id}
+                    key={event._id}
                     className="px-1 rounded text-sm flex items-center gap-1"
                   >
                     <div
@@ -384,7 +385,7 @@ const CalendarMonthView = () => {
                     ></div>
                     <span className="flex-1 truncate">{event.title}</span>
                     <time className="tabular-nums text-muted-foreground/50 text-xs">
-                      {format(event.start, 'HH:mm')}
+                      {format(event.timeStart, 'HH:mm')}
                     </time>
                   </div>
                 );

@@ -103,7 +103,7 @@ const getJobs = async () => {
 
 const getJobsForSchedule = async () => {
   return Job.find()
-  .populate('customer', 'fullName')
+  .populate('customer')
   .populate('jobAddress', 'address')
   .populate({
     path: 'schedules',

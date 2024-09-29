@@ -9,10 +9,13 @@ const scheduleSchema = new mongoose.Schema({
         type: Date,
         required: [true, "End Time Is Required"]
     },
-    teamMembers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Staff"
-    }]
+    // teamMembers: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Staff"
+    // }]
+    staff: {
+        type: String
+    }
 }, { versionKey: false, timestamps: false });
 
-export default mongoose.models.Schedule || mongoose.model('Schedule', scheduleSchema);
+export default mongoose.models.Schedule || mongoose.model('Schedule', scheduleSchema, 'schedule');

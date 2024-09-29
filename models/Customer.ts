@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const customerSchema = new mongoose.Schema({
+const customerSchema = new mongoose.Schema(
+    {
     // username: {
     //     type: String,
     //     required: [true, "Username Is Required!"],
@@ -77,6 +78,8 @@ const customerSchema = new mongoose.Schema({
     //     ref: 'Address',
     //     required: [true, "Default Job Address Is Required!"]
     // }
-}, { versionKey: false, timestamps: true });
+    }, 
+    { versionKey: false, timestamps: true },
+);
 
 export default mongoose.models.Customer || mongoose.model('Customer', customerSchema);
