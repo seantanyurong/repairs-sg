@@ -17,7 +17,7 @@ const addQuoteTemplate = async (
 };
 
 const getQuoteTemplates = async () => {
-  return await QuoteTemplate.find();
+  return JSON.stringify(await QuoteTemplate.find());
 };
 
 const getOneQuoteTemplate = async (id: string) => {

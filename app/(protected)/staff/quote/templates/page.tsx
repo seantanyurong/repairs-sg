@@ -41,7 +41,7 @@ const page = async () => {
         <CardContent>
           <DataTable
             columns={quoteTemplateColumns}
-            data={JSON.parse(JSON.stringify(templates))}
+            data={JSON.parse(templates)}
             noResultsMessage="No quote templates found."
           />
         </CardContent>

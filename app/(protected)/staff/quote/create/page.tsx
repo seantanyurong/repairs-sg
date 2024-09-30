@@ -52,7 +52,7 @@ const EditQuotation = () => {
   const getTemplates = useCallback(async () => {
     try {
       const quoteTemplates = await getQuoteTemplates();
-      setTemplates(quoteTemplates);
+      setTemplates(JSON.parse(quoteTemplates));
     } catch (e) {
       console.error(e);
       router.push("/staff/quote/");
