@@ -1,4 +1,14 @@
 import { Font } from "@pdfme/common";
+import {
+  barcodes,
+  ellipse,
+  image,
+  line,
+  multiVariableText,
+  rectangle,
+  table,
+  text,
+} from "@pdfme/schemas";
 
 export const schemas = [
   [
@@ -534,4 +544,15 @@ export const font: Font = {
     fallback: true,
     data: "http://localhost:3000/fonts/Roboto-Regular.ttf",
   },
+};
+
+export const plugins = {
+  Text: text,
+  "Multi-Variable Text": multiVariableText,
+  Table: table,
+  Line: line,
+  Rectangle: rectangle,
+  Ellipse: ellipse,
+  Image: image,
+  QR: barcodes.qrcode,
 };

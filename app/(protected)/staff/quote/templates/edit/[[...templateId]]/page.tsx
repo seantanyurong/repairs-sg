@@ -9,23 +9,13 @@ import {
   updateQuoteTemplate,
 } from "@/lib/actions/quoteTemplates";
 import { BLANK_PDF, cloneDeep, type Template } from "@pdfme/common";
-import {
-  barcodes,
-  ellipse,
-  image,
-  line,
-  multiVariableText,
-  rectangle,
-  table,
-  text,
-} from "@pdfme/schemas";
 import { Designer } from "@pdfme/ui";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { font, schemas } from "../../_components/pdfSchema";
+import { font, plugins, schemas } from "../../_components/pdfSchema";
 
-interface QuoteTemplateType {
+export interface QuoteTemplateCreate {
   name: string;
   pdfTemplate: Template;
 }
@@ -34,7 +24,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
   const [templateName, setTemplateName] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [existingTemplate, setExistingTemplate] =
-    useState<QuoteTemplateType | null>(null);
+    useState<QuoteTemplateCreate | null>(null);
   const designerRef = useRef<HTMLDivElement | null>(null);
   const designer = useRef<Designer | null>(null);
   const router = useRouter();
@@ -73,16 +63,7 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
         domContainer: designerRef.current,
         template,
         options: { font },
-        plugins: {
-          Text: text,
-          "Multi-Variable Text": multiVariableText,
-          Table: table,
-          Line: line,
-          Rectangle: rectangle,
-          Ellipse: ellipse,
-          Image: image,
-          QR: barcodes.qrcode,
-        },
+        plugins,
       });
     }
   }, [getTemplate]);

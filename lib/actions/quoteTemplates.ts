@@ -1,13 +1,11 @@
 "use server";
 
-import { QuoteTemplateType } from "@/app/(protected)/staff/quote/templates/_components/QuoteTemplateColumns";
+import { QuoteTemplateCreate } from "@/app/(protected)/staff/quote/templates/edit/[[...templateId]]/page";
 import QuoteTemplate from "@/models/QuoteTemplate";
-import { Template } from "@pdfme/common";
 
-const addQuoteTemplate = async (quoteTemplate: {
-  name: string;
-  pdfTemplate: Template;
-}): Promise<{
+const addQuoteTemplate = async (
+  quoteTemplate: QuoteTemplateCreate
+): Promise<{
   message: string;
 }> => {
   if (quoteTemplate.name.length === 0) {
@@ -29,7 +27,7 @@ const getOneQuoteTemplate = async (id: string) => {
 
 const updateQuoteTemplate = async (
   id: string,
-  templateParams: QuoteTemplateType
+  templateParams: QuoteTemplateCreate
 ) => {
   try {
     QuoteTemplate.findByIdAndUpdate(id, templateParams).exec();
