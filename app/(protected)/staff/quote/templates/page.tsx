@@ -10,14 +10,14 @@ import { DataTable } from "@/components/ui/data-table";
 import { getQuoteTemplates } from "@/lib/actions/quoteTemplates";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
-import { columns } from "./_components/QuoteTemplateColumns";
+import { quoteTemplateColumns } from "./_components/QuoteTemplateColumns";
 
 const page = async () => {
   const templates = await getQuoteTemplates();
 
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight lg:text-5xl">
+      <h1 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-5xl">
         Quote Templates
       </h1>
       <Link
@@ -40,7 +40,7 @@ const page = async () => {
         </CardHeader>
         <CardContent>
           <DataTable
-            columns={columns}
+            columns={quoteTemplateColumns}
             data={JSON.parse(JSON.stringify(templates))}
             noResultsMessage="No quote templates found."
           />
