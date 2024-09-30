@@ -11,19 +11,21 @@ import {
 import { BLANK_PDF, cloneDeep, type Template } from "@pdfme/common";
 import {
   barcodes,
-  image,
-  text,
-  line,
-  rectangle,
   ellipse,
+  image,
+  line,
+  multiVariableText,
+  rectangle,
   table,
+  text,
 } from "@pdfme/schemas";
 import { Designer } from "@pdfme/ui";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { font, schemas } from "../../_components/pdfSchema";
 
-export interface QuoteTemplateType {
+interface QuoteTemplateType {
   name: string;
   pdfTemplate: Template;
 }
@@ -64,29 +66,16 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
 
       const template: Template = {
         basePdf: BLANK_PDF,
-        schemas: [
-          {
-            name: {
-              type: "text",
-              content: "Quotation",
-              position: {
-                x: 25.06,
-                y: 26.35,
-              },
-              width: 77.77,
-              height: 18.7,
-              fontSize: 36,
-              fontColor: "#000000",
-            },
-          },
-        ],
+        schemas,
       };
 
       designer.current = new Designer({
         domContainer: designerRef.current,
         template,
+        options: { font },
         plugins: {
           Text: text,
+          "Multi-Variable Text": multiVariableText,
           Table: table,
           Line: line,
           Rectangle: rectangle,
@@ -143,7 +132,6 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
     }
   };
 
-  
   return (
     <div className="flex flex-col gap-2">
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
