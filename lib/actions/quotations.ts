@@ -25,14 +25,14 @@ const getOneQuotation = async (id: string) => {
   return JSON.stringify(template);
 };
 
-const updateQuotation = async (id: string, templateParams: any) => {
-  try {
-    Quotation.findByIdAndUpdate(id, templateParams).exec();
-    return { message: "Quote Template updated successfully" };
-  } catch (err) {
-    return { message: "An error has occurred, please try again." };
-  }
-};
+// const updateQuotation = async (id: string, templateParams: any) => {
+//   try {
+//     Quotation.findByIdAndUpdate(id, templateParams).exec();
+//     return { message: "Quote Template updated successfully" };
+//   } catch (err) {
+//     return { message: "An error has occurred, please try again." };
+//   }
+// };
 
 const setQuotationInactive = async (id: string) => {
   Quotation.findByIdAndUpdate(id, { status: "Inactive" }).exec();
@@ -44,5 +44,5 @@ export {
   getQuotations,
   getOneQuotation,
   setQuotationInactive,
-  updateQuotation,
+  // updateQuotation,
 };

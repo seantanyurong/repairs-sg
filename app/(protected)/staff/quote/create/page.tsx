@@ -58,11 +58,11 @@ const EditQuotation = () => {
       router.push("/staff/quote/");
       toast.error("Error fetching template: Please try again.");
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     getTemplates();
-  }, []);
+  }, [getTemplates]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

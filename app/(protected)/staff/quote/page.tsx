@@ -22,7 +22,7 @@ const Page = async () => {
       </h1>
       <Link
         className="self-end"
-        href="/staff/quote/edit"
+        href="/staff/quote/create"
       >
         <Button className="h-8 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />

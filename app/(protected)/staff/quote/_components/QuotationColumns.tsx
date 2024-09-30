@@ -2,13 +2,9 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { setQuotationInactive } from "@/lib/actions/quotations";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 type Quotation = {
   _id: string;
@@ -70,7 +66,7 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
 ];
 
 function ActionColumn({ row }: { row: Row<Quotation> }) {
-  const router = useRouter();
+  // const router = useRouter();
 
   return (
     <div className="flex gap-2">
