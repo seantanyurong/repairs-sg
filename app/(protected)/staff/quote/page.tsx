@@ -9,8 +9,8 @@ import {
 import { DataTable } from "@/components/ui/data-table";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
-import { quotationColumns } from "./edit/_components/QuotationColumns";
 import { getQuotations } from "@/lib/actions/quotations";
+import { quotationColumns } from "./edit/_components/QuotationColumns";
 
 const Page = async () => {
   const quotations = await getQuotations();

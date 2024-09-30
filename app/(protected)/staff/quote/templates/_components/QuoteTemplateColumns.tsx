@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-type QuoteTemplate = {
+export type QuoteTemplateType = {
   _id: string;
   name: string;
   status: "Active" | "Inactive";
@@ -27,7 +27,7 @@ const deleteQuoteTemplate = async (id: string, router: AppRouterInstance) => {
   }
 };
 
-export const quoteTemplateColumns: ColumnDef<QuoteTemplate>[] = [
+export const quoteTemplateColumns: ColumnDef<QuoteTemplateType>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -60,7 +60,7 @@ export const quoteTemplateColumns: ColumnDef<QuoteTemplate>[] = [
   },
 ];
 
-function ActionColumn({ row }: { row: Row<QuoteTemplate> }) {
+function ActionColumn({ row }: { row: Row<QuoteTemplateType> }) {
   const router = useRouter();
 
   return (

@@ -1,6 +1,6 @@
 "use server";
 
-import { QuoteTemplateType } from "@/app/(protected)/staff/quote/templates/edit/[[...templateId]]/page";
+import { QuoteTemplateType } from "@/app/(protected)/staff/quote/templates/_components/QuoteTemplateColumns";
 import QuoteTemplate from "@/models/QuoteTemplate";
 import { Template } from "@pdfme/common";
 
@@ -34,7 +34,7 @@ const updateQuoteTemplate = async (
   try {
     QuoteTemplate.findByIdAndUpdate(id, templateParams).exec();
     return { message: "Quote Template updated successfully" };
-  } catch (err) {
+  } catch {
     return { message: "An error has occurred, please try again." };
   }
 };
