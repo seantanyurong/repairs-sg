@@ -4,29 +4,44 @@ import { useState } from 'react';
 import GraphDisplay from './_components/graph'; 
 
 export default function JobAnalytics() {
-  const [selectedGraph, setSelectedGraph] = useState('graph1'); // Default to graph1
-  const [timePeriod, setTimePeriod] = useState('1Month');       // Default time period
-  const [summaryType, setSummaryType] = useState('Total');      // Default summary type
+  const [selectedGraph, setSelectedGraph] = useState('job-type-dist');          // Default to Graph1
+  const [timePeriod, setTimePeriod] = useState('one-month');                    // Default Time Period
+  const [summaryType, setSummaryType] = useState('total');                      // Default Summary Type
+  const [forecastPeriod, setForecastPeriod] = useState('month-on-month');       // Default Forecast Period
+  const [selectedJob, setSelectedJob] = useState('electrician');                // Default Job Type 
 
   const graphs = [
-    { id: 'graph1', title: 'Job Type Distribution' },
-    { id: 'graph2', title: 'Job Duration Distribution' },
-    { id: 'graph3', title: 'Job Revenue Distribution' },
-    { id: 'graph4', title: 'Job Delay Distribution' },
-    { id: 'graph5', title: 'Job Duration Forecasting' },
-    { id: 'graph6', title: 'Job Demand Forecasting' },
+    { id: 'job-type-dist', title: 'Job Type Distribution' },
+    { id: 'job-duration-dist', title: 'Job Duration Distribution' },
+    { id: 'job-delay-dist', title: 'Job Delay Distribution' },
+    { id: 'job-revenue-dist', title: 'Job Revenue Distribution' },
+    { id: 'job-revenue-forecast', title: 'Job Revenue Forecasting' },
+    { id: 'job-demand-forecast', title: 'Job Demand Forecasting' },
   ];
 
   const timePeriods = [
-    { id: '1Month', label: 'Last 1 Month' },
-    { id: '3Months', label: 'Last 3 Months' },
-    { id: '6Months', label: 'Last 6 Months' },
-    { id: '12Months', label: 'Last 12 Months' },
+    { id: 'one-month', label: 'Last 1 Month' },
+    { id: 'three-month', label: 'Last 3 Months' },
+    { id: 'six-month', label: 'Last 6 Months' },
+    { id: 'twelve-month', label: 'Last 12 Months' },
   ];
 
   const summaryTypes = [
-    { id: 'Total', label: 'Total' },
-    { id: 'Average', label: 'Average' },
+    { id: 'total', label: 'Total' },
+    { id: 'average', label: 'Average' },
+  ];
+
+  const forecastPeriods = [
+    { id: 'month', label: 'Month-on-Month' },
+    { id: 'quarter', label: 'Quarter-on-Quarter' },
+  ];
+
+  const jobTypes = [
+    { id: 'electrician', label: 'Electrician' },
+    { id: 'ventilation', label: 'Ventilation' },
+    { id: 'plumber', label: 'Plumber' },
+    { id: 'handyman', label: 'Handyman' },
+    { id: 'aircon', label: 'Aircon' },
   ];
 
   return (
@@ -41,9 +56,13 @@ export default function JobAnalytics() {
             onClick={() => {
               console.log('Graph Selected:', graph.id);
               setSelectedGraph(graph.id);
-              if (['graph1', 'graph2', 'graph3', 'graph4'].includes(selectedGraph)) {
-                setTimePeriod('1Month');
-                setSummaryType('Total'); 
+              if (['job-type-dist', 'job-duration-dist', 'job-delay-dist', 'job-revenue-dist'].includes(selectedGraph)) {
+                setTimePeriod('one-month');
+                setSummaryType('total'); 
+              }
+              if (['job-revenue-forecast', 'job-demand-forecast'].includes(selectedGraph)) {
+                setForecastPeriod('month');
+                setSelectedJob('electrician'); 
               }
             }}
             className={`flex-1 mx-2 px-4 py-2 rounded-md transition ${
@@ -59,12 +78,17 @@ export default function JobAnalytics() {
 
       <div className="flex flex-col md:flex-row items-start">
         <div className="flex-1 p-3">
-          {/* Display Selected Graph */}
-          <GraphDisplay selectedGraph={selectedGraph} timePeriod={timePeriod} summaryType={summaryType} />
+          <GraphDisplay 
+            selectedGraph={selectedGraph} 
+            timePeriod={timePeriod} 
+            summaryType={summaryType} 
+            forecastPeriod={forecastPeriod} 
+            selectedJob={selectedJob} 
+          />
         </div>
 
         {/* Dropdowns for Time Period and Summary Type */}
-        {['graph1', 'graph2', 'graph3', 'graph4'].includes(selectedGraph) && (
+        {['job-type-dist', 'job-duration-dist', 'job-delay-dist', 'job-revenue-dist'].includes(selectedGraph) && (
           <div className="ml-0 md:ml-6 flex flex-col space-y-4">
             {/* Time Period Dropdown */}
             <div>
@@ -84,7 +108,7 @@ export default function JobAnalytics() {
             </div>
 
             {/* Summary Type Dropdown */}
-            {!['graph2', 'graph4'].includes(selectedGraph) && (
+            {['job-type-dist', 'job-revenue-dist'].includes(selectedGraph) && (
               <div>
                 <label htmlFor="summary-type" className="mr-2">Summary Type:</label>
                 <select
@@ -101,6 +125,45 @@ export default function JobAnalytics() {
                 </select>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Dropdowns for Forecast Period and Job Type */}
+        {['job-revenue-forecast', 'job-demand-forecast'].includes(selectedGraph) && (
+          <div className="ml-0 md:ml-6 flex flex-col space-y-4">
+            {/* Forecast Period Dropdown */}
+            <div>
+              <label htmlFor="forecast-period" className="mr-2">Forecast Period:</label>
+              <select
+                id="forecast-period"
+                value={forecastPeriod}
+                onChange={(e) => setForecastPeriod(e.target.value)}
+                className="p-2 border rounded-md"
+              >
+                {forecastPeriods.map((period) => (
+                  <option key={period.id} value={period.id}>
+                    {period.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Job Type Dropdown */}
+            <div>
+              <label htmlFor="job-type" className="mr-2">Job Type:</label>
+              <select
+                id="job-type"
+                value={selectedJob}
+                onChange={(e) => setSelectedJob(e.target.value)}
+                className="p-2 border rounded-md"
+              >
+                {jobTypes.map((job) => (
+                  <option key={job.id} value={job.id}>
+                    {job.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         )}
       </div>
