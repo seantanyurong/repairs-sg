@@ -34,7 +34,7 @@ export const schemas = [
       strikethrough: false,
       underline: false,
       required: false,
-      readOnly: false,
+      readOnly: true,
       fontName: "Roboto Bold",
     },
     {
@@ -109,7 +109,7 @@ export const schemas = [
       strikethrough: false,
       underline: false,
       required: false,
-      readOnly: false,
+      readOnly: true,
       fontName: "Roboto",
     },
     {
@@ -168,7 +168,7 @@ export const schemas = [
       strikethrough: false,
       underline: false,
       required: false,
-      readOnly: false,
+      readOnly: true,
       fontName: "Roboto",
     },
     {
@@ -194,7 +194,7 @@ export const schemas = [
       strikethrough: false,
       underline: false,
       required: false,
-      readOnly: false,
+      readOnly: true,
       fontName: "Roboto",
     },
     {
