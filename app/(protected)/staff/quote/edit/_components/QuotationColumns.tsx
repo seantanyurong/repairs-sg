@@ -3,7 +3,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { setQuotationInactive } from "@/lib/actions/quotations";
-import { setQuoteTemplateInactive } from "@/lib/actions/quoteTemplates";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -19,15 +18,15 @@ type Quotation = {
   createdAt: string;
 };
 
-const deleteQuotation = async (id: string, router: AppRouterInstance) => {
-  try {
-    const result = await setQuotationInactive(id);
-    toast.success(result.message);
-    router.refresh();
-  } catch (err) {
-    toast.error("An error has occurred, please try again.");
-  }
-};
+// const deleteQuotation = async (id: string, router: AppRouterInstance) => {
+//   try {
+//     const result = await setQuotationInactive(id);
+//     toast.success(result.message);
+//     router.refresh();
+//   } catch {
+//     toast.error("An error has occurred, please try again.");
+//   }
+// };
 
 export const quotationColumns: ColumnDef<Quotation>[] = [
   {
@@ -80,7 +79,7 @@ function ActionColumn({ row }: { row: Row<Quotation> }) {
       </Link>
       <Button
         variant="destructive"
-        onClick={() => deleteQuotation(row.original._id, router)}
+        // onClick={() => deleteQuotation(row.original._id, router)}
       >
         Deactivate
       </Button>
