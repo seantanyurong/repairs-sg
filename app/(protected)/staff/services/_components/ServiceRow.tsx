@@ -30,6 +30,14 @@ export default function ServiceRow({
 }) {
   const router = useRouter();
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm('Are you sure you want to delete this service?');
+    if (confirmed) {
+      await deleteService(id);
+      router.refresh();
+    }
+  };
+
   return (
     <TableRow>
       <TableCell className='hidden sm:table-cell'>
@@ -62,7 +70,7 @@ export default function ServiceRow({
               className='cursor-pointer'>
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => deleteService(id)} className='cursor-pointer'>
+            <DropdownMenuItem onClick={handleDelete} className='cursor-pointer'>
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
