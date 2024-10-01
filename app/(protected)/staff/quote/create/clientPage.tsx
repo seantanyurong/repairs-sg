@@ -34,12 +34,15 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { QuoteTemplateType } from "../templates/_components/QuoteTemplateColumns";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { addQuotation } from "@/lib/actions/quotations";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   quotationDate: z.date(),
   customerEmail: z.string().email(),
   quoteTemplate: z.string().min(1),
-  notes: z.string().min(1),
+  notes: z.string().optional(),
 });
 
 function renderTemplateFields(
@@ -51,7 +54,10 @@ function renderTemplateFields(
       if (schema.variables) {
         return (
           <>
-            <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+            <h4
+              key={schema.name}
+              className="scroll-m-20 text-xl font-semibold tracking-tight"
+            >
               {schema.name}
             </h4>
             {(schema.variables as string[]).map((variable: string) => {
@@ -61,15 +67,18 @@ function renderTemplateFields(
                   control={form.control}
                   name={variable}
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{variable}</FormLabel>
-                      <FormControl>
+                    <FormItem key={`${schema.name}-${variable}-item`}>
+                      <FormLabel key={`${schema.name}-${variable}-label`}>
+                        {variable}
+                      </FormLabel>
+                      <FormControl key={`${schema.name}-${variable}-control`}>
                         <Input
+                          key={`${schema.name}-${variable}-input`}
                           type="text"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage key={`${schema.name}-${variable}-message`} />
                     </FormItem>
                   )}
                 />
@@ -82,7 +91,7 @@ function renderTemplateFields(
     case "table":
       return (
         <>
-          <p>{schema.type}</p>
+          <p key={schema.name}>{schema.type}</p>
         </>
       );
     default:
@@ -93,10 +102,13 @@ function renderTemplateFields(
             control={form.control}
             name={schema.name}
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>{schema.name}</FormLabel>
-                <FormControl>
+              <FormItem key={`${schema.name}-item`}>
+                <FormLabel key={`${schema.name}-label`}>
+                  {schema.name}
+                </FormLabel>
+                <FormControl key={`${schema.name}-control`}>
                   <Input
+                    key={`${schema.name}-input`}
                     type="text"
                     {...field}
                   />
@@ -117,10 +129,10 @@ const CreateQuoteClient = ({
   templates: QuoteTemplateType[];
   getCustomerAction: (email: string) => Promise<string>;
 }) => {
-  const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useUser();
+  const router = useRouter();
 
   const quotationForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -161,7 +173,6 @@ const CreateQuoteClient = ({
         toast.error(result);
         return;
       }
-      console.log(user);
       toast.success("Customer found!");
       templateForm.setValue("customer_name", result);
       templateForm.setValue("sales_email", user?.primaryEmailAddress);
@@ -175,19 +186,19 @@ const CreateQuoteClient = ({
   };
 
   const onSubmit = async () => {
-    setMessage("");
     setErrors({});
-    // const result = await addService(form.getValues());
-    // if (result?.errors) {
-    //   setMessage(result.message);
-    //   setErrors(result.errors);
-    //   return;
-    // } else {
-    //   setMessage(result.message);
-    //   router.refresh();
-    //   form.reset(form.getValues());
-    //   router.push("/staff/services");
-    // }
+    const result = await addQuotation(
+      JSON.stringify(quotationForm.getValues()),
+      JSON.stringify(templateForm.getValues())
+    );
+    if (result?.errors) {
+      setErrors(result.errors);
+      return;
+    } else {
+      router.refresh();
+      quotationForm.reset(quotationForm.getValues());
+      router.push(`/staff/quote/edit/${result.id}`);
+    }
   };
 
   return (
@@ -248,6 +259,24 @@ const CreateQuoteClient = ({
           />
           <FormField
             control={quotationForm.control}
+            name="notes"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Notes"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={quotationForm.control}
             name="quoteTemplate"
             render={({ field }) => {
               return (
@@ -260,16 +289,14 @@ const CreateQuoteClient = ({
                       </SelectTrigger>
                       <SelectContent>
                         {templates &&
-                          templates.map(
-                            (template: QuoteTemplateType, index: number) => (
-                              <SelectItem
-                                key={template._id}
-                                value={index.toString()}
-                              >
-                                {template.name}
-                              </SelectItem>
-                            )
-                          )}
+                          templates.map((template: QuoteTemplateType) => (
+                            <SelectItem
+                              key={template._id}
+                              value={template._id}
+                            >
+                              {template.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -313,18 +340,19 @@ const CreateQuoteClient = ({
           </Button>
 
           {selectedTemplate &&
-            templates[parseInt(selectedTemplate)].pdfTemplate.schemas[0]
-              .filter((t: Schema) => !t.readOnly)
+            templates
+              .filter(
+                (t) => t._id === quotationForm.getValues("quoteTemplate")
+              )[0]
+              .pdfTemplate.schemas[0].filter((t: Schema) => !t.readOnly)
               .map((t: Schema) => renderTemplateFields(t, templateForm))}
 
           <Button
             type="submit"
             className="w-full"
-            disabled
           >
             Preview Quotation
           </Button>
-          {message ? <h2>{message}</h2> : null}
           {errors ? (
             <div className="mb-10 text-red-500">
               {Object.keys(errors).map((key) => (

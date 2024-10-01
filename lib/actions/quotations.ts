@@ -3,12 +3,16 @@
 import Quotation from "@/models/Quotation";
 import { z } from "zod";
 
-const addQuotation = async (quotation: {
-  quotationDate: Date;
-  customerEmail: string;
-  quoteTemplate: string;
-  notes?: string;
-}): Promise<{
+const addQuotation = async (
+  // quotation: {
+  //   quotationDate: Date;
+  //   customerEmail: string;
+  //   quoteTemplate: string;
+  //   notes?: string;
+  // },
+  quote: string,
+  templateInputs: string
+): Promise<{
   message: string;
   id?: string;
   errors?: string | Record<string, unknown>;
@@ -20,6 +24,7 @@ const addQuotation = async (quotation: {
     notes: z.string().optional(),
   });
 
+  const quotation = JSON.parse(quote);
   const response = quotationSchema.safeParse({
     quotationDate: quotation.quotationDate,
     quoteTemplate: quotation.quoteTemplate,
@@ -30,11 +35,14 @@ const addQuotation = async (quotation: {
   if (!response.success) {
     return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
+  console.log(templateInputs);
 
-  const newQuotation = new Quotation(response.data);
+  const newQuotation = new Quotation({
+    ...response.data,
+  });
   newQuotation.save();
 
-  return { message: "Service added successfully", id: newQuotation._id };
+  return { message: "Quotation added successfully", id: newQuotation._id };
 };
 
 const getQuotations = async () => {

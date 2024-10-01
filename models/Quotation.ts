@@ -1,43 +1,30 @@
 import mongoose from "mongoose";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const quotationSchema = new mongoose.Schema(
   {
-    quotationId: {
-      type: Number,
-      required: [true, "Quotation ID Is Required!"],
-      unique: true,
-    },
     quotationDate: {
       type: Date,
       required: [true, "Quotation Date Is Required!"],
     },
+    //TODO: Make required if status is not draft
     lineItems: {
       type: Array,
-      required: [true, "Line Items Are Required!"],
-      validate: {
-        validator: (v: string[]) => v.length >= 1,
-        message: "Line Items Should Have At Least 1 Item!",
-      },
+      // required: [true, "Line Items Are Required!"],
+      // validate: {
+      //   validator: (v: string[]) => v.length >= 1,
+      //   message: "Line Items Should Have At Least 1 Item!",
+      // },
     },
     totalAmount: {
       type: Number,
-      required: [true, "Total Amount Is Required!"],
-      min: [0.01, "Total Amount Must Be Greater Than 0!"],
+      // required: [true, "Total Amount Is Required!"],
+      // min: [0.01, "Total Amount Must Be Greater Than 0!"],
     },
-    // public_note: {
-    //   type: String,
-    //   maxlength: [500, "Public Note Can Have At Most 500 Characters"],
-    // },
-    // private_notes: {
-    //   type: String,
-    //   maxlength: [500, "Private Note Can Have At Most 500 Characters"],
-    // },
-    // filesWithURL: {
-    //   type: Array,
-    // },
-    // secret: {
-    //   type: String,
-    // },
+    notes: {
+      type: String,
+    },
     status: {
       type: String,
       default: "Draft",
@@ -76,6 +63,8 @@ const quotationSchema = new mongoose.Schema(
   },
   { versionKey: false, timestamps: true }
 );
+
+quotationSchema.plugin(AutoIncrement, { inc_field: "quotationId" });
 
 export default mongoose.models.Quotation ||
   mongoose.model("Quotation", quotationSchema);
