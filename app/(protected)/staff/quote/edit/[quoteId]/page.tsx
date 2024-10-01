@@ -18,6 +18,16 @@ const populateTemplate = (oldTemplate: Template, quotation): Template => {
           ...field,
           content: dayjs(quotation.quotationDate).format("DD/MM/YYYY"),
         };
+      case "customer_name":
+        return {
+          ...field,
+          content: quotation.templateInputs["customer_name"],
+        };
+      case "sales_email":
+        return {
+          ...field,
+          content: quotation.templateInputs["sales_email"],
+        };
       default:
         return field;
     }
