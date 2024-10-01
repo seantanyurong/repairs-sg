@@ -13,7 +13,7 @@ import {
 export const schemas = [
   [
     {
-      name: "field1",
+      name: "quotation_no",
       type: "text",
       content: "Quotation #",
       position: {
@@ -38,7 +38,7 @@ export const schemas = [
       fontName: "Roboto Bold",
     },
     {
-      name: "field2",
+      name: "quotation_date_label",
       type: "text",
       content: "Date",
       position: {
@@ -63,7 +63,7 @@ export const schemas = [
       fontName: "Roboto Bold",
     },
     {
-      name: "field3",
+      name: "for_label",
       type: "text",
       content: "For",
       position: {
@@ -225,7 +225,7 @@ export const schemas = [
       fontName: "Roboto",
     },
     {
-      name: "field9",
+      name: "divider_upper",
       type: "line",
       position: {
         x: 16.55,
@@ -241,7 +241,7 @@ export const schemas = [
       content: "",
     },
     {
-      name: "field9 copy",
+      name: "divider_lower",
       type: "line",
       position: {
         x: 16.23,
@@ -257,7 +257,7 @@ export const schemas = [
       content: "",
     },
     {
-      name: "field12",
+      name: "subtotal_label",
       type: "text",
       content: "Subtotal",
       position: {
@@ -282,7 +282,7 @@ export const schemas = [
       fontName: "Roboto Bold",
     },
     {
-      name: "field13",
+      name: "taxes_label",
       type: "text",
       content: "Taxes",
       position: {
@@ -307,7 +307,7 @@ export const schemas = [
       fontName: "Roboto Bold",
     },
     {
-      name: "field14",
+      name: "total_label",
       type: "text",
       content: "Total",
       position: {
@@ -332,7 +332,7 @@ export const schemas = [
       fontName: "Roboto Bold",
     },
     {
-      name: "field15",
+      name: "notes",
       type: "text",
       content: "Notes",
       position: {
@@ -357,7 +357,7 @@ export const schemas = [
       fontName: "Roboto Bold",
     },
     {
-      name: "field16",
+      name: "notes_desc",
       type: "text",
       content: "30 day payment terms",
       position: {
@@ -387,7 +387,7 @@ export const schemas = [
       content: "$310.00",
       position: {
         x: 150.71,
-        y: 214.85,
+        y: 216.45,
       },
       width: 45,
       height: 10,
@@ -403,7 +403,7 @@ export const schemas = [
       strikethrough: false,
       underline: false,
       required: false,
-      readOnly: false,
+      readOnly: true,
       fontName: "Roboto",
     },
     {
@@ -502,7 +502,7 @@ export const schemas = [
       strikethrough: false,
       underline: false,
       required: false,
-      readOnly: false,
+      readOnly: true,
       fontName: "Roboto",
     },
     {
@@ -527,7 +527,7 @@ export const schemas = [
       strikethrough: false,
       underline: false,
       required: false,
-      readOnly: false,
+      readOnly: true,
       fontName: "Roboto",
     },
   ],
