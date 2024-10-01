@@ -10,9 +10,9 @@ import { Chart as ChartJS,
   LineElement, 
   Title, 
   Tooltip, 
-  TooltipItem, 
   Legend 
 } from 'chart.js';
+import { getLabels } from '../_components/label';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -35,42 +35,6 @@ interface ChartData {
   }[];
 }
 
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    tooltip: {
-      callbacks: {
-        title: (tooltipItems: TooltipItem<'line' | 'bar'>[]) => {
-          const graphType = tooltipItems[0].dataset.label;
-          return `${graphType}`;
-        },
-        label: (tooltipItem: TooltipItem<'line' | 'bar'>) => {
-          const { dataset, raw } = tooltipItem;
-          switch (dataset.label) {
-            case 'Job Type Distribution':
-              return `Count: ${raw} Jobs`;
-            case 'Average Job Duration Distribution':
-              return `Duration: ${raw} Minutes`;
-            case 'Average Job Delay Distribution':
-              return `Duration: ${raw} Minutes`;
-            case 'Job Revenue Distribution':
-              return `Revenue: $${raw}`;
-            case 'Job Revenue Forecast':
-              return `Revenue: $${raw}`;
-            case 'Job Demand Forecast':
-              return `Count: ${raw} Jobs`;
-            default:
-              return `Value: ${raw}`;
-          }
-        },
-      },
-    },
-  },
-};
-
 const GraphDisplay: React.FC<GraphDisplayProps> = ({ 
   selectedGraph, 
   timePeriod, 
@@ -90,6 +54,8 @@ const GraphDisplay: React.FC<GraphDisplayProps> = ({
       },
     ],
   });
+
+  const options = getLabels(selectedGraph);
 
   useEffect(() => {
     console.log('Selected Graph:', selectedGraph);
