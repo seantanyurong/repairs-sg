@@ -33,6 +33,7 @@ import { FieldValues, useForm, UseFormReturn, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { QuoteTemplateType } from "../templates/_components/QuoteTemplateColumns";
+import { useUser } from "@clerk/nextjs";
 
 const formSchema = z.object({
   quotationDate: z.date(),
@@ -119,6 +120,7 @@ const CreateQuoteClient = ({
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useUser();
 
   const quotationForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -159,7 +161,11 @@ const CreateQuoteClient = ({
         toast.error(result);
         return;
       }
+      console.log(user);
       toast.success("Customer found!");
+      templateForm.setValue("customer_name", result);
+      templateForm.setValue("sales_email", user?.primaryEmailAddress);
+      templateForm.setValue("sales_mobile", user?.primaryPhoneNumber);
     } catch (err) {
       console.error(err);
       toast.error("An error has ocurred, please try again!");
