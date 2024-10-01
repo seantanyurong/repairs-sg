@@ -7,9 +7,9 @@ const quotationSchema = new mongoose.Schema(
       required: [true, "Quotation ID Is Required!"],
       unique: true,
     },
-    dateCreated: {
+    quotationDate: {
       type: Date,
-      required: [true, "Date Created Is Required!"],
+      required: [true, "Quotation Date Is Required!"],
     },
     lineItems: {
       type: Array,
@@ -24,20 +24,20 @@ const quotationSchema = new mongoose.Schema(
       required: [true, "Total Amount Is Required!"],
       min: [0.01, "Total Amount Must Be Greater Than 0!"],
     },
-    public_note: {
-      type: String,
-      maxlength: [500, "Public Note Can Have At Most 500 Characters"],
-    },
-    private_notes: {
-      type: String,
-      maxlength: [500, "Private Note Can Have At Most 500 Characters"],
-    },
-    filesWithURL: {
-      type: Array,
-    },
-    secret: {
-      type: String,
-    },
+    // public_note: {
+    //   type: String,
+    //   maxlength: [500, "Public Note Can Have At Most 500 Characters"],
+    // },
+    // private_notes: {
+    //   type: String,
+    //   maxlength: [500, "Private Note Can Have At Most 500 Characters"],
+    // },
+    // filesWithURL: {
+    //   type: Array,
+    // },
+    // secret: {
+    //   type: String,
+    // },
     status: {
       type: String,
       default: "Draft",
@@ -68,6 +68,10 @@ const quotationSchema = new mongoose.Schema(
     accept: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Accept",
+    },
+    quoteTemplate: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "QuoteTemplate",
     },
   },
   { versionKey: false, timestamps: true }
