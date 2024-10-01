@@ -1,253 +1,31 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { getQuoteTemplates } from "@/lib/actions/quoteTemplates";
-import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { format } from "date-fns";
-import { useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import * as z from "zod";
-import { QuoteTemplateType } from "../templates/_components/QuoteTemplateColumns";
+import { clerkClient } from "@clerk/nextjs/server";
+import CreateQuoteClient from "./clientPage";
 
-const formSchema = z.object({
-  quotationDate: z.date(),
-  customerEmail: z.string().email(),
-  quoteTemplate: z.string().min(1),
-  notes: z.string().min(1),
-});
+const CreateQuote = async () => {
+  const quoteTemplates = await getQuoteTemplates();
 
-const EditQuotation = () => {
-  const [message, setMessage] = useState("");
-  const [errors, setErrors] = useState({});
-  const [templates, setTemplates] = useState<QuoteTemplateType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const getCustomerAction = async (email: string) => {
+    "use server";
+    const result = await clerkClient().users.getUserList({
+      emailAddress: [email],
+    });
 
-  const getTemplates = useCallback(async () => {
-    try {
-      const quoteTemplates = await getQuoteTemplates();
-      setTemplates(JSON.parse(quoteTemplates));
-    } catch (e) {
-      console.error(e);
-      router.push("/staff/quote/");
-      toast.error("Error fetching template: Please try again.");
+    if (result.totalCount === 0) {
+      return "No customer found with that email address";
     }
-  }, [router]);
 
-  useEffect(() => {
-    getTemplates();
-  }, [getTemplates]);
+    return result.data[0].fullName ?? "";
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      quotationDate: new Date(),
-      customerEmail: "",
-      quoteTemplate: "",
-    },
-  });
-
-  const getCustomerByEmail = async () => {
-    const fieldState = form.getFieldState("customerEmail");
-    if (!fieldState.isTouched || fieldState.invalid) {
-      form.setError(
-        "customerEmail",
-        { type: "pattern", message: "Enter a valid email address" },
-        { shouldFocus: true }
-      );
-      return;
-    }
-    console.log(isLoading);
-    setIsLoading(true);
-    try {
-      console.log(isLoading);
-      setTimeout(() => {
-        setIsLoading(false);
-        toast.success("Customer found!");
-      }, 3000);
-    } catch (err) {
-      console.error(err);
-      toast.error("An error has ocurred, please try again!");
-    }
-  };
-
-  const onSubmit = async () => {
-    setMessage("");
-    setErrors({});
-    // const result = await addService(form.getValues());
-    // if (result?.errors) {
-    //   setMessage(result.message);
-    //   setErrors(result.errors);
-    //   return;
-    // } else {
-    //   setMessage(result.message);
-    //   router.refresh();
-    //   form.reset(form.getValues());
-    //   router.push("/staff/services");
-    // }
+    // TODO: implement banned user check SR4
   };
 
   return (
-    <>
-      <Form {...form}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.handleSubmit(onSubmit)();
-          }}
-          className="max-w-md w-full flex flex-col gap-4"
-        >
-          <FormField
-            control={form.control}
-            name="quotationDate"
-            render={({ field }) => {
-              return (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Quotation Date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="quoteTemplate"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>Quote Template</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a quote template" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {templates.map((template: QuoteTemplateType) => (
-                          <SelectItem
-                            key={template._id}
-                            value={template._id}
-                          >
-                            {template.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="customerEmail"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>Customer Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Customer Email"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <Button
-            className="self-center ml-auto"
-            disabled={isLoading}
-            type="button"
-            onClick={() => getCustomerByEmail()}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </>
-            ) : (
-              <>Find Customer</>
-            )}
-          </Button>
-
-          <Button
-            type="submit"
-            className="w-full"
-          >
-            Preview Quotation
-          </Button>
-          {message ? <h2>{message}</h2> : null}
-          {errors ? (
-            <div className="mb-10 text-red-500">
-              {Object.keys(errors).map((key) => (
-                <p
-                  key={key}
-                >{`${key}: ${errors[key as keyof typeof errors]}`}</p>
-              ))}
-            </div>
-          ) : null}
-        </form>
-      </Form>
-    </>
+    <CreateQuoteClient
+      templates={JSON.parse(quoteTemplates)}
+      getCustomerAction={getCustomerAction}
+    />
   );
 };
 
-export default EditQuotation;
+export default CreateQuote;
