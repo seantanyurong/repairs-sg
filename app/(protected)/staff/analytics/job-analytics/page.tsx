@@ -4,11 +4,11 @@ import { useState } from 'react';
 import GraphDisplay from './_components/graph'; 
 
 export default function JobAnalytics() {
-  const [selectedGraph, setSelectedGraph] = useState('job-type-dist');          // Default to Graph1
-  const [timePeriod, setTimePeriod] = useState('one-month');                    // Default Time Period
-  const [summaryType, setSummaryType] = useState('total');                      // Default Summary Type
-  const [forecastPeriod, setForecastPeriod] = useState('month-on-month');       // Default Forecast Period
-  const [selectedJob, setSelectedJob] = useState('electrician');                // Default Job Type 
+  const [selectedGraph, setSelectedGraph] = useState('job-type-dist');  // Default to Graph1
+  const [timePeriod, setTimePeriod] = useState('one-month');            // Default Time Period
+  const [summaryType, setSummaryType] = useState('total');              // Default Summary Type
+  const [forecastPeriod, setForecastPeriod] = useState('month');        // Default Forecast Period
+  const [selectedJob, setSelectedJob] = useState('electrician');        // Default Job Type 
 
   const graphs = [
     { id: 'job-type-dist', title: 'Job Type Distribution' },
