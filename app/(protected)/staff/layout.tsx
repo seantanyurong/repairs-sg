@@ -11,6 +11,7 @@ import {
   NotepadText,
   PanelLeft,
   Quote,
+  Receipt,
   Settings,
   Truck,
   UserRound,
@@ -61,7 +62,7 @@ export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
           <BreadcrumbLink asChild>
             <Link
               href={`/${["staff", ...pathSegments.slice(0, index + 1)].join(
-                "/",
+                "/"
               )}`}
             >
               {kebabToTitleCase(segment)}
@@ -91,7 +92,7 @@ export default function PublicLayout({
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   if (!clerkPublishableKey) {
     throw new Error(
-      "Missing Clerk publishable key. Please add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to your environment variables.",
+      "Missing Clerk publishable key. Please add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to your environment variables."
     );
   }
 
@@ -196,6 +197,26 @@ export default function PublicLayout({
                 } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
                 <Quote className="h-5 w-5" />
+                <span className="sr-only">
+                  {NAVIGATION_LABELS.QUOTATION_TEMPLATES}
+                </span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.QUOTATION_TEMPLATES}
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/staff/quote/"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/quote/"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
+              >
+                <Receipt className="h-5 w-5" />
                 <span className="sr-only">{NAVIGATION_LABELS.QUOTATIONS}</span>
               </Link>
             </TooltipTrigger>
@@ -283,9 +304,16 @@ export default function PublicLayout({
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
           {/* Side Toggle Menu */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <Sheet
+            open={isOpen}
+            onOpenChange={setIsOpen}
+          >
             <SheetTrigger asChild>
-              <Button size="icon" variant="outline" className="sm:hidden">
+              <Button
+                size="icon"
+                variant="outline"
+                className="sm:hidden"
+              >
                 <PanelLeft className="h-5 w-5" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
