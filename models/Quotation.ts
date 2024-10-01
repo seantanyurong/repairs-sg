@@ -25,6 +25,9 @@ const quotationSchema = new mongoose.Schema(
     notes: {
       type: String,
     },
+    templateInputs: {
+      type: Object,
+    },
     status: {
       type: String,
       default: "Draft",

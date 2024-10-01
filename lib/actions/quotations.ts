@@ -35,10 +35,10 @@ const addQuotation = async (
   if (!response.success) {
     return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
-  console.log(templateInputs);
 
   const newQuotation = new Quotation({
     ...response.data,
+    templateInputs: JSON.parse(templateInputs),
   });
   newQuotation.save();
 
