@@ -65,7 +65,7 @@ function renderTemplateFields(
                 <FormField
                   key={`${schema.name}-${variable}`}
                   control={form.control}
-                  name={variable}
+                  name={`${schema.name}-${variable}`}
                   render={({ field }) => (
                     <FormItem key={`${schema.name}-${variable}-item`}>
                       <FormLabel key={`${schema.name}-${variable}-label`}>
@@ -175,7 +175,10 @@ const CreateQuoteClient = ({
       }
       toast.success("Customer found!");
       templateForm.setValue("customer_name", result);
-      templateForm.setValue("sales_email", user?.primaryEmailAddress);
+      templateForm.setValue(
+        "sales_email",
+        user?.primaryEmailAddress?.emailAddress
+      );
       templateForm.setValue("sales_mobile", user?.primaryPhoneNumber);
     } catch (err) {
       console.error(err);
