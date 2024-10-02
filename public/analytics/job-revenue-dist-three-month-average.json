@@ -1,16 +1,16 @@
 {
     "labels": [
-        "ELECTRICIAN",
-        "VENTILATION",
-        "PLUMBER",
-        "HANDYMAN",
-        "AIRCON"
+        "Electrician",
+        "Ventilation",
+        "Plumber",
+        "Handyman",
+        "Aircon"
     ],
     "data": [
-        830.0,
-        570.0,
-        500.0,
-        800.0,
-        1710.0
+        8300.0,
+        5700.0,
+        5000.0,
+        8000.0,
+        17100.0
     ]
 }
