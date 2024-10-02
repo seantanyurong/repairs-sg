@@ -1,10 +1,6 @@
 'use server';
 
 import Job from '@/models/Job';
-import Schedule from '@/models/Schedule';
-import Staff from '@/models/Staff';
-import Address from '@/models/Address';
-import Customer from '@/models/Customer';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { ObjectId } from 'mongodb';
@@ -102,15 +98,12 @@ const getJobs = async () => {
 };
 
 const getJobsForSchedule = async () => {
-  return Job.find()
-  .populate('customer')
-  .populate('jobAddress', 'address')
-  .populate({
-    path: 'schedules',
-    populate: {
-      path: 'staff',
-    }
-  }).exec();
+  const jobs = await Job.find()
+  .populate('schedule')
+  .populate('service')
+  .exec();
+
+  return jobs;
 };
 
 

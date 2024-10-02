@@ -1,70 +1,65 @@
-import mongoose from "mongoose";
-const Customer = require('./Customer');
-const Address = require('./Address');
-const Schedule = require('./Schedule');
-const Quotation = require('./Quotation');
-const Invoice = require('./Invoice');
-const File = require('./File');
-const Staff = require('./Staff');
+import mongoose from 'mongoose';
 
-
-const jobSchema = new mongoose.Schema({
-	categoryType: [{
-        type: String,
-        enum: ['ELECTRICIAN', 'VENTILATION', 'PLUMBER', 'HANDYMAN', 'AIRCON'],
-        required: [true, "Category Type Is Required"]
-    }],
-	description: {
-		type: String,
-        maxlength: [500, 'Description Can Have At Most 500 Characters']
-	},
-    // quickQuotation: {
-    //     type: Array
-    // },
-    status: {
-        type: String,
-        default: "Draft",
-        required: [true, "Job Status Is Required!"]
+const jobSchema = new mongoose.Schema(
+  {
+    description: {
+      type: String,
+      maxlength: [500, 'Description Can Have At Most 500 Characters'],
     },
-    // is_first_job: {
-    //     type: Boolean,
-    //     default: false
-    // },  
-    customer: {
+    quantity: {
+      type: Number,
+      required: [true, 'Quantity Is Required!'],
+      min: [1, 'Quantity Must Be Greater Than 1'],
+    },
+    service: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Service',
+    },
+    is_first_job: {
+      type: Boolean,
+      default: false,
+    },
+    quickQuotation: {
+      type: Array,
+    },
+    quotations: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Customer'
-    },
+        ref: 'Quotation',
+      },
+    ],
+    invoices: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Invoice',
+      },
+    ],
+    files: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'File',
+      },
+    ],
     jobAddress: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Address"
+      type: String,
+      required: [true, 'Job Address Is Required!'],
+      maxlength: [256, 'Job Address Can Have At Most 256 Characters'],
     },
-    // removed array for simplicity. will add back
-    schedules: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Schedule"
+    customer: {
+      type: String,
+      required: [true, 'Customer Is Required!'],
     },
-    // quotations: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Quotation"
-    // }],
-    // invoices: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Invoice"
-    // }],
-	// files: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "File"
-    // }],
-    // createdBy: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Staff",
-    //     required: [true, "Created By Is Required!"]
-    // },
-    // lastUpdatedBy: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Staff",
-    //     required: [true, "Last Updated By Is Required!"]
-    // }
-}, { versionKey: false, timestamps: true });
+    status: {
+      type: String,
+      default: 'Draft',
+      required: [true, 'Job Status Is Required!'],
+    },
+    schedule: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Schedule',
+    },
+  },
+  { versionKey: false, timestamps: true },
+);
 
-export default mongoose.models.Job || mongoose.model('Job', jobSchema, 'jobs');
+export default mongoose.models.Job || mongoose.model('Job', jobSchema);

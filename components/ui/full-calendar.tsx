@@ -188,40 +188,168 @@ const CalendarViewTrigger = forwardRef<
 });
 CalendarViewTrigger.displayName = 'CalendarViewTrigger';
 
-const EventGroup = ({
+const EventGroupOG = ({
   events,
   hour,
 }: {
   events: CalendarEvent[];
   hour: Date;
 }) => {
-  return (
-    <div className="h-20 border-t last:border-b">
-      {events
-        .filter((event) => isSameHour(event.timeStart, hour))
-        .map((event) => {
-          const hoursDifference =
-            differenceInMinutes(event.timeEnd, event.timeStart) / 60;
-          const startPosition = event.timeStart.getMinutes() / 60;
+  // Helper function to detect overlaps
+  const areOverlapping = (eventA: CalendarEvent, eventB: CalendarEvent) => {
+    return (eventA.timeStart <= eventB.timeEnd && eventA.timeEnd >= eventB.timeStart) ||
+      (eventB.timeStart <= eventA.timeEnd && eventB.timeEnd >= eventA.timeStart);
+  };
 
-          return (
-            <div
-              key={event._id}
-              className={cn(
-                'relative',
-                dayEventVariants({ variant: event.color })
-              )}
-              style={{
-                top: `${startPosition * 100}%`,
-                height: `${hoursDifference * 100}%`,
-              }}
-            > 
-              {event.title}
-            </div>
-          );
-        })}
+  // Filter events that occur in the same hour
+  const hourEvents = events.filter((event) => isSameHour(event.timeStart, hour));
+
+  // Group overlapping events
+  const eventGroups: CalendarEvent[][] = [];
+
+  hourEvents.forEach((event) => {
+    let placed = false;
+
+    // Try to place the event into an existing group of overlapping events
+    for (const group of eventGroups) {
+      if (group.every((groupEvent) => areOverlapping(event, groupEvent))) {
+        group.push(event);
+        placed = true;
+        break;
+      }
+    }
+
+    // If no group was found, create a new group
+    if (!placed) {
+      eventGroups.push([event]);
+    }
+
+    console.log(eventGroups);
+  });
+
+  return (
+    <div className="h-20 border-t last:border-b relative">
+      {eventGroups.map((group, groupIndex) => (
+        <div key={groupIndex} className="relative w-full h-full flex">
+          {group.map((event, index) => {
+            const hoursDifference =
+              differenceInMinutes(event.timeEnd, event.timeStart) / 60;
+            const startPosition = event.timeStart.getMinutes() / 60;
+
+            return (
+              <div
+                key={event._id}
+                className={cn(
+                  'absolute',
+                  'border',
+                  'mx-1', // Small margin between events
+                  dayEventVariants({ variant: event.color })
+                )}
+                style={{
+                  top: `${startPosition * 100}%`,
+                  height: `${hoursDifference * 100}%`,
+                  width: `${100 / group.length}%`, // Distribute width evenly among overlapping events
+                  left: `${(index / group.length) * 100}%`, // Position events beside each other
+                }}
+              >
+                <div className="event-content">
+                  <div className="event-title font-bold text-lg">
+                    {event.title}
+                  </div>
+                  <div className="event-staff text-sm text-gray-600">
+                    {event.staff}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
+};
+
+const EventGroup = ({
+  date,
+  events,
+}: {
+  date: Date;
+  events: CalendarEvent[];
+}) => {
+  // Helper function to detect overlaps
+  const areOverlapping = (eventA: CalendarEvent, eventB: CalendarEvent) => {
+    const condition1 = eventA.timeStart < eventB.timeEnd && eventA.timeStart >= eventB.timeStart;
+    const condition2 = eventB.timeStart < eventA.timeEnd && eventB.timeStart >= eventA.timeStart;
+    const condition3 = eventA.timeEnd <= eventB.timeEnd && eventA.timeEnd > eventB.timeStart;
+    const condition4 = eventB.timeEnd <= eventA.timeEnd && eventB.timeEnd > eventA.timeStart;
+  
+    return condition1 || condition2 || condition3 || condition4;
+  };
+
+  // Group overlapping events
+  const eventGroups: CalendarEvent[][] = [];
+
+  events
+  .filter((event) => isSameDay(event.timeStart, date))
+  .forEach((event) => {
+    let placed = false;
+
+    // Try to place the event into an existing group of overlapping events
+    for (const group of eventGroups) {
+      if (group.some((groupEvent) => areOverlapping(event, groupEvent))) {
+        group.push(event);
+        placed = true;
+        
+        break;
+      }
+    }
+
+    // If no group was found, create a new group
+    if (!placed) {
+      eventGroups.push([event]);
+    }
+  });
+
+  return (
+    <div className="h-20 relative">
+      {eventGroups.map((group, groupIndex) => (
+        <div key={groupIndex} className="w-full h-full flex">
+          {group.map((event, index) => {
+            const hoursDifference =
+              differenceInMinutes(event.timeEnd, event.timeStart) / 60;
+            const startPosition = event.timeStart.getMinutes() / 60 + event.timeStart.getHours();
+  
+            return (
+              <div
+                key={event._id}
+                className={cn(
+                  'absolute',
+                  'border',
+                  dayEventVariants({ variant: event.color })
+                )}
+                style={{
+                  top: `${startPosition * 100}%`,
+                  height: `${hoursDifference * 100}%`,
+                  width: `${100 / group.length}%`, // Distribute width evenly among overlapping events
+                  left: `${(index / group.length) * 100}%`, // Position events beside each other
+                }}
+              >
+                <div className="event-content p-2"> {/* Add padding for better readability */}
+                  <div className="event-title font-bold text-lg overflow-hidden text-ellipsis whitespace-normal">
+                    {event.title}
+                  </div>
+                  <div className="event-staff text-sm text-gray-600 overflow-hidden text-ellipsis whitespace-normal">
+                    {event.staff}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+  
 };
 
 const CalendarDayView = () => {
@@ -235,9 +363,7 @@ const CalendarDayView = () => {
     <div className="flex relative pt-2 overflow-auto h-full">
       <TimeTable />
       <div className="flex-1">
-        {hours.map((hour) => (
-          <EventGroup key={hour.toString()} hour={hour} events={events} />
-        ))}
+          <EventGroup date={date} events={events} />
       </div>
     </div>
   );
@@ -245,19 +371,6 @@ const CalendarDayView = () => {
 
 const CalendarWeekView = () => {
   const { view, date, locale, events } = useCalendar();
-
-  const weekDates = useMemo(() => {
-    const start = startOfWeek(date, { weekStartsOn: 0 });
-    const weekDates = [];
-
-    for (let i = 0; i < 7; i++) {
-      const day = addDays(start, i);
-      const hours = [...Array(24)].map((_, i) => setHours(day, i));
-      weekDates.push(hours);
-    }
-
-    return weekDates;
-  }, [date]);
 
   const headerDays = useMemo(() => {
     const daysOfWeek = [];
@@ -300,22 +413,18 @@ const CalendarWeekView = () => {
           <TimeTable />
         </div>
         <div className="grid grid-cols-7 flex-1">
-          {weekDates.map((hours, i) => {
+          {headerDays.map((date, i) => {
             return (
               <div
                 className={cn(
                   'h-full text-sm text-muted-foreground border-l first:border-l-0',
                   [0, 6].includes(i) && 'bg-muted/50'
                 )}
-                key={hours[0].toString()}
               >
-                {hours.map((hour) => (
                   <EventGroup
-                    key={hour.toString()}
-                    hour={hour}
+                    date={date}
                     events={events}
                   />
-                ))}
               </div>
             );
           })}
@@ -590,6 +699,13 @@ const TimeTable = () => {
             className="text-right relative text-xs text-muted-foreground/50 h-20 last:h-0"
             key={hour}
           >
+            {/* Grey line for every hour */}
+            <div
+              className="absolute z-0 left-full translate-x-2 w-dvw h-[0.5px] bg-gray-300"
+              style={{
+                top: "0%",
+              }}
+            ></div>
             {now.getHours() === hour && (
               <div
                 className="absolute z- left-full translate-x-2 w-dvw h-[2px] bg-red-500"

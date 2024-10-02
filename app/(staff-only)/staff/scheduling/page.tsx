@@ -12,23 +12,28 @@ import { getStaff } from '@/lib/actions/staff';
 import JobRow from './_components/JobRow';
 import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
 import { getSchedules } from '@/lib/actions/schedules';
+import { getServices } from '@/lib/actions/services';
+import { getAddress } from '@/lib/actions/address';
+import { getCustomers } from '@/lib/actions/customers';
+import { clerkClient } from '@clerk/nextjs/server';
 
 
-// type SearchParams = {
-//   view?: string;
-// };
+type SearchParams = {
+  filters?: string;
+};
 
 export default async function Schedule({
   searchParams,
 }: {
-  // searchParams: SearchParams;
+  searchParams: SearchParams;
 }) {
-  // const jobs = await getJobsForSchedule();
-  const jobs = await getJobs();
+  const jobs = await getJobsForSchedule();
   console.log(jobs);
-  const staff = await getStaff();
+  const services = await getServices();
   const schedules = await getSchedules();
-  console.log(schedules);
+  const staff = await clerkClient().users.getUserList();
+  console.log(staff);
+
   const filters = searchParams.filters;
   const filtersArray = filters ? filters.split(",") : [];
   console.log(filtersArray);
@@ -39,22 +44,43 @@ export default async function Schedule({
       return <div>No jobs found</div>;
     }
 
+    // return all if there is no filter param
+    if (filtersArray[0] === 'all') {
+      return jobs.map((job) => {
+        return (
+          <JobRow
+            key={job._id.toString()}
+            id={job._id.toString()}
+            serviceName={job.service.name}
+            description={job.description}
+            address={job.jobAddress}
+            // from the staff user list, find the staff with the same user id as the job staff id and return first name and last name
+            // staffName={staff.find((staff) => staff.id === job.staff).firstName}
+            staffName = 'Staff Name'
+            timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
+            timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
+            status={job.status}
+          />
+        );
+      });
+    }
+
+
     // Filter by staff in filtersArray
     return jobs
-      .filter((job) => filtersArray.includes(job.description))
+      // .filter((job) => filtersArray.includes(job.staff.fullName))
       .map((job) => {
         return (
           <JobRow
             key={job._id.toString()}
             id={job._id.toString()}
-            categoryType={job.categoryType}
+            serviceName={job.service.name}
             description={job.description}
-            address={job.jobAddress.address}
-            customerName={job.customer.fullName}
-            // staffName={job.schedules.staff.fullName}
-            staffName='PlaceHolder'
-            timeStart={job.schedules.timeStart}
-            timeEnd={job.schedules.timeEnd}
+            address={job.jobAddress}
+            // staffName={job.staff.fullName}
+            staffName = 'Staff Name'
+            timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
+            timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
           />
         );
@@ -72,11 +98,17 @@ export default async function Schedule({
   };
 
   const jobCount = (filtersArray: string[]) => {
-    if (filtersArray.length === 0) {
+    if (filtersArray[0] === 'all') {
       return jobs.length;
     }
 
-    return jobs.filter((job) => filtersArray.includes(job.description)).length;
+    else if (filtersArray.length === 0) {
+      return 0;
+    }
+
+    return jobs
+    // .filter((job) => filtersArray.includes(job.staff.fullName))
+    .length;
   };
 
   const tableDisplay = () => {
@@ -90,10 +122,9 @@ export default async function Schedule({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Category Type</TableHead>
+                <TableHead>Service</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Address</TableHead>
-                <TableHead>Customer</TableHead>
                 <TableHead>Staff</TableHead>
                 <TableHead>Start</TableHead>
                 <TableHead>End</TableHead>
@@ -126,42 +157,19 @@ export default async function Schedule({
         <CardContent>
           <Calendar
           events={
-            schedules
-            .filter((schedule) => filtersArray.includes(schedule.staff))
-            .map((schedule) => {
+            jobs
+            // .filter((job) => filtersArray.includes(job.staff.fullName))
+            .map((job) => {
               return {
-                _id: schedule._id.toString(),
-                // timeStart: new Date('2024-08-26T09:30:00Z'),
-                timeStart: new Date(schedule.timeStart),
-                // timeEnd: new Date('2024-08-26T10:30:00Z'),
-                timeEnd: new Date(schedule.timeEnd),
-                title: schedule.title,
-                staff: schedule.staff,
+                _id: job._id.toString(),
+                timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
+                timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
+                title: job.description,
+                // staff: job.staff.fullName,
+                staff: 'Staff Name',
                 color: 'blue',
               };
             })
-            // {
-            //   id: '1',
-            //   start: new Date('2024-08-26T09:30:00Z'),
-            //   end: new Date('2024-08-26T14:30:00Z'),
-            //   title: 'event A',
-            //   color: 'blue',
-            // },
-            // {
-            //   id: '2',
-            //   start: new Date('2024-08-26T10:00:00Z'),
-            //   end: new Date('2024-08-26T10:30:00Z'),
-            //   title: 'event B',
-            //   color: 'blue',
-            // },
-            // {
-            //   id: '3',
-            //   start: new Date('2024-08-26T10:00:00Z'),
-            //   end: new Date('2024-08-26T11:30:00Z'),
-            //   title: 'event B',
-            //   color: 'blue',
-            // },
-
           }
         >
           <div className="h-dvh py-6 flex flex-col">
@@ -226,14 +234,12 @@ export default async function Schedule({
           <TabsTrigger value='table'>Table</TabsTrigger>
           <TabsTrigger value='calendar'>Calendar</TabsTrigger>
         </TabsList>
-        <DropdownMenuCheckboxes 
-                items={
-                  staff.map((staff) => {
-                    return {
-                      fullName: staff.fullName,
-                    };
-                  })
-                  }/>
+        {/* <DropdownMenuCheckboxes 
+          items={ staff.map((staff) => { return { label: staff.fullName }; })}>
+        </DropdownMenuCheckboxes> */}
+        {/* <DropdownMenuCheckboxes 
+          items={ services.map((service) => { return { label: service.name }; })}>
+        </DropdownMenuCheckboxes> */}
         <div className='ml-auto flex items-center gap-2'>
           {/* <Link href='/staff/jobs/create-event'>
             <Button size='sm' className='h-8 gap-1'>

@@ -17,20 +17,18 @@ import { custom } from 'zod';
 
 export default function JobRow({
   id,
-  categoryType,
+  serviceName,
   description,
   address,
-  customerName,
   staffName,
   timeStart,
   timeEnd,
   status
 }: {
   id: string;
-  categoryType: string;
+  serviceName: string;
   description: string;
   address: string;
-  customerName: string;
   staffName: string;
   timeStart: string;
   timeEnd: string;
@@ -40,16 +38,12 @@ export default function JobRow({
 
   return (
     <TableRow>
-      <TableCell className='font-medium'>{id}</TableCell>
-      <TableCell className='font-medium'>{categoryType}</TableCell>
+      <TableCell className='font-medium'>{serviceName}</TableCell>
       <TableCell className='font-medium'>{description}</TableCell>
-      <TableCell className='font-medium'>{status}</TableCell>
-      <TableCell className='hidden md:table-cell'>{address}</TableCell>
-      <TableCell className='hidden md:table-cell'>{customerName}</TableCell>
-      <TableCell className='hidden md:table-cell'>{staffName}</TableCell>
-      <TableCell className='hidden md:table-cell'>{timeStart}</TableCell>
-      <TableCell className='hidden md:table-cell'>{timeEnd}</TableCell>
-
+      <TableCell className='font-medium'>{address}</TableCell>
+      <TableCell className='font-medium'>{staffName}</TableCell>
+      <TableCell className='font-medium'>{timeStart}</TableCell>
+      <TableCell className='font-medium'>{timeEnd}</TableCell>
       <TableCell>
         <Badge variant='outline'>{status}</Badge>
       </TableCell>

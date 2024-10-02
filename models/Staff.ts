@@ -43,4 +43,4 @@ const staffSchema = new mongoose.Schema({
     // }
 }, { versionKey: false, timestamps: true });
 
-export default mongoose.models.Staff || mongoose.model('Staff', staffSchema, 'staff');
+export default mongoose.models.Staff || mongoose.model('Staff', staffSchema);

@@ -8,14 +8,8 @@ const scheduleSchema = new mongoose.Schema({
     timeEnd: {
         type: Date,
         required: [true, "End Time Is Required"]
-    },
-    // teamMembers: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Staff"
-    // }]
-    staff: {
-        type: String
     }
+
 }, { versionKey: false, timestamps: false });
 
-export default mongoose.models.Schedule || mongoose.model('Schedule', scheduleSchema, 'schedule');
+export default mongoose.models.Schedule || mongoose.model('Schedule', scheduleSchema);
