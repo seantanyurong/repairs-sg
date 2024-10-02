@@ -1,19 +1,48 @@
-import Quotation from "@/models/Quotation";
-import { Template } from "@pdfme/common";
+"use server";
 
-// TODO: Update params to match the Quotation model
-const addQuotation = async (quotation: {
-  name: string;
-  pdfTemplate: Template;
-}): Promise<{
+import Quotation from "@/models/Quotation";
+import { z } from "zod";
+
+const addQuotation = async (
+  // quotation: {
+  //   quotationDate: Date;
+  //   customerEmail: string;
+  //   quoteTemplate: string;
+  //   notes?: string;
+  // },
+  quote: string,
+  templateInputs: string
+): Promise<{
   message: string;
+  id?: string;
+  errors?: string | Record<string, unknown>;
 }> => {
-  if (quotation.name.length === 0) {
-    return { message: "Enter a template name" };
+  const quotationSchema = z.object({
+    quotationDate: z.string().min(1),
+    quoteTemplate: z.string().min(1),
+    customerEmail: z.string().min(1),
+    notes: z.string().optional(),
+  });
+
+  const quotation = JSON.parse(quote);
+  const response = quotationSchema.safeParse({
+    quotationDate: quotation.quotationDate,
+    quoteTemplate: quotation.quoteTemplate,
+    customerEmail: quotation.customerEmail,
+    notes: quotation.notes,
+  });
+
+  if (!response.success) {
+    return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
-  const newQuotation = new Quotation(quotation);
+
+  const newQuotation = new Quotation({
+    ...response.data,
+    templateInputs: JSON.parse(templateInputs),
+  });
   newQuotation.save();
-  return { message: "Quote Template added successfully" };
+
+  return { message: "Quotation added successfully", id: newQuotation._id };
 };
 
 const getQuotations = async () => {
@@ -25,14 +54,18 @@ const getOneQuotation = async (id: string) => {
   return JSON.stringify(template);
 };
 
-// const updateQuotation = async (id: string, templateParams: any) => {
-//   try {
-//     Quotation.findByIdAndUpdate(id, templateParams).exec();
-//     return { message: "Quote Template updated successfully" };
-//   } catch (err) {
-//     return { message: "An error has occurred, please try again." };
-//   }
-// };
+const updateQuotation = async (
+  id: string,
+  templateParams: { notes: string }
+) => {
+  try {
+    Quotation.findByIdAndUpdate(id, templateParams).exec();
+    return { message: "Quote Template updated successfully" };
+  } catch (err) {
+    console.error(err);
+    return { message: "An error has occurred, please try again." };
+  }
+};
 
 const setQuotationInactive = async (id: string) => {
   Quotation.findByIdAndUpdate(id, { status: "Inactive" }).exec();
@@ -41,8 +74,8 @@ const setQuotationInactive = async (id: string) => {
 
 export {
   addQuotation,
-  getQuotations,
   getOneQuotation,
+  getQuotations,
+  updateQuotation,
   setQuotationInactive,
-  // updateQuotation,
 };

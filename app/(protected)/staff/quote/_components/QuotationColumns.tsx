@@ -8,7 +8,7 @@ import Link from "next/link";
 
 type Quotation = {
   _id: string;
-
+  quotationId: number;
   name: string;
   status: "Active" | "Inactive";
   createdAt: string;
@@ -26,7 +26,7 @@ type Quotation = {
 
 export const quotationColumns: ColumnDef<Quotation>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "quotationId",
     header: "Number",
   },
   {

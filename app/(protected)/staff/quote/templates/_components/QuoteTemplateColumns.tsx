@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { setQuoteTemplateInactive } from "@/lib/actions/quoteTemplates";
+import { Template } from "@pdfme/common";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -15,6 +16,7 @@ export type QuoteTemplateType = {
   name: string;
   status: "Active" | "Inactive";
   createdAt: string;
+  pdfTemplate: Template;
 };
 
 const deleteQuoteTemplate = async (id: string, router: AppRouterInstance) => {
