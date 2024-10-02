@@ -1,7 +1,5 @@
 "use client";
 
-import "../../css/globals.css";
-import Link from "next/link";
 import {
   BriefcaseBusiness,
   CalendarDays,
@@ -11,11 +9,12 @@ import {
   NotepadText,
   PanelLeft,
   Quote,
-  Receipt,
   Settings,
   Truck,
   UserRound,
 } from "lucide-react";
+import Link from "next/link";
+import "../../css/globals.css";
 
 import {
   Breadcrumb,
@@ -32,9 +31,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { NAVIGATION_LABELS } from "../../constants";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { NAVIGATION_LABELS } from "../../constants";
 
 export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
   if (!pathname) return null;

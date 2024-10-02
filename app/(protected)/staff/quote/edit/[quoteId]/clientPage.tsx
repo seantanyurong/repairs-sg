@@ -30,7 +30,7 @@ const EditQuotationClient = ({
       }
     };
     buildUi();
-  }, []);
+  }, [inputs, template]);
 
   return (
     <>

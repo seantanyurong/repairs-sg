@@ -5,7 +5,14 @@ import { QuoteTemplateType } from "../../templates/_components/QuoteTemplateColu
 import EditQuotationClient from "./clientPage";
 import dayjs from "dayjs";
 
-const populateTemplate = (oldTemplate: Template, quotation): Template => {
+const populateTemplate = (
+  oldTemplate: Template,
+  quotation: {
+    quotationId: string;
+    quotationDate: string | number | Date | dayjs.Dayjs | null | undefined;
+    templateInputs: { [x: string]: string };
+  }
+): Template => {
   const updatedSchema = oldTemplate.schemas[0].map((field) => {
     switch (field.name) {
       case "quotation_no":
