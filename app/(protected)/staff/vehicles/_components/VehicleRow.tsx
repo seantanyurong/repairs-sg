@@ -33,6 +33,14 @@ export default function VehicleRow({
 }) {
   const router = useRouter();
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm('Are you sure you want to delete this vehicle?');
+    if (confirmed) {
+      await deleteVehicle(id);
+      router.refresh();
+    }
+  };
+
   return (
     <TableRow>
       <TableCell className='font-medium'>{licencePlate}</TableCell>
@@ -58,7 +66,7 @@ export default function VehicleRow({
               className='cursor-pointer'>
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => deleteVehicle(id)} className='cursor-pointer'>
+            <DropdownMenuItem onClick={handleDelete} className='cursor-pointer'>
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>

@@ -3,91 +3,36 @@ import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, CalendarCurrentDate, CalendarDayView, CalendarMonthView, CalendarNextTrigger, CalendarPrevTrigger, CalendarTodayTrigger, CalendarViewTrigger, CalendarWeekView, CalendarYearView } from '@/components/ui/full-calendar';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ModeToggle } from '@/components/ui/theme-toggle';
 import JobRow from './_components/JobRow';
-import { clerkClient } from '@clerk/nextjs/server';
 import { getJobsForSchedule } from '@/lib/actions/jobs';
 
 
-type SearchParams = {
-  filters?: string;
-};
+export default async function Schedule() {
 
-export default async function Schedule({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
   const jobs = await getJobsForSchedule();
-  console.log(jobs);
-  const staff = await clerkClient().users.getUserList();
-  console.log(staff);
-
-  const filters = searchParams.filters;
-  const filtersArray = filters ? filters.split(",") : [];
-  console.log(filtersArray);
-
 
   const jobTableDisplay = () => {
     if (jobs.length === 0) {
       return <div>No jobs found</div>;
     }
 
-    // return all if there is no filter param
-    if (filtersArray[0] === 'all') {
-      return jobs.map((job) => {
-        return (
-          <JobRow
-            key={job._id.toString()}
-            id={job._id.toString()}
-            serviceName={job.service.name}
-            description={job.description}
-            address={job.jobAddress}
-            // from the staff user list, find the staff with the same user id as the job staff id and return first name and last name
-            // staffName={staff.find((staff) => staff.id === job.staff).firstName}
-            staffName = 'Staff Name'
-            timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
-            timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
-            status={job.status}
-          />
-        );
-      });
-    }
-
-
-    // Filter by staff in filtersArray
-    return jobs
-      // .filter((job) => filtersArray.includes(job.staff.fullName))
-      .map((job) => {
-        return (
-          <JobRow
-            key={job._id.toString()}
-            id={job._id.toString()}
-            serviceName={job.service.name}
-            description={job.description}
-            address={job.jobAddress}
-            // staffName={job.staff.fullName}
-            staffName = 'Staff Name'
-            timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
-            timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
-            status={job.status}
-          />
-        );
-      });
+    return jobs.map((job) => {
+      return (
+        <JobRow
+          key={job._id.toString()}
+          id={job._id.toString()}
+          serviceName={job.service.name}
+          description={job.description}
+          address={job.jobAddress}
+          timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
+          timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
+        />
+      );
+    });
   };
 
-  const jobCount = (filtersArray: string[]) => {
-    if (filtersArray[0] === 'all') {
+  const jobCount = () => {
       return jobs.length;
-    }
-
-    else if (filtersArray.length === 0) {
-      return 0;
-    }
-
-    return jobs
-    // .filter((job) => filtersArray.includes(job.staff.fullName))
-    .length;
   };
 
   const tableDisplay = () => {
@@ -104,10 +49,8 @@ export default async function Schedule({
                 <TableHead>Service</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Address</TableHead>
-                <TableHead>Staff</TableHead>
                 <TableHead>Start</TableHead>
                 <TableHead>End</TableHead>
-                <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>{jobTableDisplay()}</TableBody>
@@ -117,9 +60,9 @@ export default async function Schedule({
           <div className='text-xs text-muted-foreground'>
             Showing{' '}
             <strong>
-              {jobCount(filtersArray) === 0 ? '0' : '1'}-{jobCount(filtersArray)}
+              {jobCount() === 0 ? '0' : '1'}-{jobCount()}
             </strong>{' '}
-            of <strong>{jobCount(filtersArray)}</strong> jobs
+            of <strong>{jobCount()}</strong> jobs
           </div>
         </CardFooter>
       </Card>
@@ -137,15 +80,12 @@ export default async function Schedule({
           <Calendar
           events={
             jobs
-            // .filter((job) => filtersArray.includes(job.staff.fullName))
             .map((job) => {
               return {
                 _id: job._id.toString(),
                 timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
                 timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
-                title: job.description,
-                // staff: job.staff.fullName,
-                staff: 'Staff Name',
+                title: job.service.name,
                 color: 'blue',
               };
             })
@@ -189,8 +129,6 @@ export default async function Schedule({
                 <ChevronRight size={20} />
                 <span className="sr-only">Next</span>
               </CalendarNextTrigger>
-
-              <ModeToggle />
             </div>
 
             <div className="flex-1 overflow-auto px-6 relative">
@@ -213,19 +151,7 @@ export default async function Schedule({
           <TabsTrigger value='table'>Table</TabsTrigger>
           <TabsTrigger value='calendar'>Calendar</TabsTrigger>
         </TabsList>
-        {/* <DropdownMenuCheckboxes 
-          items={ staff.map((staff) => { return { label: staff.fullName }; })}>
-        </DropdownMenuCheckboxes> */}
-        {/* <DropdownMenuCheckboxes 
-          items={ services.map((service) => { return { label: service.name }; })}>
-        </DropdownMenuCheckboxes> */}
         <div className='ml-auto flex items-center gap-2'>
-          {/* <Link href='/staff/jobs/create-event'>
-            <Button size='sm' className='h-8 gap-1'>
-              <PlusCircle className='h-3.5 w-3.5' />
-              <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Create Event</span>
-            </Button>
-          </Link> */}
         </div>
       </div>
           <TabsContent value='calendar'>{calendarDisplay()}</TabsContent>
