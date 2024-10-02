@@ -1,0 +1,16 @@
+{
+    "labels": [
+        "ELECTRICIAN",
+        "VENTILATION",
+        "PLUMBER",
+        "HANDYMAN",
+        "AIRCON"
+    ],
+    "data": [
+        21,
+        48,
+        57,
+        19,
+        181
+    ]
+}

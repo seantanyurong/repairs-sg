@@ -6,25 +6,29 @@ import {
 import { NextResponse } from "next/server";
 
 // Protected Routes
-const isCustomerRoute = createRouteMatcher(["/customer(.*)"]);
 const isTechnicianRoute = createRouteMatcher([
-  // To Be Updated When More Features Arrives In SR2 and Beyond
+  // To Be Updated When More Features Arrives In SR3 and Beyond
   "/staff",
 ]);
 const isAdminRoute = createRouteMatcher([
-  // To Be Updated When More Features Arrives In SR2 and Beyond
-  "/staff(.*)",
+  // To Be Updated When More Features Arrives In SR3 and Beyond
+  "/staff",
+  "/staff/services(.*)",
+  "/staff/quote(.*)",
+  "/staff/vehicles(.*)",
+  "/staff/schedule(.*)"
 ]);
-const isSuperAdminRoute = createRouteMatcher(["/staff(.*)"]);
+const isSuperAdminRoute = createRouteMatcher([
+  // To Be Updated When More Features Arrives In SR3 and Beyond
+  "/staff(.*)",
+  "/public/analytics(.*)"
+]);
 const isHomeRoute = createRouteMatcher(["/"]);
 
 export default clerkMiddleware(async (auth, req) => {
   if (
     !auth().userId &&
-    (isCustomerRoute(req) ||
-      isTechnicianRoute(req) ||
-      isAdminRoute(req) ||
-      isSuperAdminRoute(req))
+    (isTechnicianRoute(req) || isAdminRoute(req) || isSuperAdminRoute(req))
   ) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
@@ -34,14 +38,6 @@ export default clerkMiddleware(async (auth, req) => {
   if (typeof userId === "string") {
     const user = await clerkClient().users.getUser(userId as string);
     const role = user.publicMetadata.role;
-    if (!role && isSuperAdminRoute(req)) {
-      // Is A Customer
-      return NextResponse.redirect(new URL("/customer", req.url));
-    }
-    if (role && isCustomerRoute(req)) {
-      // Is A Staff
-      return NextResponse.redirect(new URL("/staff", req.url));
-    }
     if (
       (role === "technician" && !isTechnicianRoute(req)) ||
       (role === "admin" && !isAdminRoute(req))
@@ -49,12 +45,8 @@ export default clerkMiddleware(async (auth, req) => {
       return NextResponse.redirect(new URL("/staff", req.url));
     }
 
-    if (isHomeRoute(req)) {
-      if (!role) {
-        return NextResponse.redirect(new URL("/customer", req.url));
-      } else {
-        return NextResponse.redirect(new URL("/staff", req.url));
-      }
+    if (user && isHomeRoute(req)) {
+      return NextResponse.redirect(new URL("/staff", req.url));
     }
   }
 });

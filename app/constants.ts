@@ -4,6 +4,7 @@ export const NAVIGATION_LABELS = {
   SCHEDULE: "Schedule",
   JOBS: "Jobs",
   INVOICES: "Invoices",
+  QUOTATION_TEMPLATES: "Quote Templates",
   QUOTATIONS: "Quotations",
   CUSTOMERS: "Customers",
   VEHICLES: "Vehicles",
