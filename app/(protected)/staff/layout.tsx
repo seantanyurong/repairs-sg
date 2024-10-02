@@ -134,7 +134,7 @@ export default function PublicLayout({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
+                href="/staff/schedule"
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${
                   pathname === "/staff/schedule"
                     ? "bg-accent text-accent-foreground"
