@@ -206,7 +206,7 @@ export default function PublicLayout({
               {NAVIGATION_LABELS.QUOTATION_TEMPLATES}
             </TooltipContent>
           </Tooltip>
-          <Tooltip>
+          {/* <Tooltip>
             <TooltipTrigger asChild>
               <Link
                 href="/staff/quote/"
@@ -223,7 +223,7 @@ export default function PublicLayout({
             <TooltipContent side="right">
               {NAVIGATION_LABELS.QUOTATIONS}
             </TooltipContent>
-          </Tooltip>
+          </Tooltip> */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
