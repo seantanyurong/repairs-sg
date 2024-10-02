@@ -1,21 +1,12 @@
-import Link from 'next/link';
-import { PlusCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, CalendarCurrentDate, CalendarDayView, CalendarMonthView, CalendarNextTrigger, CalendarPrevTrigger, CalendarTodayTrigger, CalendarViewTrigger, CalendarWeekView, CalendarYearView } from '@/components/ui/full-calendar';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ModeToggle } from '@/components/ui/theme-toggle';
-import { getJobs, getJobsForSchedule } from '@/lib/actions/jobs';
-import { getStaff } from '@/lib/actions/staff';
 import JobRow from './_components/JobRow';
-import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
-import { getSchedules } from '@/lib/actions/schedules';
-import { getServices } from '@/lib/actions/services';
-import { getAddress } from '@/lib/actions/address';
-import { getCustomers } from '@/lib/actions/customers';
 import { clerkClient } from '@clerk/nextjs/server';
+import { getJobsForSchedule } from '@/lib/actions/jobs';
 
 
 type SearchParams = {
@@ -29,8 +20,6 @@ export default async function Schedule({
 }) {
   const jobs = await getJobsForSchedule();
   console.log(jobs);
-  const services = await getServices();
-  const schedules = await getSchedules();
   const staff = await clerkClient().users.getUserList();
   console.log(staff);
 
@@ -85,16 +74,6 @@ export default async function Schedule({
           />
         );
       });
-  };
-
-  const jobCalendarEvents = (status?: string) => {
-    
-    if (status === 'all') {
-      return jobs;
-    }
-    // Filter by status
-    return jobs
-      .filter((job) => job.status.toLowerCase() === status);
   };
 
   const jobCount = (filtersArray: string[]) => {

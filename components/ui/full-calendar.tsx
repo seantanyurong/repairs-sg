@@ -13,10 +13,8 @@ import {
   format,
   getMonth,
   isSameDay,
-  isSameHour,
   isSameMonth,
   isToday,
-  setHours,
   setMonth,
   startOfMonth,
   startOfWeek,
@@ -188,87 +186,6 @@ const CalendarViewTrigger = forwardRef<
 });
 CalendarViewTrigger.displayName = 'CalendarViewTrigger';
 
-const EventGroupOG = ({
-  events,
-  hour,
-}: {
-  events: CalendarEvent[];
-  hour: Date;
-}) => {
-  // Helper function to detect overlaps
-  const areOverlapping = (eventA: CalendarEvent, eventB: CalendarEvent) => {
-    return (eventA.timeStart <= eventB.timeEnd && eventA.timeEnd >= eventB.timeStart) ||
-      (eventB.timeStart <= eventA.timeEnd && eventB.timeEnd >= eventA.timeStart);
-  };
-
-  // Filter events that occur in the same hour
-  const hourEvents = events.filter((event) => isSameHour(event.timeStart, hour));
-
-  // Group overlapping events
-  const eventGroups: CalendarEvent[][] = [];
-
-  hourEvents.forEach((event) => {
-    let placed = false;
-
-    // Try to place the event into an existing group of overlapping events
-    for (const group of eventGroups) {
-      if (group.every((groupEvent) => areOverlapping(event, groupEvent))) {
-        group.push(event);
-        placed = true;
-        break;
-      }
-    }
-
-    // If no group was found, create a new group
-    if (!placed) {
-      eventGroups.push([event]);
-    }
-
-    console.log(eventGroups);
-  });
-
-  return (
-    <div className="h-20 border-t last:border-b relative">
-      {eventGroups.map((group, groupIndex) => (
-        <div key={groupIndex} className="relative w-full h-full flex">
-          {group.map((event, index) => {
-            const hoursDifference =
-              differenceInMinutes(event.timeEnd, event.timeStart) / 60;
-            const startPosition = event.timeStart.getMinutes() / 60;
-
-            return (
-              <div
-                key={event._id}
-                className={cn(
-                  'absolute',
-                  'border',
-                  'mx-1', // Small margin between events
-                  dayEventVariants({ variant: event.color })
-                )}
-                style={{
-                  top: `${startPosition * 100}%`,
-                  height: `${hoursDifference * 100}%`,
-                  width: `${100 / group.length}%`, // Distribute width evenly among overlapping events
-                  left: `${(index / group.length) * 100}%`, // Position events beside each other
-                }}
-              >
-                <div className="event-content">
-                  <div className="event-title font-bold text-lg">
-                    {event.title}
-                  </div>
-                  <div className="event-staff text-sm text-gray-600">
-                    {event.staff}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ))}
-    </div>
-  );
-};
-
 const EventGroup = ({
   date,
   events,
@@ -357,8 +274,6 @@ const CalendarDayView = () => {
 
   if (view !== 'day') return null;
 
-  const hours = [...Array(24)].map((_, i) => setHours(date, i));
-
   return (
     <div className="flex relative pt-2 overflow-auto h-full">
       <TimeTable />
@@ -420,6 +335,7 @@ const CalendarWeekView = () => {
                   'h-full text-sm text-muted-foreground border-l first:border-l-0',
                   [0, 6].includes(i) && 'bg-muted/50'
                 )}
+                key={date.toString()}
               >
                   <EventGroup
                     date={date}

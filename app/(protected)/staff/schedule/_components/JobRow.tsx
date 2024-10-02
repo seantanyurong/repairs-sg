@@ -1,22 +1,9 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { deleteVehicle } from '@/lib/actions/vehicles';
-import { useRouter } from 'next/navigation';
-import { custom } from 'zod';
 
 export default function JobRow({
-  id,
   serviceName,
   description,
   address,
@@ -34,7 +21,6 @@ export default function JobRow({
   timeEnd: string;
   status: string;
 }) {
-  const router = useRouter();
 
   return (
     <TableRow>
