@@ -7,6 +7,8 @@ import { ModeToggle } from '@/components/ui/theme-toggle';
 import JobRow from './_components/JobRow';
 import { clerkClient } from '@clerk/nextjs/server';
 import { getJobsForSchedule } from '@/lib/actions/jobs';
+import { getSchedules } from '@/lib/actions/schedules';
+import { getServices } from '@/lib/actions/services';
 
 
 type SearchParams = {
@@ -18,10 +20,27 @@ export default async function Schedule({
 }: {
   searchParams: SearchParams;
 }) {
+
   const jobs = await getJobsForSchedule();
-  console.log(jobs);
+  // console.log(jobs);
+
+  const services = await getServices();
+  const schedules = await getSchedules();
+  
   const staff = await clerkClient().users.getUserList();
-  console.log(staff);
+  // convert this PaginatedResourceResponse<User[]>into an array
+  const staffArray = staff.data.map((staff) => { 
+    return { id: String(staff.id).trim(), name: staff.firstName + ' ' + staff.lastName };
+  })
+  console.log(staffArray);
+
+  // iterate through the jobs array and find the staff with the same id as the job staff id and return the staff name
+
+  const matches = jobs.map((job) => {
+    return staffArray.find((staff) => staff.id === job.staff)?.name || 'Unknown Staff';
+  });
+
+  console.log(matches);
 
   const filters = searchParams.filters;
   const filtersArray = filters ? filters.split(",") : [];
@@ -34,7 +53,7 @@ export default async function Schedule({
     }
 
     // return all if there is no filter param
-    if (filtersArray[0] === 'all') {
+    // if (filtersArray[0] === 'all') {
       return jobs.map((job) => {
         return (
           <JobRow
@@ -44,15 +63,15 @@ export default async function Schedule({
             description={job.description}
             address={job.jobAddress}
             // from the staff user list, find the staff with the same user id as the job staff id and return first name and last name
-            // staffName={staff.find((staff) => staff.id === job.staff).firstName}
-            staffName = 'Staff Name'
+            // take the first item if there is a match
+            staffName={staffArray.find((staff) => staff.id === job.staff)?.name || 'Unknown Staff'}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
           />
         );
       });
-    }
+    // }
 
 
     // Filter by staff in filtersArray
