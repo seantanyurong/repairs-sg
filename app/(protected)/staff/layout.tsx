@@ -343,7 +343,7 @@ export default function PublicLayout({
                   {NAVIGATION_LABELS.SERVICES}
                 </Link>
                 <Link
-                  href="#"
+                  href="/staff/schedule"
                   className={`flex items-center gap-4 px-2.5 ${
                     pathname === "/staff/schedule"
                       ? "text-foreground"
