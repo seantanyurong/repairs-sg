@@ -1,29 +1,39 @@
 import mongoose from "mongoose";
 
-const leaveSchema = new mongoose.Schema({
-    leaveApplicationId: {
-        type: Number,
-        required: [true, "Leave Application ID Is Required!"],
-        unique: true
+const leaveSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["ANNUAL", "MC"],
+      required: [true, "Leave Type Is Required"],
     },
-    leaveType: {
-        type: String,
-        enum: ['LEAVE', 'MC', 'OFF'],
-        required: [true, "Leave Type Is Required"]
+    status: {
+      type: String,
+      enum: ["PENDING", "APPROVED", "REJECTED"],
+      required: [true, "Leave Status Is Required"],
     },
-    dateFrom: {
+    dateRange: {
+      start: {
         type: Date,
-        required: [true, "Date From Is Required!"]
-    },
-    dateTo: {
+        required: [true, "Start Date Is Required!"],
+      },
+      end: {
         type: Date,
-        required: [true, "Date To Is Required!"]
+        required: [true, "End Date Is Required!"],
+      },
     },
-    takenBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Staff',
-        required: [true, "Staff Is Required"]
-    }
-}, { versionKey: false, timestamps: true });
+    requesterId: {
+      type: String,
+      ref: "Staff",
+      required: [true, "Staff ID Is Required"],
+    },
+    approverId: {
+      type: String,
+      ref: "Staff",
+      required: [true, "Staff ID Is Required"],
+    },
+  },
+  { versionKey: false, timestamps: true }
+);
 
-export default mongoose.models.Leave || mongoose.model('Leave', leaveSchema);
+export default mongoose.models.Leave || mongoose.model("Leave", leaveSchema);
