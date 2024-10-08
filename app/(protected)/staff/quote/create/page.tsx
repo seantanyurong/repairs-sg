@@ -1,5 +1,5 @@
 import { getQuoteTemplates } from "@/lib/actions/quoteTemplates";
-import { clerkClient } from "@clerk/nextjs/server";
+import { createClerkClient } from "@clerk/nextjs/server";
 import CreateQuoteClient from "./clientPage";
 
 const CreateQuote = async () => {
@@ -7,14 +7,14 @@ const CreateQuote = async () => {
 
   const getCustomerAction = async (email: string) => {
     "use server";
-    const result = await clerkClient().users.getUserList({
-      emailAddress: [email],
-    });
 
+    const custClerk = createClerkClient({
+      secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY as string,
+    });
+    const result = await custClerk.users.getUserList({ emailAddress: [email] });
     if (result.totalCount === 0) {
       return "No customer found with that email address";
     }
-
     return result.data[0].fullName ?? "";
 
     // TODO: implement banned user check SR4
