@@ -52,8 +52,8 @@ const updateLeave = async (leave: {
   type?: string;
   status?: string;
   dateRange?: {
-    start: string;
-    end: string;
+    start?: string;
+    end?: string;
   };
   requesterId?: string;
   approverId?: string;
@@ -64,8 +64,8 @@ const updateLeave = async (leave: {
     status: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
     dateRange: z
       .object({
-        start: z.string().min(1),
-        end: z.string().min(1),
+        start: z.string().min(1).optional(),
+        end: z.string().min(1).optional(),
       })
       .optional(),
     requesterId: z.string().min(1).optional(),

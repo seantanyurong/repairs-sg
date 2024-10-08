@@ -17,9 +17,9 @@ import { deleteLeave, updateLeave } from "@/lib/actions/leave";
 import { User } from "@clerk/backend";
 
 function formatShortDate(dateString: string): string {
+  console.log("Date String: ", dateString);
   const date = new Date(dateString);
 
-  // Check if the date is valid
   if (isNaN(date.getTime())) {
     throw new Error("Invalid date string");
   }
@@ -55,6 +55,7 @@ export default function LeaveRow({
   end,
   actor,
   actorRole,
+  userId,
   createdAt,
 }: {
   _id: string;
@@ -64,9 +65,11 @@ export default function LeaveRow({
   end: string;
   actor: User;
   actorRole: string;
+  userId: string;
   createdAt: string;
 }) {
   const router = useRouter();
+  console.log("start: ", start);
 
   const handleAction = async (action: string) => {
     const confirmed = window.confirm(
@@ -76,7 +79,14 @@ export default function LeaveRow({
     if (confirmed) {
       await updateLeave({
         _id: _id,
+        type: type,
         status: newStatus,
+        dateRange: {
+          start: start.toString(),
+          end: end.toString(),
+        },
+        requesterId: actor.id,
+        approverId: userId,
       });
       router.refresh();
     }
@@ -111,9 +121,11 @@ export default function LeaveRow({
       </TableCell>
       <TableCell className="hidden md:table-cell">
         {formatShortDate(start)}
+        {/* {start} */}
       </TableCell>
       <TableCell className="hidden md:table-cell">
         {formatShortDate(end)}
+        {/* {end as string} */}
       </TableCell>
       <TableCell className="hidden md:table-cell">
         <Badge variant="outline">{status}</Badge>
@@ -137,6 +149,7 @@ export default function LeaveRow({
                 <DropdownMenuItem
                   onClick={() => router.push(`/staff/leaves/edit-leave/${_id}`)}
                   className="cursor-pointer"
+                  disabled={status !== "PENDING"}
                 >
                   Edit
                 </DropdownMenuItem>
