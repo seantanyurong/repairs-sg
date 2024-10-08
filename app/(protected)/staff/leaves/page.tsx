@@ -28,6 +28,7 @@ import LeaveRow from "./_components/LeaveRow";
 export default async function Leaves() {
   const { sessionClaims } = auth();
   const userId = sessionClaims?.userId;
+  const role = sessionClaims?.role;
   const leavesRequested = await getLeavesByRequesterId(userId as string);
   const leavesToApprove = await getLeavesByApproverId(userId as string);
 
@@ -64,12 +65,13 @@ export default async function Leaves() {
               _id={leave._id.toString()}
               type={leave.type}
               status={leave.status}
-              start={leave.dateRange?.start.toString()}
-              end={leave.dateRange?.end.toString()}
+              start={leave.dateRange?.start}
+              end={leave.dateRange?.end}
               actor={JSON.parse(JSON.stringify(actor))}
               actorRole={
                 action === "leavesToApprove" ? "requester" : "approver"
               }
+              userId={userId as string}
               createdAt={leave.createdAt.toString()}
             />
           );
@@ -85,6 +87,7 @@ export default async function Leaves() {
 
     const filteredLeavesRows = await Promise.all(
       filteredLeaves.map(async (leave) => {
+        console.log("test: ", leave.dateRange?.start);
         const actor =
           action === "leavesToApprove"
             ? await fetchUser(leave.requesterId)
@@ -96,10 +99,11 @@ export default async function Leaves() {
             _id={leave._id.toString()}
             type={leave.type}
             status={leave.status}
-            start={leave.dateRange?.start.toString()}
-            end={leave.dateRange?.end.toString()}
+            start={leave.dateRange?.start}
+            end={leave.dateRange?.end}
             actor={JSON.parse(JSON.stringify(actor))}
             actorRole={action === "leavesToApprove" ? "requester" : "approver"}
+            userId={userId as string}
             createdAt={leave.createdAt.toString()}
           />
         );
@@ -188,7 +192,11 @@ export default async function Leaves() {
         </TabsList>
         <div className="ml-auto flex items-center gap-2 mt-2">
           <Link href="/staff/leaves/create-leave">
-            <Button size="sm" className="h-8 gap-1">
+            <Button
+              size="sm"
+              className="h-8 gap-1"
+              disabled={role === "superadmin"}
+            >
               <PlusCircle className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                 Apply for leave
