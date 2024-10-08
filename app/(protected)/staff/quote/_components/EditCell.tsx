@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Check, Pencil, X } from "lucide-react";
 import { MouseEvent } from "react";
 
@@ -12,7 +11,7 @@ export const EditCell = ({ row, table }) => {
 
   const setEditedRows = (e: MouseEvent<HTMLButtonElement>) => {
     const elName = e.currentTarget.name;
-    meta?.setEditedRows((old: []) => ({
+    meta?.setEditedRows((old: { [key: string]: boolean }) => ({
       ...old,
       [row.id]: !old[row.id],
     }));
@@ -67,10 +66,6 @@ export const EditCell = ({ row, table }) => {
           </Button>
         </div>
       )}
-      <Checkbox
-        // checked={row.getIsSelected()}
-        onChange={row.getToggleSelectedHandler()}
-      />
     </div>
   );
 };

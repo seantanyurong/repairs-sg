@@ -23,20 +23,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { addQuotation } from "@/lib/actions/quotations";
 import { cn } from "@/lib/utils";
+import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema } from "@pdfme/common";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FieldValues, useForm, UseFormReturn, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
+import { EditableTable } from "../_components/EditableTable";
 import { QuoteTemplateType } from "../templates/_components/QuoteTemplateColumns";
-import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import { addQuotation } from "@/lib/actions/quotations";
-import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   quotationDate: z.date(),
@@ -91,7 +92,8 @@ function renderTemplateFields(
     case "table":
       return (
         <>
-          <p key={schema.name}>{schema.type}</p>
+          <p key={schema.name}>{schema.name}</p>
+          <EditableTable key={`${schema.name}-${schema.type}`} />
         </>
       );
     default:
@@ -157,11 +159,10 @@ const CreateQuoteClient = ({
   const getCustomerByEmail = async () => {
     const fieldState = quotationForm.getFieldState("customerEmail");
     if (!fieldState.isTouched || fieldState.invalid) {
-      quotationForm.setError(
-        "customerEmail",
-        { type: "pattern", message: "Enter a valid email address" },
-        { shouldFocus: true }
-      );
+      quotationForm.setError("customerEmail", {
+        type: "pattern",
+        message: "Enter a valid email address",
+      });
       return;
     }
     setIsLoading(true);
@@ -206,7 +207,6 @@ const CreateQuoteClient = ({
 
   return (
     <>
-      <Button onClick={() => console.log(templateWatch)}></Button>
       <Form {...quotationForm}>
         <form
           onSubmit={(e) => {
@@ -278,6 +278,7 @@ const CreateQuoteClient = ({
               );
             }}
           />
+
           <FormField
             control={quotationForm.control}
             name="quoteTemplate"
@@ -341,7 +342,9 @@ const CreateQuoteClient = ({
               <>Find Customer</>
             )}
           </Button>
-
+          <Button onClick={() => console.log(templateWatch)}>
+            Console Log Template
+          </Button>
           {selectedTemplate &&
             templates
               .filter(

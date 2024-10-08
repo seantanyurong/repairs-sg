@@ -38,7 +38,9 @@ export const EditableTable = () => {
   const [data, setData] = useState(() => [...defaultData]);
   const [originalData, setOriginalData] = useState(() => [...defaultData]);
   const [editedRows, setEditedRows] = useState({});
-  const [validRows, setValidRows] = useState({});
+  const [validRows, setValidRows] = useState<{
+    [key: number]: { [key: string]: boolean };
+  }>({});
 
   const table = useReactTable({
     data,

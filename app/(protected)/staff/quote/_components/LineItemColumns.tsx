@@ -1,6 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { EditableTableCell } from "./EditableTableCell";
 import { EditCell } from "./EditCell";
+import { EditableTableCell } from "./EditableTableCell";
 
 export interface LineItem {
   description: string;
@@ -20,7 +20,7 @@ export const LineItemColumns = [
     },
   }),
   columnHelper.accessor("quantity", {
-    header: "Full Name",
+    header: "Quantity",
     cell: EditableTableCell,
     meta: {
       type: "number",
