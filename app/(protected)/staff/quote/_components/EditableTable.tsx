@@ -1,11 +1,3 @@
-import { useState } from "react";
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { LineItem, LineItemColumns } from "./LineItemColumns";
-import { FooterCell } from "./FooterCell";
 import {
   Table,
   TableBody,
@@ -15,36 +7,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { useEffect, useState } from "react";
+import { FooterCell } from "./FooterCell";
 
-const defaultData: LineItem[] = [
-  {
-    description: "Item 1",
-    quantity: 1,
-    total: 1,
-  },
-  {
-    description: "Item 2",
-    quantity: 2,
-    total: 2,
-  },
-  {
-    description: "Item 3",
-    quantity: 3,
-    total: 3,
-  },
-];
+type EditableTableProps<TData, TValue> = {
+  columns: ColumnDef<TData, TValue>[];
+  initialData: TData[];
+  onStateChange: (newState: TData[]) => void;
+};
 
-export const EditableTable = () => {
-  const [data, setData] = useState(() => [...defaultData]);
-  const [originalData, setOriginalData] = useState(() => [...defaultData]);
+export const EditableTable = <TData, TValue>({
+  initialData,
+  columns,
+  onStateChange,
+}: EditableTableProps<TData, TValue>) => {
+  const [data, setData] = useState(() => [...initialData]);
+  const [originalData, setOriginalData] = useState(() => [...initialData]);
   const [editedRows, setEditedRows] = useState({});
   const [validRows, setValidRows] = useState<{
     [key: number]: { [key: string]: boolean };
   }>({});
 
+  useEffect(() => {
+    onStateChange(data);
+  }, [data, onStateChange]);
+
   const table = useReactTable({
     data,
-    columns: LineItemColumns,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     meta: {
       editedRows,
@@ -87,23 +83,19 @@ export const EditableTable = () => {
         }));
       },
       addRow: () => {
-        const newRow: LineItem = {
-          description: "Transport Fee",
-          quantity: 1,
-          total: 1,
-        };
-        const setFunc = (old: LineItem[]) => [...old, newRow];
+        const newRow = initialData[0];
+        const setFunc = (old: TData[]) => [...old, newRow];
         setData(setFunc);
         setOriginalData(setFunc);
       },
       removeRow: (rowIndex: number) => {
-        const setFilterFunc = (old: LineItem[]) =>
-          old.filter((_row: LineItem, index: number) => index !== rowIndex);
+        const setFilterFunc = (old: TData[]) =>
+          old.filter((_row: TData, index: number) => index !== rowIndex);
         setData(setFilterFunc);
         setOriginalData(setFilterFunc);
       },
       removeSelectedRows: (selectedRows: number[]) => {
-        const setFilterFunc = (old: LineItem[]) =>
+        const setFilterFunc = (old: TData[]) =>
           old.filter((_row, index) => !selectedRows.includes(index));
         setData(setFilterFunc);
         setOriginalData(setFilterFunc);

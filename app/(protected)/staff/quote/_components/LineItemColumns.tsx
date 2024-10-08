@@ -1,4 +1,4 @@
-import { createColumnHelper } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { EditCell } from "./EditCell";
 import { EditableTableCell } from "./EditableTableCell";
 
@@ -8,33 +8,37 @@ export interface LineItem {
   total: number;
 }
 
-const columnHelper = createColumnHelper<LineItem>();
-
-export const LineItemColumns = [
-  columnHelper.accessor("description", {
+export const lineItemColumns: ColumnDef<LineItem>[] = [
+  {
+    accessorKey: "description",
     header: "Description",
     cell: EditableTableCell,
     meta: {
       type: "text",
       required: true,
+      validationMessage: "Description is required",
     },
-  }),
-  columnHelper.accessor("quantity", {
+  },
+  {
+    accessorKey: "quantity",
     header: "Quantity",
     cell: EditableTableCell,
     meta: {
       type: "number",
       required: true,
+      validationMessage: "Quantity is required",
     },
-  }),
-  columnHelper.accessor("total", {
+  },
+  {
+    accessorKey: "total",
     header: "Total",
     cell: EditableTableCell,
     meta: {
       type: "number",
       required: true,
+      validationMessage: "Total is required",
     },
-  }),
+  },
   //   columnHelper.accessor("major", {
   //     header: "Major",
   //     cell: TableCell,
@@ -50,8 +54,8 @@ export const LineItemColumns = [
   //       required: true,
   //     },
   //   }),
-  columnHelper.display({
-    id: "edit",
+  {
+    header: "Edit",
     cell: EditCell,
-  }),
+  },
 ];

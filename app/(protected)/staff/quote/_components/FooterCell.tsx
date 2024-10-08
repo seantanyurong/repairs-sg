@@ -1,16 +1,19 @@
 import { Button } from "@/components/ui/button";
+import { Table } from "@tanstack/react-table";
 import { PlusCircle } from "lucide-react";
 
-export const FooterCell = ({ table }) => {
+export const FooterCell = <TData,>({ table }: { table: Table<TData> }) => {
   const meta = table.options.meta;
   const selectedRows = table.getSelectedRowModel().rows;
 
   const removeRows = () => {
-    meta.removeSelectedRows(
-      table
-        .getSelectedRowModel()
-        .rows.map((row: { index: number }) => row.index)
-    );
+    if (meta) {
+      meta.removeSelectedRows(
+        table
+          .getSelectedRowModel()
+          .rows.map((row: { index: number }) => row.index)
+      );
+    }
     table.resetRowSelection();
   };
 

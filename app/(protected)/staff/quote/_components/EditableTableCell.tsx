@@ -1,12 +1,26 @@
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, ChangeEvent } from "react";
+import { Column, Row, Table } from "@tanstack/react-table";
+import { ChangeEvent, useEffect, useState } from "react";
 
 type Option = {
   label: string;
   value: string;
 };
 
-export const EditableTableCell = ({ getValue, row, column, table }) => {
+type EditableTableCellProps<TData, TValue> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getValue: () => any;
+  row: Row<TData>;
+  column: Column<TData, TValue>;
+  table: Table<TData>;
+};
+
+export const EditableTableCell = <TData, TValue>({
+  getValue,
+  row,
+  column,
+  table,
+}: EditableTableCellProps<TData, TValue>) => {
   const initialValue = getValue();
   const columnMeta = column.columnDef.meta;
   const tableMeta = table.options.meta;
@@ -19,7 +33,12 @@ export const EditableTableCell = ({ getValue, row, column, table }) => {
 
   const onBlur = (e: ChangeEvent<HTMLInputElement>) => {
     displayValidationMessage(e);
-    tableMeta?.updateData(row.index, column.id, value, e.target.validity.valid);
+    tableMeta?.updateData(
+      row.index,
+      column.id,
+      String(value),
+      e.target.validity.valid
+    );
   };
   const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
     displayValidationMessage(e);

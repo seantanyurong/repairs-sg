@@ -1,8 +1,14 @@
 import { Button } from "@/components/ui/button";
+import { Row, Table } from "@tanstack/react-table";
 import { Check, Pencil, X } from "lucide-react";
 import { MouseEvent } from "react";
 
-export const EditCell = ({ row, table }) => {
+interface EditCellProps<TData> {
+  row: Row<TData>;
+  table: Table<TData>;
+}
+
+export const EditCell = <TData,>({ row, table }: EditCellProps<TData>) => {
   const meta = table.options.meta;
   const validRow = meta?.validRows[row.id];
   const disableSubmit = validRow

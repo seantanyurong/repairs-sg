@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { EditableTable } from "../_components/EditableTable";
 import { QuoteTemplateType } from "../templates/_components/QuoteTemplateColumns";
+import { LineItem, lineItemColumns } from "../_components/LineItemColumns";
 
 const formSchema = z.object({
   quotationDate: z.date(),
@@ -45,6 +46,24 @@ const formSchema = z.object({
   quoteTemplate: z.string().min(1),
   notes: z.string().optional(),
 });
+
+const defaultData: LineItem[] = [
+  {
+    description: "Item 1",
+    quantity: 1,
+    total: 1,
+  },
+  {
+    description: "Item 2",
+    quantity: 2,
+    total: 2,
+  },
+  {
+    description: "Item 3",
+    quantity: 3,
+    total: 3,
+  },
+];
 
 function renderTemplateFields(
   schema: Schema,
@@ -93,7 +112,12 @@ function renderTemplateFields(
       return (
         <>
           <p key={schema.name}>{schema.name}</p>
-          <EditableTable key={`${schema.name}-${schema.type}`} />
+          <EditableTable
+            key={`${schema.name}-${schema.type}`}
+            initialData={defaultData}
+            columns={lineItemColumns}
+            onStateChange={(data) => console.log(data)}
+          />
         </>
       );
     default:
