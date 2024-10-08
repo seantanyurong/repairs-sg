@@ -6,19 +6,39 @@ import {
 } from "@tanstack/react-table";
 import { LineItem, LineItemColumns } from "./LineItemColumns";
 import { FooterCell } from "./FooterCell";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-const defaultData = [
+const defaultData: LineItem[] = [
   {
     description: "Item 1",
     quantity: 1,
-    total: 100,
+    total: 1,
+  },
+  {
+    description: "Item 2",
+    quantity: 2,
+    total: 2,
+  },
+  {
+    description: "Item 3",
+    quantity: 3,
+    total: 3,
   },
 ];
 
-export const Table = () => {
+export const EditableTable = () => {
   const [data, setData] = useState(() => [...defaultData]);
   const [originalData, setOriginalData] = useState(() => [...defaultData]);
   const [editedRows, setEditedRows] = useState({});
+  const [validRows, setValidRows] = useState({});
 
   const table = useReactTable({
     data,
@@ -27,6 +47,8 @@ export const Table = () => {
     meta: {
       editedRows,
       setEditedRows,
+      validRows,
+      setValidRows,
       revertData: (rowIndex: number, revert: boolean) => {
         if (revert) {
           setData((old) =>
@@ -40,7 +62,12 @@ export const Table = () => {
           );
         }
       },
-      updateData: (rowIndex: number, columnId: string, value: string) => {
+      updateData: (
+        rowIndex: number,
+        columnId: string,
+        value: string,
+        isValid: boolean
+      ) => {
         setData((old) =>
           old.map((row, index) => {
             if (index === rowIndex) {
@@ -52,10 +79,14 @@ export const Table = () => {
             return row;
           })
         );
+        setValidRows((old) => ({
+          ...old,
+          [rowIndex]: { ...old[rowIndex], [columnId]: isValid },
+        }));
       },
       addRow: () => {
         const newRow: LineItem = {
-          description: "",
+          description: "Transport Fee",
           quantity: 1,
           total: 1,
         };
@@ -79,46 +110,44 @@ export const Table = () => {
   });
 
   return (
-    <article className="table-container">
-      <table>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <th
-              colSpan={table.getCenterLeafColumns().length}
-              align="right"
-            >
-              <FooterCell table={table} />
-            </th>
-          </tr>
-        </tfoot>
-      </table>
-    </article>
+    <Table>
+      <TableHeader>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <TableHead key={header.id}>
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+              </TableHead>
+            ))}
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody>
+        {table.getRowModel().rows.map((row) => (
+          <TableRow key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <TableCell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableHead
+            colSpan={table.getCenterLeafColumns().length}
+            align="right"
+          >
+            <FooterCell table={table} />
+          </TableHead>
+        </TableRow>
+      </TableFooter>
+    </Table>
   );
 };

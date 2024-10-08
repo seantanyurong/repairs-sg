@@ -1,3 +1,4 @@
+import { Input } from "@/components/ui/input";
 import { useState, useEffect, ChangeEvent } from "react";
 
 type Option = {
@@ -20,7 +21,6 @@ export const EditableTableCell = ({ getValue, row, column, table }) => {
     displayValidationMessage(e);
     tableMeta?.updateData(row.index, column.id, value, e.target.validity.valid);
   };
-
   const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
     displayValidationMessage(e);
     setValue(e.target.value);
@@ -71,14 +71,14 @@ export const EditableTableCell = ({ getValue, row, column, table }) => {
         ))}
       </select>
     ) : (
-      <input
+      <Input
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={onBlur}
         type={columnMeta?.type || "text"}
         required={columnMeta?.required}
-        pattern={columnMeta?.pattern}
         title={validationMessage}
+        pattern={columnMeta?.pattern}
       />
     );
   }

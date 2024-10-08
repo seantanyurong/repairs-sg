@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Check, Pencil, X } from "lucide-react";
 import { MouseEvent } from "react";
 
 export const EditCell = ({ row, table }) => {
@@ -14,9 +17,7 @@ export const EditCell = ({ row, table }) => {
       [row.id]: !old[row.id],
     }));
     if (elName !== "edit") {
-      e.currentTarget.name === "cancel"
-        ? meta?.revertData(row.index)
-        : meta?.updateRow(row.index);
+      meta?.revertData(row.index, e.currentTarget.name === "cancel");
     }
   };
 
@@ -25,42 +26,49 @@ export const EditCell = ({ row, table }) => {
   };
 
   return (
-    <div className="edit-cell-container">
+    <div className="flex justify-end items-center gap-4">
       {meta?.editedRows[row.id] ? (
-        <div className="edit-cell-action">
-          <button
+        <div className="flex gap-2">
+          <Button
             onClick={setEditedRows}
+            variant="outline"
+            size="icon"
+            disabled={disableSubmit}
+            name="done"
+          >
+            <Check className="h-4 w-4" />
+          </Button>
+          <Button
+            onClick={setEditedRows}
+            variant="outline"
+            size="icon"
             name="cancel"
           >
-            ⚊
-          </button>{" "}
-          <button
-            onClick={setEditedRows}
-            name="done"
-            disabled={disableSubmit}
-          >
-            ✔
-          </button>
+            <X className="h-4 w-4" />
+          </Button>
         </div>
       ) : (
-        <div className="edit-cell-action">
-          <button
+        <div className="flex gap-2">
+          <Button
             onClick={setEditedRows}
+            variant="outline"
+            size="icon"
             name="edit"
           >
-            ✐
-          </button>
-          <button
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
             onClick={removeRow}
+            variant="destructive"
+            size="icon"
             name="remove"
           >
-            X
-          </button>
+            <X className="h-4 w-4" />
+          </Button>
         </div>
       )}
-      <input
-        type="checkbox"
-        checked={row.getIsSelected()}
+      <Checkbox
+        // checked={row.getIsSelected()}
         onChange={row.getToggleSelectedHandler()}
       />
     </div>
