@@ -28,12 +28,12 @@ const populateTemplate = (
       case "customer_name":
         return {
           ...field,
-          content: quotation.templateInputs["customer_name"],
+          content: quotation.templateInputs["customer_name"] ?? "",
         };
       case "sales_email":
         return {
           ...field,
-          content: quotation.templateInputs["sales_email"],
+          content: quotation.templateInputs["sales_email"] ?? "",
         };
       default:
         return field;

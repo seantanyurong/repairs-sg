@@ -53,16 +53,6 @@ const defaultData: LineItem[] = [
     quantity: 1,
     total: 1,
   },
-  {
-    description: "Item 2",
-    quantity: 2,
-    total: 2,
-  },
-  {
-    description: "Item 3",
-    quantity: 3,
-    total: 3,
-  },
 ];
 
 function renderTemplateFields(
@@ -95,6 +85,7 @@ function renderTemplateFields(
                         <Input
                           key={`${schema.name}-${variable}-input`}
                           type="text"
+                          required={schema.required}
                           {...field}
                         />
                       </FormControl>
@@ -136,6 +127,7 @@ function renderTemplateFields(
                   <Input
                     key={`${schema.name}-input`}
                     type="text"
+                    required={schema.required}
                     {...field}
                   />
                 </FormControl>
@@ -237,7 +229,7 @@ const CreateQuoteClient = ({
             e.preventDefault();
             quotationForm.handleSubmit(onSubmit)();
           }}
-          className="max-w-md w-full flex flex-col gap-4"
+          className="w-full md:w-2/3 flex flex-col gap-4"
         >
           <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
             Quotation Information
