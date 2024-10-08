@@ -32,7 +32,7 @@ import { Schema } from "@pdfme/common";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { FieldValues, useForm, UseFormReturn, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -57,7 +57,11 @@ const defaultData: LineItem[] = [
 
 function renderTemplateFields(
   schema: Schema,
-  form: UseFormReturn<FieldValues>
+  form: UseFormReturn<FieldValues>,
+  setLineItems: {
+    (value: SetStateAction<LineItem[]>): void;
+    (arg0: LineItem[]): void;
+  }
 ) {
   switch (schema.type) {
     case "multiVariableText":
@@ -107,7 +111,7 @@ function renderTemplateFields(
             key={`${schema.name}-${schema.type}`}
             initialData={defaultData}
             columns={lineItemColumns}
-            onStateChange={(data) => console.log(data)}
+            onStateChange={(data) => setLineItems(data)}
           />
         </>
       );
@@ -149,6 +153,7 @@ const CreateQuoteClient = ({
 }) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [lineItems, setLineItems] = useState<LineItem[]>([]);
   const { user } = useUser();
   const router = useRouter();
 
@@ -167,10 +172,6 @@ const CreateQuoteClient = ({
   });
 
   const templateForm = useForm();
-
-  const templateWatch = useWatch({
-    control: templateForm.control,
-  });
 
   const getCustomerByEmail = async () => {
     const fieldState = quotationForm.getFieldState("customerEmail");
@@ -207,6 +208,12 @@ const CreateQuoteClient = ({
 
   const onSubmit = async () => {
     setErrors({});
+    const transformedItems = lineItems.map((item) => [
+      item.description,
+      item.quantity.toString(),
+      item.total.toString(),
+    ]);
+    templateForm.setValue("line_items", transformedItems);
     const result = await addQuotation(
       JSON.stringify(quotationForm.getValues()),
       JSON.stringify(templateForm.getValues())
@@ -358,16 +365,15 @@ const CreateQuoteClient = ({
               <>Find Customer</>
             )}
           </Button>
-          <Button onClick={() => console.log(templateWatch)}>
-            Console Log Template
-          </Button>
           {selectedTemplate &&
             templates
               .filter(
                 (t) => t._id === quotationForm.getValues("quoteTemplate")
               )[0]
               .pdfTemplate.schemas[0].filter((t: Schema) => !t.readOnly)
-              .map((t: Schema) => renderTemplateFields(t, templateForm))}
+              .map((t: Schema) =>
+                renderTemplateFields(t, templateForm, setLineItems)
+              )}
 
           <Button
             type="submit"

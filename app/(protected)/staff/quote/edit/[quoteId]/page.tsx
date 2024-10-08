@@ -35,6 +35,11 @@ const populateTemplate = (
           ...field,
           content: quotation.templateInputs["sales_email"] ?? "",
         };
+      case "line_items":
+        return {
+          ...field,
+          content: JSON.stringify(quotation.templateInputs["line_items"]),
+        };
       default:
         return field;
     }
@@ -46,11 +51,6 @@ const populateTemplate = (
 };
 
 const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
-  // const template: Template = {
-  //   basePdf: BLANK_PDF,
-  //   schemas,
-  // };
-
   const quotation = JSON.parse(await getOneQuotation(params.quoteId));
   console.log(quotation);
   const quoteTemplate: QuoteTemplateType = JSON.parse(

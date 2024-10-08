@@ -36,7 +36,7 @@ export const EditableTable = <TData, TValue>({
 
   useEffect(() => {
     onStateChange(data);
-  }, [data, onStateChange]);
+  }, [data]);
 
   const table = useReactTable({
     data,
