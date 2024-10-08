@@ -1,4 +1,4 @@
-import { Font } from "@pdfme/common";
+import { Font, Template } from "@pdfme/common";
 import {
   barcodes,
   ellipse,
@@ -20,7 +20,7 @@ export const schemas = [
         x: 14.66,
         y: 14.75,
       },
-      width: 78.6,
+      width: 179.14,
       height: 13.7,
       rotate: 0,
       alignment: "left",
@@ -671,6 +671,15 @@ export const schemas = [
     },
   ],
 ];
+
+export const template: Template = {
+  basePdf: {
+    width: 210,
+    height: 297,
+    padding: [15, 15, 15, 15],
+  },
+  schemas,
+};
 
 export const font: Font = {
   "Roboto Bold": {
