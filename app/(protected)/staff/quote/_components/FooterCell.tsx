@@ -21,6 +21,7 @@ export const FooterCell = <TData,>({ table }: { table: Table<TData> }) => {
     <div className="footer-buttons">
       {selectedRows.length > 0 ? (
         <Button
+          type="button"
           className="remove-button"
           onClick={removeRows}
         >
@@ -28,6 +29,7 @@ export const FooterCell = <TData,>({ table }: { table: Table<TData> }) => {
         </Button>
       ) : null}
       <Button
+        type="button"
         className="h-8 gap-1"
         onClick={meta?.addRow}
         variant="outline"

@@ -35,6 +35,7 @@ export const EditCell = <TData,>({ row, table }: EditCellProps<TData>) => {
       {meta?.editedRows[row.id] ? (
         <div className="flex gap-2">
           <Button
+            type="button"
             onClick={setEditedRows}
             variant="outline"
             size="icon"
@@ -44,6 +45,7 @@ export const EditCell = <TData,>({ row, table }: EditCellProps<TData>) => {
             <Check className="h-4 w-4" />
           </Button>
           <Button
+            type="button"
             onClick={setEditedRows}
             variant="outline"
             size="icon"
@@ -55,6 +57,7 @@ export const EditCell = <TData,>({ row, table }: EditCellProps<TData>) => {
       ) : (
         <div className="flex gap-2">
           <Button
+            type="button"
             onClick={setEditedRows}
             variant="outline"
             size="icon"
@@ -63,6 +66,7 @@ export const EditCell = <TData,>({ row, table }: EditCellProps<TData>) => {
             <Pencil className="h-4 w-4" />
           </Button>
           <Button
+            type="button"
             onClick={removeRow}
             variant="destructive"
             size="icon"
