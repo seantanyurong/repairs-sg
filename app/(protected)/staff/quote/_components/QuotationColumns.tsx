@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { deleteQuotation } from "@/lib/actions/quotations";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import dayjs from "dayjs";
+import { ArrowUpDown } from "lucide-react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -33,6 +34,14 @@ const handleDelete = async (id: string, router: AppRouterInstance) => {
     }
 };
 
+const handleDownload = async (id: string) => {
+  try {
+    console.log("Downloading PDF for quotation", id);
+  } catch {
+    toast.error("An error has occurred, please try again.");
+  }
+};
+
 const currencyFormat = new Intl.NumberFormat("en-SG", {
   style: "currency",
   currency: "SGD",
@@ -41,22 +50,62 @@ const currencyFormat = new Intl.NumberFormat("en-SG", {
 export const quotationColumns: ColumnDef<Quotation>[] = [
   {
     accessorKey: "quotationId",
-    header: "Number",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Number
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "name",
-    header: "Customer",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Customer
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     id: "status",
-    header: "Status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       return <Badge variant="outline">{row.original.status}</Badge>;
     },
   },
   {
     accessorKey: "totalAmount",
-    header: "Total",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Total
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       return row.original.totalAmount
         ? currencyFormat.format(row.original.totalAmount)
@@ -65,7 +114,19 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
   },
   {
     id: "createdAt",
-    header: "Created At",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    sortingFn: "datetime",
+    accessorKey: "createdAt",
     cell: ({ row }) => {
       return dayjs(row.original.createdAt).format("DD-MMM-YYYY HH:mm ");
     },
@@ -96,9 +157,15 @@ function ActionColumn({ row }: { row: Row<Quotation> }) {
           </Button>
         </>
       ) : (
-        <Link href={`/staff/quote/edit/${row.original._id}`}>
-          <Button variant="ghost">View</Button>
-        </Link>
+        <>
+          <Link href={`/staff/quote/edit/${row.original._id}`}>
+            <Button variant="ghost">View</Button>
+          </Link>
+
+          <Button onClick={() => handleDownload(row.original._id)}>
+            Download PDF
+          </Button>
+        </>
       )}
     </div>
   );
