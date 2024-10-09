@@ -42,8 +42,9 @@ import { LineItem, lineItemColumns } from "../_components/LineItemColumns";
 
 const formSchema = z.object({
   quotationDate: z.date(),
+  quotationExpiry: z.date().optional(),
   customerEmail: z.string().email(),
-  quoteTemplate: z.string().min(1),
+  quoteTemplate: z.string().min(1, { message: "Select a quote template" }),
   notes: z.string().optional(),
 });
 
@@ -219,19 +220,21 @@ const CreateQuoteClient = ({
       "total_amount",
       currencyFormat.format(total + taxAmt)
     );
+    return total + taxAmt;
   };
 
   const onSubmit = async () => {
     setErrors({});
-    calculateTotals(lineItems);
+    const totalAmount = calculateTotals(lineItems);
     const transformedItems = lineItems.map((item) => [
       item.description,
       item.quantity.toString(),
       item.total.toString(),
     ]);
     templateForm.setValue("line_items", transformedItems);
+
     const result = await addQuotation(
-      JSON.stringify(quotationForm.getValues()),
+      JSON.stringify({ ...quotationForm.getValues(), totalAmount }),
       JSON.stringify(templateForm.getValues())
     );
     if (result?.errors) {
@@ -264,6 +267,48 @@ const CreateQuoteClient = ({
               return (
                 <FormItem className="flex flex-col">
                   <FormLabel>Quotation Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[240px] pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0"
+                      align="start"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={quotationForm.control}
+            name="quotationExpiry"
+            render={({ field }) => {
+              return (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Quotation Expiry Date</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -391,12 +436,22 @@ const CreateQuoteClient = ({
                 renderTemplateFields(t, templateForm, setLineItems)
               )}
 
-          <Button
-            type="submit"
-            className="w-full"
-          >
-            Preview Quotation
-          </Button>
+          <div className="flex flex-row gap-4">
+            <Button
+              type="submit"
+              variant="outline"
+              className="w-auto"
+            >
+              Preview Quotation
+            </Button>
+            <Button
+              type="submit"
+              className="w-auto"
+            >
+              Save Quotation
+            </Button>
+          </div>
+
           {errors ? (
             <div className="mb-10 text-red-500">
               {Object.keys(errors).map((key) => (

@@ -43,6 +43,7 @@ const Page = async () => {
             columns={quotationColumns}
             data={JSON.parse(JSON.stringify(quotations))}
             noResultsMessage="No quotations found."
+            filterColumn="name"
           />
         </CardContent>
       </Card>

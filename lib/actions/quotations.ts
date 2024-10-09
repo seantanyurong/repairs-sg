@@ -19,23 +19,20 @@ const addQuotation = async (
 }> => {
   const quotationSchema = z.object({
     quotationDate: z.string().min(1),
+    quotationExpiry: z.date().optional(),
     quoteTemplate: z.string().min(1),
     customerEmail: z.string().min(1),
+    totalAmount: z.number(),
     notes: z.string().optional(),
   });
 
   const quotation = JSON.parse(quote);
-  const response = quotationSchema.safeParse({
-    quotationDate: quotation.quotationDate,
-    quoteTemplate: quotation.quoteTemplate,
-    customerEmail: quotation.customerEmail,
-    notes: quotation.notes,
-  });
+  const response = quotationSchema.safeParse(quotation);
 
   if (!response.success) {
     return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
-
+  console.log(response.data);
   const newQuotation = new Quotation({
     ...response.data,
     templateInputs: JSON.parse(templateInputs),
@@ -67,9 +64,9 @@ const updateQuotation = async (
   }
 };
 
-const setQuotationInactive = async (id: string) => {
-  Quotation.findByIdAndUpdate(id, { status: "Inactive" }).exec();
-  return { message: "Quote Template set to inactive" };
+const deleteQuotation = async (id: string) => {
+  Quotation.findByIdAndDelete(id).exec();
+  return { message: "Quotation Deleted" };
 };
 
 export {
@@ -77,5 +74,5 @@ export {
   getOneQuotation,
   getQuotations,
   updateQuotation,
-  setQuotationInactive,
+  deleteQuotation,
 };
