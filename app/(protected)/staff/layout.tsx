@@ -170,7 +170,7 @@ export default function PublicLayout({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
+                href="/staff/invoices"
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${
                   pathname === "/staff/invoices"
                     ? "bg-accent text-accent-foreground"
@@ -367,9 +367,9 @@ export default function PublicLayout({
                   {NAVIGATION_LABELS.JOBS}
                 </Link>
                 <Link
-                  href="#"
+                  href="/staff/invoices"
                   className={`flex items-center gap-4 px-2.5 ${
-                    pathname === "/staff/invocies"
+                    pathname === "/staff/invoices"
                       ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
