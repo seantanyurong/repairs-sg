@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
-    paymentId: {
-        type: Number,
-        required: [true, "Payment ID Is Required!"],
-        unique: true
-    },
     paymentDate: {
         type: Date,
         required: [true, "Payment Date Is Required"],
@@ -38,7 +33,6 @@ const paymentSchema = new mongoose.Schema({
     collectedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Staff",
-        required: [true, "Staff Collecting Is Required"]
     }
 }, { versionKey: false, timestamps: true });
 
