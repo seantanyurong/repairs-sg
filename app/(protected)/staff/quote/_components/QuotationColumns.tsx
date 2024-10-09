@@ -158,7 +158,7 @@ function ActionColumn({ row }: { row: Row<Quotation> }) {
         </>
       ) : (
         <>
-          <Link href={`/staff/quote/edit/${row.original._id}`}>
+          <Link href={`/staff/quote/view/${row.original._id}`}>
             <Button variant="ghost">View</Button>
           </Link>
 

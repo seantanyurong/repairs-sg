@@ -36,9 +36,9 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { LineItem } from "../_components/LineItemColumns";
-import { QuoteTemplateType } from "../templates/_components/QuoteTemplateColumns";
-import { TemplateForm } from "../_components/TemplateForm";
+import { LineItem } from "../../_components/LineItemColumns";
+import { QuoteTemplateType } from "../../templates/_components/QuoteTemplateColumns";
+import { TemplateForm } from "../../_components/TemplateForm";
 
 const formSchema = z.object({
   quotationDate: z.date(),
@@ -146,7 +146,7 @@ const CreateQuoteClient = ({
     } else {
       router.refresh();
       quotationForm.reset(quotationForm.getValues());
-      router.push(`/staff/quote/edit/${result.id}`);
+      router.push(`/staff/quote/view/${result.id}`);
     }
   };
 
