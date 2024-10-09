@@ -109,7 +109,13 @@ export const EditableTable = <TData, TValue>({
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <TableHead key={header.id}>
+              <TableHead
+                key={header.id}
+                style={{
+                  minWidth: header.column.columnDef.size,
+                  maxWidth: header.column.columnDef.size,
+                }}
+              >
                 {header.isPlaceholder
                   ? null
                   : flexRender(
@@ -125,7 +131,13 @@ export const EditableTable = <TData, TValue>({
         {table.getRowModel().rows.map((row) => (
           <TableRow key={row.id}>
             {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id}>
+              <TableCell
+                key={cell.id}
+                style={{
+                  minWidth: cell.column.columnDef.size,
+                  maxWidth: cell.column.columnDef.size,
+                }}
+              >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
             ))}

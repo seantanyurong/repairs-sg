@@ -13,6 +13,7 @@ export const lineItemColumns: ColumnDef<LineItem>[] = [
     accessorKey: "description",
     header: "Description",
     cell: EditableTableCell,
+    size: 400,
     meta: {
       type: "text",
       required: true,
@@ -23,6 +24,7 @@ export const lineItemColumns: ColumnDef<LineItem>[] = [
     accessorKey: "quantity",
     header: "Quantity",
     cell: EditableTableCell,
+    size: 75,
     meta: {
       type: "number",
       required: true,
@@ -33,29 +35,16 @@ export const lineItemColumns: ColumnDef<LineItem>[] = [
     accessorKey: "total",
     header: "Total",
     cell: EditableTableCell,
+    size: 75,
     meta: {
       type: "number",
       required: true,
       validationMessage: "Total is required",
     },
   },
-  //   columnHelper.accessor("major", {
-  //     header: "Major",
-  //     cell: TableCell,
-  //     meta: {
-  //       type: "select",
-  //       options: [
-  //         { value: "", label: "Select" },
-  //         { value: "Computer Science", label: "Computer Science" },
-  //         { value: "Communications", label: "Communications" },
-  //         { value: "Business", label: "Business" },
-  //         { value: "Psychology", label: "Psychology" },
-  //       ],
-  //       required: true,
-  //     },
-  //   }),
   {
     header: "Edit",
+    size: 75,
     cell: EditCell,
   },
 ];
