@@ -181,13 +181,11 @@ const getInvoice = async (invoiceId: number) => {
 const getInvoices = async () => {
   const invoices = await Invoice
     .find()
-    .populate('customer')
     .populate('payments')
     .sort({ invoiceId: -1 })
     .limit(20)
     .exec()
 
-  console.log(invoices)
   return invoices;
   
 };

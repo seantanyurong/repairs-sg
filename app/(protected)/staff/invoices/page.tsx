@@ -1,7 +1,6 @@
 import Link from 'next/link';
-// import { clerkClient } from '@clerk/nextjs/server';
+import { createClerkClient } from '@clerk/nextjs/server';
 import { getInvoices } from '@/lib/actions/invoices';
-import { getCustomers } from '@/lib/actions/customers';
 import { getPayments } from '@/lib/actions/payments';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,53 +9,51 @@ import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import InvoiceRow from './_components/InvoiceRow';
 
-// interface User {
-//   id: string;
-//   firstName: string | null;
-//   lastName: string | null;
-// }
+interface User {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+}
 
-// interface CustomerMap {
-//   [key: string]: {
-//     firstName: string;
-//     lastName: string;
-//   };
-// }
+interface CustomerMap {
+  [key: string]: {
+    firstName: string;
+    lastName: string;
+  };
+}
 
 export default async function Invoices() {
-  // Fetch Customer
-  const customer = await getCustomers();
-  console.log(customer);
-
   // Fetch Payment
   const payment = await getPayments();
   console.log(payment);
 
   // Fetch Invoice
   const invoices = await getInvoices();
+  console.log(invoices)
 
-  // // Fetch Customers
-  // const customers = await clerkClient().users.getUserList();
-  // const customerMap: CustomerMap = {};
-  // customers.data.forEach((user: User) => {
-  //   customerMap[user.id] = {
-  //     firstName: user.firstName || "",
-  //     lastName: user.lastName || "",
-  //   };
-  // });
+  // Fetch Customers
+  const custClerk = createClerkClient({ secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY });
+  const customers = await custClerk.users.getUserList();
+  const customerMap: CustomerMap = {};
+  customers.data.forEach((user: User) => {
+    customerMap[user.id] = {
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+    };
+  });
 
   const invoiceDisplay = (validityStatus?: string) => {
     if (validityStatus === 'all') {
       return invoices.map((invoice) => {
-        // const customer = customerMap[invoice.customer];
-        // const fullName = customer ? `${customer.firstName} ${customer.lastName}` : 'Unknown';
+        const customer = customerMap[invoice.customer];
+        const fullName = customer ? `${customer.firstName} ${customer.lastName}` : 'Unknown';
 
         return (
           <InvoiceRow
             key={invoice.invoiceId.toString()}
             invoiceId={invoice.invoiceId.toString()}
             dateIssued={invoice.dateIssued.toString()}
-            customer={invoice.customer.fullName}
+            customer={fullName}
             totalAmount={invoice.totalAmount.toString()}
             lineItems={invoice.lineItems}
             paymentStatus={invoice.paymentStatus}
@@ -70,15 +67,15 @@ export default async function Invoices() {
     return invoices
       .filter((invoice) => invoice.validityStatus === validityStatus)
       .map((invoice) => {
-        // const customer = customerMap[invoice.customer];
-        // const fullName = customer ? `${customer.firstName} ${customer.lastName}` : 'Unknown';
+        const customer = customerMap[invoice.customer];
+        const fullName = customer ? `${customer.firstName} ${customer.lastName}` : 'Unknown';
 
         return (
           <InvoiceRow
           key={invoice.invoiceId.toString()}
           invoiceId={invoice.invoiceId.toString()}
           dateIssued={invoice.dateIssued.toString()}
-          customer={invoice.customer.fullName}
+          customer={fullName}
           totalAmount={invoice.totalAmount.toString()}
           lineItems={invoice.lineItems}
           paymentStatus={invoice.paymentStatus}

@@ -57,15 +57,15 @@ const invoiceSchema = new mongoose.Schema({
     // secret: {
     //     type: String
     // },
-    customer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Customer",
-        required: [true, "Customer Is Required!"]
-    },
     // customer: {
-    //     type: String,
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Customer",
     //     required: [true, "Customer Is Required!"]
     // },
+    customer: {
+        type: String,
+        required: [true, "Customer Is Required!"]
+    },
     job: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Job",
