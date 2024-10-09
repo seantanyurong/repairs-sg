@@ -32,13 +32,13 @@ import { Schema } from "@pdfme/common";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { SetStateAction, useState } from "react";
-import { FieldValues, useForm, UseFormReturn, useWatch } from "react-hook-form";
+import { useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { EditableTable } from "../_components/EditableTable/EditableTable";
+import { LineItem } from "../_components/LineItemColumns";
 import { QuoteTemplateType } from "../templates/_components/QuoteTemplateColumns";
-import { LineItem, lineItemColumns } from "../_components/LineItemColumns";
+import { TemplateForm } from "../_components/TemplateForm";
 
 const formSchema = z.object({
   quotationDate: z.date(),
@@ -47,103 +47,6 @@ const formSchema = z.object({
   quoteTemplate: z.string().min(1, { message: "Select a quote template" }),
   notes: z.string().optional(),
 });
-
-const defaultData: LineItem[] = [
-  {
-    description: "Transport Fee",
-    quantity: 1,
-    total: 40,
-  },
-];
-
-function renderTemplateFields(
-  schema: Schema,
-  form: UseFormReturn<FieldValues>,
-  setLineItems: {
-    (value: SetStateAction<LineItem[]>): void;
-    (arg0: LineItem[]): void;
-  }
-) {
-  switch (schema.type) {
-    case "multiVariableText":
-      if (schema.variables) {
-        return (
-          <>
-            <h4
-              key={schema.name}
-              className="scroll-m-20 text-xl font-semibold tracking-tight"
-            >
-              {schema.name}
-            </h4>
-            {(schema.variables as string[]).map((variable: string) => {
-              return (
-                <FormField
-                  key={`${schema.name}-${variable}`}
-                  control={form.control}
-                  name={`${schema.name}-${variable}`}
-                  render={({ field }) => (
-                    <FormItem key={`${schema.name}-${variable}-item`}>
-                      <FormLabel key={`${schema.name}-${variable}-label`}>
-                        {variable}
-                      </FormLabel>
-                      <FormControl key={`${schema.name}-${variable}-control`}>
-                        <Input
-                          key={`${schema.name}-${variable}-input`}
-                          type="text"
-                          required={schema.required}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage key={`${schema.name}-${variable}-message`} />
-                    </FormItem>
-                  )}
-                />
-              );
-            })}
-          </>
-        );
-      }
-      break;
-    case "table":
-      return (
-        <>
-          <p key={schema.name}>{schema.name}</p>
-          <EditableTable
-            key={`${schema.name}-${schema.type}`}
-            initialData={defaultData}
-            columns={lineItemColumns}
-            onStateChange={(data) => setLineItems(data)}
-          />
-        </>
-      );
-    default:
-      return (
-        <>
-          <FormField
-            key={schema.name}
-            control={form.control}
-            name={schema.name}
-            render={({ field }) => (
-              <FormItem key={`${schema.name}-item`}>
-                <FormLabel key={`${schema.name}-label`}>
-                  {schema.name}
-                </FormLabel>
-                <FormControl key={`${schema.name}-control`}>
-                  <Input
-                    key={`${schema.name}-input`}
-                    type="text"
-                    required={schema.required}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </>
-      );
-  }
-}
 
 const CreateQuoteClient = ({
   templates,
@@ -432,9 +335,16 @@ const CreateQuoteClient = ({
                 (t) => t._id === quotationForm.getValues("quoteTemplate")
               )[0]
               .pdfTemplate.schemas[0].filter((t: Schema) => !t.readOnly)
-              .map((t: Schema) =>
-                renderTemplateFields(t, templateForm, setLineItems)
-              )}
+              .map((t: Schema) => {
+                return (
+                  <TemplateForm
+                    key={t.name}
+                    schema={t}
+                    form={templateForm}
+                    setLineItems={setLineItems}
+                  />
+                );
+              })}
 
           <div className="flex flex-row gap-4">
             <Button

@@ -14,7 +14,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-import { FooterCell } from "../FooterCell";
+import { FooterCell } from "./FooterCell";
 
 type EditableTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
