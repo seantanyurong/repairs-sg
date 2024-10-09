@@ -60,7 +60,7 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
   {
     header: "Actions",
     cell: ({ row }) => {
-      if (row.original.status === "Active") return <ActionColumn row={row} />;
+      return <ActionColumn row={row} />;
     },
   },
 ];

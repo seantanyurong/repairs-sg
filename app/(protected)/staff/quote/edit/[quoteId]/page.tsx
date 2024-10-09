@@ -25,23 +25,21 @@ const populateTemplate = (
           ...field,
           content: dayjs(quotation.quotationDate).format("DD/MM/YYYY"),
         };
-      case "customer_name":
-        return {
-          ...field,
-          content: quotation.templateInputs["customer_name"] ?? "",
-        };
-      case "sales_email":
-        return {
-          ...field,
-          content: quotation.templateInputs["sales_email"] ?? "",
-        };
       case "line_items":
         return {
           ...field,
           content: JSON.stringify(quotation.templateInputs["line_items"]),
         };
-      default:
+      default: {
+        const content = quotation.templateInputs[field.name];
+        if (content) {
+          return {
+            ...field,
+            content,
+          };
+        }
         return field;
+      }
     }
   });
   return {

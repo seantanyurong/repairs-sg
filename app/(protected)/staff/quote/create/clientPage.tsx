@@ -49,9 +49,9 @@ const formSchema = z.object({
 
 const defaultData: LineItem[] = [
   {
-    description: "Item 1",
+    description: "Transport Fee",
     quantity: 1,
-    total: 1,
+    total: 40,
   },
 ];
 
@@ -206,8 +206,24 @@ const CreateQuoteClient = ({
     }
   };
 
+  const calculateTotals = (lineItems: LineItem[]) => {
+    const total = lineItems.reduce((acc, item) => acc + item.total, 0);
+    const taxAmt = total * 0.09;
+    const currencyFormat = new Intl.NumberFormat("en-SG", {
+      style: "currency",
+      currency: "SGD",
+    });
+    templateForm.setValue("subtotal", currencyFormat.format(total));
+    templateForm.setValue("taxes", currencyFormat.format(taxAmt));
+    templateForm.setValue(
+      "total_amount",
+      currencyFormat.format(total + taxAmt)
+    );
+  };
+
   const onSubmit = async () => {
     setErrors({});
+    calculateTotals(lineItems);
     const transformedItems = lineItems.map((item) => [
       item.description,
       item.quantity.toString(),
