@@ -9,6 +9,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { getJobsForSchedule } from '@/lib/actions/jobs';
 import { getSchedules } from '@/lib/actions/schedules';
 import { getServices } from '@/lib/actions/services';
+import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
 
 
 type SearchParams = {
@@ -28,23 +29,21 @@ export default async function Schedule({
   const schedules = await getSchedules();
   
   const staff = await clerkClient().users.getUserList();
+
   // convert this PaginatedResourceResponse<User[]>into an array
   const staffArray = staff.data.map((staff) => { 
     return { id: String(staff.id).trim(), name: staff.firstName + ' ' + staff.lastName };
   })
   console.log(staffArray);
 
-  // iterate through the jobs array and find the staff with the same id as the job staff id and return the staff name
-
-  const matches = jobs.map((job) => {
-    return staffArray.find((staff) => staff.id === job.staff)?.name || 'Unknown Staff';
-  });
-
-  console.log(matches);
-
   const filters = searchParams.filters;
   const filtersArray = filters ? filters.split(",") : [];
   console.log(filtersArray);
+
+  // convert the staff attribute in jobs to hold the name of the staff instead of the id
+  jobs.map((job) => {
+    job.staff = staffArray.find((staff) => staff.id === job.staff)?.name || 'Unknown Staff';
+  });
 
 
   const jobTableDisplay = () => {
@@ -53,7 +52,7 @@ export default async function Schedule({
     }
 
     // return all if there is no filter param
-    // if (filtersArray[0] === 'all') {
+    if (filtersArray[0] === 'all') {
       return jobs.map((job) => {
         return (
           <JobRow
@@ -62,21 +61,19 @@ export default async function Schedule({
             serviceName={job.service.name}
             description={job.description}
             address={job.jobAddress}
-            // from the staff user list, find the staff with the same user id as the job staff id and return first name and last name
-            // take the first item if there is a match
-            staffName={staffArray.find((staff) => staff.id === job.staff)?.name || 'Unknown Staff'}
+            staffName={job.staff}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
           />
         );
       });
-    // }
+    }
 
 
     // Filter by staff in filtersArray
     return jobs
-      // .filter((job) => filtersArray.includes(job.staff.fullName))
+      .filter((job) => filtersArray.includes(job.staff))
       .map((job) => {
         return (
           <JobRow
@@ -85,8 +82,7 @@ export default async function Schedule({
             serviceName={job.service.name}
             description={job.description}
             address={job.jobAddress}
-            // staffName={job.staff.fullName}
-            staffName = 'Staff Name'
+            staffName={job.staff}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
@@ -105,7 +101,7 @@ export default async function Schedule({
     }
 
     return jobs
-    // .filter((job) => filtersArray.includes(job.staff.fullName))
+    .filter((job) => filtersArray.includes(job.staff))
     .length;
   };
 
@@ -145,29 +141,37 @@ export default async function Schedule({
     );
   };
 
-  const calendarDisplay = () => {
-    return (
-      <Card x-chunk='dashboard-06-chunk-0'>
-        <CardHeader>
-          <CardTitle>Scheduling</CardTitle>
-          <CardDescription>Manage your job schedule Calendar</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Calendar
-          events={
-            jobs
-            // .filter((job) => filtersArray.includes(job.staff.fullName))
-            .map((job) => {
-              return {
-                _id: job._id.toString(),
-                timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
-                timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
-                title: job.description,
-                // staff: job.staff.fullName,
-                staff: 'Staff Name',
-                color: 'blue',
-              };
-            })
+  const jobCalendarDisplay = () => {
+    if (filtersArray[0] === 'all') {
+      const eventsArray =
+        jobs
+        .map((job) => {
+          return {
+            _id: job._id.toString(),
+            timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
+            timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
+            title: job.description,
+            // staff: job.staff.fullName,
+            staff: 'Staff Name',
+            color: 'blue',
+          };
+        });
+
+        return (
+        <Calendar
+          events={ eventsArray
+            // jobs
+            // .map((job) => {
+            //   return {
+            //     _id: job._id.toString(),
+            //     timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
+            //     timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
+            //     title: job.description,
+            //     // staff: job.staff.fullName,
+            //     staff: 'Staff Name',
+            //     color: 'blue',
+            //   };
+            // })
           }
         >
           <div className="h-dvh py-6 flex flex-col">
@@ -220,21 +224,120 @@ export default async function Schedule({
             </div>
           </div>
         </Calendar>
+      );
+    }  
+    const eventsArray =
+      jobs
+      .filter((job) => filtersArray.includes(job.staff))
+      .map((job) => {
+        return {
+          _id: job._id.toString(),
+          timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
+          timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
+          title: job.description,
+          staff: job.staff,
+          // staff: 'Staff Name',
+          color: 'blue',
+        };
+      });
+
+    console.log("eventsArray");
+    console.log(eventsArray);
+
+      return (
+      <Calendar
+        events={ eventsArray
+          // jobs
+          // .map((job) => {
+          //   return {
+          //     _id: job._id.toString(),
+          //     timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
+          //     timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
+          //     title: job.description,
+          //     // staff: job.staff.fullName,
+          //     staff: 'Staff Name',
+          //     color: 'blue',
+          //   };
+          // })
+        }
+      >
+        <div className="h-dvh py-6 flex flex-col">
+          <div className="flex px-6 items-center gap-2 mb-6">
+            <CalendarViewTrigger className="aria-[current=true]:bg-accent" view="day">
+              Day
+            </CalendarViewTrigger>
+            <CalendarViewTrigger
+              view="week"
+              className="aria-[current=true]:bg-accent"
+            >
+              Week
+            </CalendarViewTrigger>
+            <CalendarViewTrigger
+              view="month"
+              className="aria-[current=true]:bg-accent"
+            >
+              Month
+            </CalendarViewTrigger>
+            <CalendarViewTrigger
+              view="year"
+              className="aria-[current=true]:bg-accent"
+            >
+              Year
+            </CalendarViewTrigger>
+            <span className="flex-1" />
+
+            <CalendarCurrentDate />
+
+            <CalendarPrevTrigger>
+              <ChevronLeft size={20} />
+              <span className="sr-only">Previous</span>
+            </CalendarPrevTrigger>
+
+            <CalendarTodayTrigger>Today</CalendarTodayTrigger>
+
+            <CalendarNextTrigger>
+              <ChevronRight size={20} />
+              <span className="sr-only">Next</span>
+            </CalendarNextTrigger>
+
+            <ModeToggle />
+          </div>
+
+          <div className="flex-1 overflow-auto px-6 relative">
+            <CalendarDayView />
+            <CalendarWeekView />
+            <CalendarMonthView />
+            <CalendarYearView />
+          </div>
+        </div>
+      </Calendar>
+      );
+  };
+
+  const calendarDisplay = () => {
+    return (
+      <Card x-chunk='dashboard-06-chunk-0'>
+        <CardHeader>
+          <CardTitle>Scheduling</CardTitle>
+          <CardDescription>Manage your job schedule Calendar</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {jobCalendarDisplay()}
         </CardContent>
       </Card>
     );
   };
 
   return (
-    <Tabs defaultValue='calendar'>
+    <Tabs defaultValue='table'>
       <div className='flex items-center'>
         <TabsList>
           <TabsTrigger value='table'>Table</TabsTrigger>
           <TabsTrigger value='calendar'>Calendar</TabsTrigger>
         </TabsList>
-        {/* <DropdownMenuCheckboxes 
-          items={ staff.map((staff) => { return { label: staff.fullName }; })}>
-        </DropdownMenuCheckboxes> */}
+        <DropdownMenuCheckboxes 
+          items={ staffArray.map((staff) => { return { label: staff.name }; })}>
+        </DropdownMenuCheckboxes>
         {/* <DropdownMenuCheckboxes 
           items={ services.map((service) => { return { label: service.name }; })}>
         </DropdownMenuCheckboxes> */}
