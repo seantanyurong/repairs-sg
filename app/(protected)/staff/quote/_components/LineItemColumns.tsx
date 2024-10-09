@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { EditCell } from "./EditCell";
-import { EditableTableCell } from "./EditableTableCell";
+import { EditCell } from "./EditableTable/EditCell";
+import { EditableTableCell } from "./EditableTable/EditableTableCell";
 
 export interface LineItem {
   description: string;

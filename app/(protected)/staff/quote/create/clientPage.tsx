@@ -36,7 +36,7 @@ import { SetStateAction, useState } from "react";
 import { FieldValues, useForm, UseFormReturn, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { EditableTable } from "../_components/EditableTable";
+import { EditableTable } from "../_components/EditableTable/EditableTable";
 import { QuoteTemplateType } from "../templates/_components/QuoteTemplateColumns";
 import { LineItem, lineItemColumns } from "../_components/LineItemColumns";
 
