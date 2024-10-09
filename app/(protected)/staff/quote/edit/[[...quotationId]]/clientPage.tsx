@@ -37,8 +37,8 @@ import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { LineItem } from "../../_components/LineItemColumns";
+import { QuoteTemplateForm } from "../../_components/TemplateForm";
 import { QuoteTemplateType } from "../../templates/_components/QuoteTemplateColumns";
-import { TemplateForm } from "../../_components/TemplateForm";
 
 const formSchema = z.object({
   quotationDate: z.date(),
@@ -48,13 +48,19 @@ const formSchema = z.object({
   notes: z.string().optional(),
 });
 
-const CreateQuoteClient = ({
-  templates,
-  getCustomerAction,
-}: {
+interface EditQuoteClientProps {
   templates: QuoteTemplateType[];
   getCustomerAction: (email: string) => Promise<string>;
-}) => {
+  quotationFormValues: { [x: string]: unknown };
+  templateFormValues: { [x: string]: unknown };
+}
+
+const EditQuoteClient = ({
+  templates,
+  getCustomerAction,
+  quotationFormValues,
+  templateFormValues,
+}: EditQuoteClientProps) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
@@ -63,11 +69,7 @@ const CreateQuoteClient = ({
 
   const quotationForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      quotationDate: new Date(),
-      customerEmail: "",
-      quoteTemplate: "",
-    },
+    defaultValues: quotationFormValues,
   });
 
   const selectedTemplate = useWatch({
@@ -75,7 +77,7 @@ const CreateQuoteClient = ({
     name: "quoteTemplate",
   });
 
-  const templateForm = useForm();
+  const templateForm = useForm({ defaultValues: templateFormValues });
 
   const getCustomerByEmail = async () => {
     const fieldState = quotationForm.getFieldState("customerEmail");
@@ -274,7 +276,10 @@ const CreateQuoteClient = ({
                 <FormItem>
                   <FormLabel>Quote Template</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange}>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a quote template" />
                       </SelectTrigger>
@@ -337,7 +342,7 @@ const CreateQuoteClient = ({
               .pdfTemplate.schemas[0].filter((t: Schema) => !t.readOnly)
               .map((t: Schema) => {
                 return (
-                  <TemplateForm
+                  <QuoteTemplateForm
                     key={t.name}
                     schema={t}
                     form={templateForm}
@@ -348,7 +353,8 @@ const CreateQuoteClient = ({
 
           <div className="flex flex-row gap-4">
             <Button
-              type="submit"
+              type="button"
+              onClick={() => console.log(quotationForm.getValues())}
               variant="outline"
               className="w-auto"
             >
@@ -377,4 +383,4 @@ const CreateQuoteClient = ({
   );
 };
 
-export default CreateQuoteClient;
+export default EditQuoteClient;

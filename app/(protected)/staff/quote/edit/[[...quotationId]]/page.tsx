@@ -1,9 +1,32 @@
+import { getOneQuotation } from "@/lib/actions/quotations";
 import { getQuoteTemplates } from "@/lib/actions/quoteTemplates";
 import { createClerkClient } from "@clerk/nextjs/server";
-import CreateQuoteClient from "./clientPage";
+import EditQuoteClient from "./clientPage";
 
-const CreateQuote = async () => {
+const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
   const quoteTemplates = await getQuoteTemplates();
+
+  let quotationFormValues = {
+    quotationDate: new Date(),
+    notes: "",
+    customerEmail: "",
+    quoteTemplate: "",
+  };
+
+  let templateFormValues = {};
+
+  if (params.quotationId) {
+    const quotation = JSON.parse(await getOneQuotation(params.quotationId));
+    console.log(quotation);
+    quotationFormValues = {
+      quotationDate: new Date(),
+      notes: quotation.notes,
+      customerEmail: "",
+      quoteTemplate: quotation.quoteTemplate,
+    };
+
+    templateFormValues = quotation.templateInputs;
+  }
 
   const getCustomerAction = async (email: string) => {
     "use server";
@@ -21,11 +44,13 @@ const CreateQuote = async () => {
   };
 
   return (
-    <CreateQuoteClient
+    <EditQuoteClient
       templates={JSON.parse(quoteTemplates)}
       getCustomerAction={getCustomerAction}
+      quotationFormValues={quotationFormValues}
+      templateFormValues={templateFormValues}
     />
   );
 };
 
-export default CreateQuote;
+export default EditQuote;

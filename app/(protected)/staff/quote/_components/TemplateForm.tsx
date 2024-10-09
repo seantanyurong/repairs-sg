@@ -29,7 +29,7 @@ interface TemplateFormProps {
   };
 }
 
-export function TemplateForm({
+export function QuoteTemplateForm({
   schema,
   form,
   setLineItems,

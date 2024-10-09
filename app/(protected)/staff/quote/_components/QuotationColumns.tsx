@@ -63,7 +63,8 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
     },
   },
   {
-    accessorKey: "name",
+    id: "name",
+    accessorKey: "templateInputs.customer_name",
     header: ({ column }) => {
       return (
         <Button
