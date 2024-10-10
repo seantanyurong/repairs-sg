@@ -1,7 +1,12 @@
-import { getOneQuotation } from "@/lib/actions/quotations";
+import {
+  addQuotation,
+  getOneQuotation,
+  updateQuotation,
+} from "@/lib/actions/quotations";
 import { getQuoteTemplates } from "@/lib/actions/quoteTemplates";
 import { createClerkClient } from "@clerk/nextjs/server";
 import EditQuoteClient from "./clientPage";
+import { LineItem } from "../../_components/LineItemColumns";
 
 const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
   const quoteTemplates = await getQuoteTemplates();
@@ -14,10 +19,11 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
   };
 
   let templateFormValues = {};
+  let lineItems: Array<LineItem> = [];
 
   if (params.quotationId) {
     const quotation = JSON.parse(await getOneQuotation(params.quotationId));
-    console.log(quotation);
+
     quotationFormValues = {
       quotationDate: new Date(),
       notes: quotation.notes,
@@ -26,6 +32,7 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
     };
 
     templateFormValues = quotation.templateInputs;
+    lineItems = quotation.lineItems;
   }
 
   const getCustomerAction = async (email: string) => {
@@ -43,12 +50,27 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
     // TODO: implement banned user check SR4
   };
 
+  const submitQuotationAction = async (
+    quote: string,
+    templateInputs: string
+  ) => {
+    "use server";
+    console.log(params.quotationId);
+    if (params.quotationId) {
+      return updateQuotation(params.quotationId, quote, templateInputs);
+    } else {
+      return addQuotation(quote, templateInputs);
+    }
+  };
+
   return (
     <EditQuoteClient
       templates={JSON.parse(quoteTemplates)}
       getCustomerAction={getCustomerAction}
       quotationFormValues={quotationFormValues}
       templateFormValues={templateFormValues}
+      lineItemValues={lineItems}
+      submitQuotationAction={submitQuotationAction}
     />
   );
 };

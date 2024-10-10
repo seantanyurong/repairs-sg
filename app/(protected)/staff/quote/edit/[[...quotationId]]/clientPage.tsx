@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { addQuotation } from "@/lib/actions/quotations";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,11 +47,32 @@ const formSchema = z.object({
   notes: z.string().optional(),
 });
 
+export interface LineItemTotals {
+  subtotal: string;
+  taxAmt: string;
+  total: number;
+}
+
+const defaultTotals = {
+  subtotal: "",
+  taxAmt: "",
+  total: 0,
+};
+
 interface EditQuoteClientProps {
   templates: QuoteTemplateType[];
   getCustomerAction: (email: string) => Promise<string>;
   quotationFormValues: { [x: string]: unknown };
   templateFormValues: { [x: string]: unknown };
+  lineItemValues: LineItem[];
+  submitQuotationAction: (
+    quote: string,
+    templateInputs: string
+  ) => Promise<{
+    message: string;
+    id?: string;
+    errors?: string | Record<string, unknown>;
+  }>;
 }
 
 const EditQuoteClient = ({
@@ -60,10 +80,13 @@ const EditQuoteClient = ({
   getCustomerAction,
   quotationFormValues,
   templateFormValues,
+  lineItemValues,
+  submitQuotationAction,
 }: EditQuoteClientProps) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [lineItems, setLineItems] = useState<LineItem[]>([]);
+  const [lineItemTotal, setTotals] = useState<LineItemTotals>(defaultTotals);
   const { user } = useUser();
   const router = useRouter();
 
@@ -112,34 +135,36 @@ const EditQuoteClient = ({
     }
   };
 
-  const calculateTotals = (lineItems: LineItem[]) => {
-    const total = lineItems.reduce((acc, item) => acc + item.total, 0);
-    const taxAmt = total * 0.09;
-    const currencyFormat = new Intl.NumberFormat("en-SG", {
-      style: "currency",
-      currency: "SGD",
-    });
-    templateForm.setValue("subtotal", currencyFormat.format(total));
-    templateForm.setValue("taxes", currencyFormat.format(taxAmt));
-    templateForm.setValue(
-      "total_amount",
-      currencyFormat.format(total + taxAmt)
-    );
-    return total + taxAmt;
-  };
-
   const onSubmit = async () => {
     setErrors({});
-    const totalAmount = calculateTotals(lineItems);
+
     const transformedItems = lineItems.map((item) => [
       item.description,
       item.quantity.toString(),
       item.total.toString(),
     ]);
     templateForm.setValue("line_items", transformedItems);
+    templateForm.setValue("subtotal", lineItemTotal.subtotal);
+    templateForm.setValue("taxes", lineItemTotal.taxAmt);
+    templateForm.setValue(
+      "total_amount",
+      lineItemTotal.total.toLocaleString("en-SG", {
+        style: "currency",
+        currency: "SGD",
+      })
+    );
 
-    const result = await addQuotation(
-      JSON.stringify({ ...quotationForm.getValues(), totalAmount }),
+    const result = await submitQuotationAction(
+      JSON.stringify({
+        ...quotationForm.getValues(),
+        totalAmount: lineItemTotal.total,
+        // html input turns number into string, so need to convert back
+        lineItems: lineItems.map((item) => ({
+          description: item.description,
+          quantity: parseInt(item.quantity.toString()),
+          total: parseInt(item.total.toString()),
+        })),
+      }),
       JSON.stringify(templateForm.getValues())
     );
     if (result?.errors) {
@@ -347,6 +372,8 @@ const EditQuoteClient = ({
                     schema={t}
                     form={templateForm}
                     setLineItems={setLineItems}
+                    setTotals={setTotals}
+                    initialData={lineItemValues}
                   />
                 );
               })}

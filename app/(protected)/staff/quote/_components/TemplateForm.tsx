@@ -5,12 +5,13 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { SetStateAction } from "react";
+import { SetStateAction, useState } from "react";
 import { UseFormReturn, FieldValues } from "react-hook-form";
 import { EditableTable } from "./EditableTable/EditableTable";
 import { LineItem, lineItemColumns } from "./LineItemColumns";
 import { Schema } from "@pdfme/common";
 import { Input } from "@/components/ui/input";
+import { LineItemTotals } from "../edit/[[...quotationId]]/clientPage";
 
 const defaultData: LineItem[] = [
   {
@@ -23,9 +24,14 @@ const defaultData: LineItem[] = [
 interface TemplateFormProps {
   schema: Schema;
   form: UseFormReturn<FieldValues>;
+  initialData?: LineItem[];
   setLineItems: {
     (value: SetStateAction<LineItem[]>): void;
     (arg0: LineItem[]): void;
+  };
+  setTotals: {
+    (value: SetStateAction<LineItemTotals>): void;
+    (arg0: LineItemTotals): void;
   };
 }
 
@@ -33,7 +39,37 @@ export function QuoteTemplateForm({
   schema,
   form,
   setLineItems,
+  setTotals,
+  initialData,
 }: TemplateFormProps) {
+  const [subtotalState, setSubtotal] = useState("");
+  const [taxAmtState, setTaxAmt] = useState("");
+  const [totalState, setTotal] = useState("");
+
+  const currencyFormat = new Intl.NumberFormat("en-SG", {
+    style: "currency",
+    currency: "SGD",
+  });
+
+  const calculateTotal = (lineItems: LineItem[]) => {
+    const subtotal = lineItems.reduce(
+      (acc, item) => acc + item.total * item.quantity,
+      0
+    );
+    const taxAmt = subtotal * 0.09;
+    const total = subtotal + taxAmt;
+    setLineItems(lineItems);
+    setSubtotal(currencyFormat.format(subtotal));
+    setTaxAmt(currencyFormat.format(taxAmt));
+    setTotal(currencyFormat.format(total));
+
+    setTotals({
+      subtotal: subtotalState,
+      taxAmt: taxAmtState,
+      total: total,
+    });
+  };
+
   switch (schema.type) {
     case "multiVariableText":
       if (schema.variables) {
@@ -80,10 +116,21 @@ export function QuoteTemplateForm({
           <p key={schema.name}>{schema.name}</p>
           <EditableTable
             key={`${schema.name}-${schema.type}`}
-            initialData={defaultData}
+            initialData={initialData ?? defaultData}
             columns={lineItemColumns}
-            onStateChange={(data) => setLineItems(data)}
+            onStateChange={(data) => calculateTotal(data)}
           />
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium leading-none">
+              Subtotal: {subtotalState}
+            </p>
+            <p className="text-sm font-medium leading-none">
+              Tax: {taxAmtState}
+            </p>
+            <p className="text-sm font-medium leading-none">
+              Total: {totalState}
+            </p>
+          </div>
         </>
       );
     default:

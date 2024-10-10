@@ -3,13 +3,24 @@
 import Quotation from "@/models/Quotation";
 import { z } from "zod";
 
+const quotationSchema = z.object({
+  quotationDate: z.string().min(1),
+  quotationExpiry: z.date().optional(),
+  quoteTemplate: z.string().min(1),
+  customerEmail: z.string().min(1),
+  totalAmount: z.number(),
+  notes: z.string().optional(),
+  lineItems: z
+    .object({
+      description: z.string(),
+      quantity: z.number(),
+      total: z.number(),
+    })
+    .array()
+    .optional(),
+});
+
 const addQuotation = async (
-  // quotation: {
-  //   quotationDate: Date;
-  //   customerEmail: string;
-  //   quoteTemplate: string;
-  //   notes?: string;
-  // },
   quote: string,
   templateInputs: string
 ): Promise<{
@@ -17,22 +28,13 @@ const addQuotation = async (
   id?: string;
   errors?: string | Record<string, unknown>;
 }> => {
-  const quotationSchema = z.object({
-    quotationDate: z.string().min(1),
-    quotationExpiry: z.date().optional(),
-    quoteTemplate: z.string().min(1),
-    customerEmail: z.string().min(1),
-    totalAmount: z.number(),
-    notes: z.string().optional(),
-  });
-
   const quotation = JSON.parse(quote);
   const response = quotationSchema.safeParse(quotation);
 
   if (!response.success) {
     return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
-  console.log(response.data);
+
   const newQuotation = new Quotation({
     ...response.data,
     templateInputs: JSON.parse(templateInputs),
@@ -53,11 +55,25 @@ const getOneQuotation = async (id: string) => {
 
 const updateQuotation = async (
   id: string,
-  templateParams: { notes: string }
+  quote: string,
+  templateInputs: string
 ) => {
   try {
-    Quotation.findByIdAndUpdate(id, templateParams).exec();
-    return { message: "Quote Template updated successfully" };
+    const quotation = JSON.parse(quote);
+    const response = quotationSchema.safeParse(quotation);
+
+    if (!response.success) {
+      return { message: "Error", errors: response.error.flatten().fieldErrors };
+    }
+
+    const updatedQuotation = await Quotation.findByIdAndUpdate(id, {
+      ...response.data,
+      templateInputs: JSON.parse(templateInputs),
+    }).exec();
+    return {
+      message: "Quotation updated successfully",
+      id: updatedQuotation._id,
+    };
   } catch (err) {
     console.error(err);
     return { message: "An error has occurred, please try again." };
