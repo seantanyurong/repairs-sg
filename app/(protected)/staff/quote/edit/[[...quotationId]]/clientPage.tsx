@@ -38,6 +38,7 @@ import * as z from "zod";
 import { LineItem } from "../../_components/LineItemColumns";
 import { QuoteTemplateForm } from "../../_components/TemplateForm";
 import { QuoteTemplateType } from "../../templates/_components/QuoteTemplateColumns";
+import { User } from "@clerk/nextjs/server";
 
 const formSchema = z.object({
   quotationDate: z.date(),
@@ -45,6 +46,7 @@ const formSchema = z.object({
   customerEmail: z.string().email(),
   quoteTemplate: z.string().min(1, { message: "Select a quote template" }),
   notes: z.string().optional(),
+  customer: z.string().optional(),
 });
 
 export interface LineItemTotals {
@@ -113,15 +115,16 @@ const EditQuoteClient = ({
     }
     setIsLoading(true);
     try {
-      const result = await getCustomerAction(
-        quotationForm.getValues("customerEmail")
+      const result: User = JSON.parse(
+        await getCustomerAction(quotationForm.getValues("customerEmail"))
       );
-      if (result === "No customer found with that email address") {
-        toast.error(result);
-        return;
-      }
+
+      quotationForm.setValue("customer", result.id);
       toast.success("Customer found!");
-      templateForm.setValue("customer_name", result);
+      templateForm.setValue(
+        "customer_name",
+        result.fullName ?? `${result.firstName} ${result.lastName}`
+      );
       templateForm.setValue(
         "sales_email",
         user?.primaryEmailAddress?.emailAddress
@@ -129,7 +132,9 @@ const EditQuoteClient = ({
       templateForm.setValue("sales_mobile", user?.primaryPhoneNumber);
     } catch (err) {
       console.error(err);
-      toast.error("An error has ocurred, please try again!");
+      toast.error(
+        (err as Error).message ?? "An error has ocurred, please try again!"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -153,6 +158,17 @@ const EditQuoteClient = ({
         currency: "SGD",
       })
     );
+
+    console.log({
+      ...quotationForm.getValues(),
+      totalAmount: lineItemTotal.total,
+      // html input turns number into string, so need to convert back
+      lineItems: lineItems.map((item) => ({
+        description: item.description,
+        quantity: parseInt(item.quantity.toString()),
+        total: parseInt(item.total.toString()),
+      })),
+    });
 
     const result = await submitQuotationAction(
       JSON.stringify({

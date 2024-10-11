@@ -1,12 +1,25 @@
+import { getCustomerByEmail, getCustomerById } from "@/lib/actions/customers";
 import {
   addQuotation,
   getOneQuotation,
   updateQuotation,
 } from "@/lib/actions/quotations";
 import { getQuoteTemplates } from "@/lib/actions/quoteTemplates";
-import { createClerkClient } from "@clerk/nextjs/server";
-import EditQuoteClient from "./clientPage";
 import { LineItem } from "../../_components/LineItemColumns";
+import EditQuoteClient from "./clientPage";
+
+const replaceNullsWithEmptyStrings = (obj: unknown): unknown => {
+  if (obj !== null && typeof obj === "object") {
+    return Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [
+        key,
+        replaceNullsWithEmptyStrings(value),
+      ])
+    );
+  } else {
+    return obj === null ? "" : obj;
+  }
+};
 
 const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
   const quoteTemplates = await getQuoteTemplates();
@@ -18,37 +31,27 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
     quoteTemplate: "",
   };
 
-  let templateFormValues = {};
+  let templateFormValues: unknown = {};
   let lineItems: Array<LineItem> = [];
 
   if (params.quotationId) {
     const quotation = JSON.parse(await getOneQuotation(params.quotationId));
 
+    const customerEmail: string | undefined = JSON.parse(
+      await getCustomerById(quotation.customer)
+    ).emailAddresses[0].emailAddress;
+
     quotationFormValues = {
       quotationDate: new Date(),
       notes: quotation.notes,
-      customerEmail: "",
+      customerEmail: customerEmail ?? "",
       quoteTemplate: quotation.quoteTemplate,
     };
 
-    templateFormValues = quotation.templateInputs;
+    templateFormValues = replaceNullsWithEmptyStrings(quotation.templateInputs);
+
     lineItems = quotation.lineItems;
   }
-
-  const getCustomerAction = async (email: string) => {
-    "use server";
-
-    const custClerk = createClerkClient({
-      secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY as string,
-    });
-    const result = await custClerk.users.getUserList({ emailAddress: [email] });
-    if (result.totalCount === 0) {
-      return "No customer found with that email address";
-    }
-    return result.data[0].fullName ?? "";
-
-    // TODO: implement banned user check SR4
-  };
 
   const submitQuotationAction = async (
     quote: string,
@@ -66,9 +69,9 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
   return (
     <EditQuoteClient
       templates={JSON.parse(quoteTemplates)}
-      getCustomerAction={getCustomerAction}
+      getCustomerAction={getCustomerByEmail}
       quotationFormValues={quotationFormValues}
-      templateFormValues={templateFormValues}
+      templateFormValues={templateFormValues as { [x: string]: unknown }}
       lineItemValues={lineItems}
       submitQuotationAction={submitQuotationAction}
     />

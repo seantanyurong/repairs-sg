@@ -7,7 +7,6 @@ const quotationSchema = z.object({
   quotationDate: z.string().min(1),
   quotationExpiry: z.date().optional(),
   quoteTemplate: z.string().min(1),
-  customerEmail: z.string().min(1),
   totalAmount: z.number(),
   notes: z.string().optional(),
   lineItems: z
@@ -18,6 +17,7 @@ const quotationSchema = z.object({
     })
     .array()
     .optional(),
+  customer: z.string(),
 });
 
 const addQuotation = async (
