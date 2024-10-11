@@ -17,7 +17,7 @@ const quotationSchema = z.object({
     })
     .array()
     .optional(),
-  customer: z.string(),
+  customer: z.string().optional(),
 });
 
 const addQuotation = async (
