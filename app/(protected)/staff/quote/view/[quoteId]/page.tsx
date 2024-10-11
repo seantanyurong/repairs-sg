@@ -25,18 +25,21 @@ const populateTemplate = (
           ...field,
           content: dayjs(quotation.quotationDate).format("DD/MM/YYYY"),
         };
-      case "customer_name":
+      case "line_items":
         return {
           ...field,
-          content: quotation.templateInputs["customer_name"],
+          content: JSON.stringify(quotation.templateInputs["line_items"]),
         };
-      case "sales_email":
-        return {
-          ...field,
-          content: quotation.templateInputs["sales_email"],
-        };
-      default:
+      default: {
+        const content = quotation.templateInputs[field.name];
+        if (content) {
+          return {
+            ...field,
+            content,
+          };
+        }
         return field;
+      }
     }
   });
   return {
@@ -46,11 +49,6 @@ const populateTemplate = (
 };
 
 const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
-  // const template: Template = {
-  //   basePdf: BLANK_PDF,
-  //   schemas,
-  // };
-
   const quotation = JSON.parse(await getOneQuotation(params.quoteId));
   console.log(quotation);
   const quoteTemplate: QuoteTemplateType = JSON.parse(
