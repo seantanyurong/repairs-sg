@@ -47,6 +47,7 @@ export default function Invoices({
   const [searchQuery, setSearchQuery] = useState("");
 
   console.log("initialInvoices", initialInvoices);
+  console.log("initialInvoices date issued", initialInvoices[0].dateIssued);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -84,7 +85,7 @@ export default function Invoices({
           <InvoiceRow
             key={invoice.invoiceId.toString()}
             invoiceId={invoice.invoiceId.toString()}
-            dateIssued={invoice.dateIssued.toString()}
+            dateIssued={invoice.dateIssued}
             customer={fullName}
             totalAmount={invoice.totalAmount.toString()}
             lineItems={invoice.lineItems}

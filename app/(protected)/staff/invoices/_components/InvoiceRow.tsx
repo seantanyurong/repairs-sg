@@ -33,12 +33,10 @@ export default function InvoiceRow({
   const router = useRouter();
 
   // Format Date
-  const dateSplit = dateIssued.toString().split(" ");
-  const day = dateSplit[2];
-  const month = String(
-    new Date(Date.parse(dateSplit[1] + " 1, 2024")).getMonth() + 1,
-  ).padStart(2, "0");
-  const year = dateSplit[3];
+  const date = new Date(dateIssued);
+  const day = String(date.getUTCDate()).padStart(2, "0"); // Ensure it's two digits
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-indexed, so add 1
+  const year = date.getUTCFullYear();
   const formattedDateIssued = `${day}/${month}/${year}`;
 
   return (
