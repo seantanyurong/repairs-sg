@@ -56,24 +56,37 @@ const getOneQuotation = async (id: string) => {
 const updateQuotation = async (
   id: string,
   quote: string,
-  templateInputs: string
+  templateInputs?: string
 ) => {
   try {
-    const quotation = JSON.parse(quote);
-    const response = quotationSchema.safeParse(quotation);
+    if (templateInputs) {
+      const quotation = JSON.parse(quote);
+      const response = quotationSchema.safeParse(quotation);
 
-    if (!response.success) {
-      return { message: "Error", errors: response.error.flatten().fieldErrors };
+      if (!response.success) {
+        return {
+          message: "Error",
+          errors: response.error.flatten().fieldErrors,
+        };
+      }
+
+      const updatedQuotation = await Quotation.findByIdAndUpdate(id, {
+        ...response.data,
+        templateInputs: JSON.parse(templateInputs),
+      }).exec();
+      return {
+        message: "Quotation updated successfully",
+        id: updatedQuotation._id,
+      };
+    } else {
+      const updatedQuotation = await Quotation.findByIdAndUpdate(id, {
+        ...JSON.parse(quote),
+      }).exec();
+      return {
+        message: "Quotation updated successfully",
+        id: updatedQuotation._id,
+      };
     }
-
-    const updatedQuotation = await Quotation.findByIdAndUpdate(id, {
-      ...response.data,
-      templateInputs: JSON.parse(templateInputs),
-    }).exec();
-    return {
-      message: "Quotation updated successfully",
-      id: updatedQuotation._id,
-    };
   } catch (err) {
     console.error(err);
     return { message: "An error has occurred, please try again." };

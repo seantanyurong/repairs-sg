@@ -1,9 +1,12 @@
-import { getOneQuotation } from "@/lib/actions/quotations";
+import { getOneQuotation, updateQuotation } from "@/lib/actions/quotations";
 import { getOneQuoteTemplate } from "@/lib/actions/quoteTemplates";
 import { getInputFromTemplate, Template } from "@pdfme/common";
-import { QuoteTemplateType } from "../../templates/_components/QuoteTemplateColumns";
-import EditQuotationClient from "./clientPage";
 import dayjs from "dayjs";
+import { QuoteTemplateType } from "../../templates/_components/QuoteTemplateColumns";
+import QuoteDetailsClient from "./QuoteDetailsClient";
+import QuoteViewerClient from "./QuoteViewerClient";
+import QuoteActionsClient from "./QuoteActionsClient";
+import { getCustomerById } from "@/lib/actions/customers";
 
 const populateTemplate = (
   oldTemplate: Template,
@@ -50,24 +53,41 @@ const populateTemplate = (
 
 const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
   const quotation = JSON.parse(await getOneQuotation(params.quoteId));
-  console.log(quotation);
   const quoteTemplate: QuoteTemplateType = JSON.parse(
     await getOneQuoteTemplate(quotation.quoteTemplate)
   );
-  console.log(quoteTemplate);
   const updatedQuoteTemplate = populateTemplate(
     quoteTemplate.pdfTemplate,
     quotation
   );
   const inputs = getInputFromTemplate(updatedQuoteTemplate);
 
-  console.log(inputs);
+  const customer = JSON.parse(await getCustomerById(quotation.customer));
+
+  const submitQuotationAction = async (quote: string) => {
+    "use server";
+    return updateQuotation(params.quoteId, quote);
+  };
+
   return (
     <>
-      <EditQuotationClient
-        template={updatedQuoteTemplate}
-        inputs={inputs}
-      />
+      <div className="flex flex-row justify-between items-center shadow-md rounded-md w-full p-4">
+        <h2 className="scroll-m-20  pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+          Quotation #{quotation.quotationId}
+        </h2>
+        <QuoteActionsClient status={quotation.status} />
+      </div>
+      <div className="flex lg:flex-row flex-col gap-2 h-dvh">
+        <QuoteDetailsClient
+          quotation={quotation}
+          customer={customer}
+          updateQuotationAction={submitQuotationAction}
+        />
+        <QuoteViewerClient
+          template={updatedQuoteTemplate}
+          inputs={inputs}
+        />
+      </div>
     </>
   );
 };

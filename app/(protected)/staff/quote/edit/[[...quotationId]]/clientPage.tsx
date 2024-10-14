@@ -159,17 +159,6 @@ const EditQuoteClient = ({
       })
     );
 
-    console.log({
-      ...quotationForm.getValues(),
-      totalAmount: lineItemTotal.total,
-      // html input turns number into string, so need to convert back
-      lineItems: lineItems.map((item) => ({
-        description: item.description,
-        quantity: parseInt(item.quantity.toString()),
-        total: parseInt(item.total.toString()),
-      })),
-    });
-
     const result = await submitQuotationAction(
       JSON.stringify({
         ...quotationForm.getValues(),
@@ -189,8 +178,14 @@ const EditQuoteClient = ({
     } else {
       router.refresh();
       quotationForm.reset(quotationForm.getValues());
-      router.push(`/staff/quote/view/${result.id}`);
+      toast.success(result.message);
     }
+    return result.id;
+  };
+
+  const handleContinue = async () => {
+    const quotationId = await onSubmit();
+    router.push(`/staff/quote/view/${quotationId}`);
   };
 
   return (
@@ -396,18 +391,18 @@ const EditQuoteClient = ({
 
           <div className="flex flex-row gap-4">
             <Button
-              type="button"
-              onClick={() => console.log(quotationForm.getValues())}
               variant="outline"
-              className="w-auto"
-            >
-              Preview Quotation
-            </Button>
-            <Button
               type="submit"
               className="w-auto"
             >
               Save Quotation
+            </Button>
+            <Button
+              type="button"
+              onClick={() => handleContinue()}
+              className="w-auto"
+            >
+              Continue
             </Button>
           </div>
 
