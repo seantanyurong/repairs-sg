@@ -45,6 +45,8 @@ export default function Invoices({
 }: InvoicesProps) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortCriteria, setSortCriteria] = useState<string>("dateIssued");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -68,6 +70,41 @@ export default function Invoices({
 
       setInvoices(filteredInvoices);
     }
+  };
+
+  // Sorting function
+  const sortInvoices = (criteria: string, direction: "asc" | "desc") => {
+    const sortedInvoices = [...invoices].sort((a, b) => {
+      let valueA: number | string;
+      let valueB: number | string;
+
+      if (criteria === "dateIssued") {
+        valueA = new Date(a.dateIssued).getTime();
+        valueB = new Date(b.dateIssued).getTime();
+      } else if (criteria === "totalAmount") {
+        valueA = a.totalAmount;
+        valueB = b.totalAmount;
+      } else {
+        return 0;
+      }
+
+      if (direction === "asc") {
+        return valueA > valueB ? 1 : -1;
+      } else {
+        return valueA < valueB ? 1 : -1;
+      }
+    });
+
+    setInvoices(sortedInvoices);
+  };
+
+  // Handling sort button click
+  const handleSortChange = (criteria: string) => {
+    const newDirection: "asc" | "desc" =
+      sortDirection === "asc" ? "desc" : "asc";
+    setSortCriteria(criteria);
+    setSortDirection(newDirection);
+    sortInvoices(criteria, newDirection);
   };
 
   const invoiceDisplay = (validityStatus?: string) => {
@@ -177,6 +214,20 @@ export default function Invoices({
   return (
     <>
       <SearchBar onSearch={handleSearch} />
+
+      {/* Sort buttons */}
+      <div className="flex space-x-4">
+        <Button size="sm" onClick={() => handleSortChange("dateIssued")}>
+          Sort by Date{" "}
+          {sortCriteria === "dateIssued" && sortDirection === "asc" ? "▲" : "▼"}
+        </Button>
+        <Button size="sm" onClick={() => handleSortChange("totalAmount")}>
+          Sort by Amount{" "}
+          {sortCriteria === "totalAmount" && sortDirection === "asc"
+            ? "▲"
+            : "▼"}
+        </Button>
+      </div>
 
       <Tabs defaultValue="all">
         <div className="flex items-center">
