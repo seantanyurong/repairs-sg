@@ -1,4 +1,8 @@
-import { getOneQuotation, updateQuotation } from "@/lib/actions/quotations";
+import {
+  getOneQuotation,
+  sendQuoteEmail,
+  updateQuotation,
+} from "@/lib/actions/quotations";
 import { getOneQuoteTemplate } from "@/lib/actions/quoteTemplates";
 import { getInputFromTemplate, Template } from "@pdfme/common";
 import dayjs from "dayjs";
@@ -69,13 +73,30 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
     return updateQuotation(params.quoteId, quote);
   };
 
+  const sendEmailAction = async () => {
+    "use server";
+    return sendQuoteEmail(params.quoteId);
+  };
+
+  const updateStatusAction = async (newStatus: string) => {
+    "use server";
+    return updateQuotation(
+      params.quoteId,
+      JSON.stringify({ status: newStatus })
+    );
+  };
+
   return (
     <>
       <div className="flex flex-row justify-between items-center shadow-md rounded-md w-full p-4">
         <h2 className="scroll-m-20  pb-2 text-3xl font-semibold tracking-tight first:mt-0">
           Quotation #{quotation.quotationId}
         </h2>
-        <QuoteActionsClient status={quotation.status} />
+        <QuoteActionsClient
+          status={quotation.status}
+          sendEmailAction={sendEmailAction}
+          updateStatusAction={updateStatusAction}
+        />
       </div>
       <div className="flex lg:flex-row flex-col gap-2 h-dvh">
         <QuoteDetailsClient

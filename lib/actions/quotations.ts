@@ -2,6 +2,8 @@
 
 import Quotation from "@/models/Quotation";
 import { z } from "zod";
+import { getCustomerById } from "./customers";
+import { User } from "@clerk/nextjs/server";
 
 const quotationSchema = z.object({
   quotationDate: z.string().min(1),
@@ -98,10 +100,22 @@ const deleteQuotation = async (id: string) => {
   return { message: "Quotation Deleted" };
 };
 
+const sendQuoteEmail = async (id: string) => {
+  const quotation = await Quotation.findById(id).exec();
+
+  const customer: User = JSON.parse(await getCustomerById(quotation.customer));
+  const customerEmail =
+    customer.primaryEmailAddress?.emailAddress ??
+    customer.emailAddresses[0].emailAddress;
+
+  console.log(customerEmail);
+};
+
 export {
   addQuotation,
   getOneQuotation,
   getQuotations,
   updateQuotation,
   deleteQuotation,
+  sendQuoteEmail,
 };
