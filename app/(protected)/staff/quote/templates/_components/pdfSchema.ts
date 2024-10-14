@@ -547,7 +547,7 @@ export const schemas = [
     {
       name: "address_line_2",
       type: "text",
-      content: "Address Line 2",
+      content: "",
       position: {
         x: 29.6,
         y: 70.38,

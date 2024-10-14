@@ -65,7 +65,7 @@ const QuoteActionsClient = ({
                 Please wait
               </>
             ) : (
-              <>Mark as Ready</>
+              <>Mark Active</>
             )}
           </Button>
         </>

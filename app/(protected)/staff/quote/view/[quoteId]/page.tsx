@@ -65,7 +65,6 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
     quotation
   );
   const inputs = getInputFromTemplate(updatedQuoteTemplate);
-
   const customer = JSON.parse(await getCustomerById(quotation.customer));
 
   const submitQuotationAction = async (quote: string) => {
