@@ -8,12 +8,12 @@ import {
   getOneQuoteTemplate,
   updateQuoteTemplate,
 } from "@/lib/actions/quoteTemplates";
-import { BLANK_PDF, cloneDeep, type Template } from "@pdfme/common";
+import { cloneDeep, type Template } from "@pdfme/common";
 import { Designer } from "@pdfme/ui";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { font, plugins, schemas } from "../../_components/pdfSchema";
+import { font, plugins, template } from "../../_components/pdfSchema";
 
 export interface QuoteTemplateCreate {
   name: string;
@@ -53,11 +53,6 @@ const Page = ({ params }: { params: { templateId?: string } }) => {
     // Check to ensure NextJS does not pre render
     if (typeof window !== "undefined" && designerRef.current) {
       getTemplate();
-
-      const template: Template = {
-        basePdf: BLANK_PDF,
-        schemas,
-      };
 
       designer.current = new Designer({
         domContainer: designerRef.current,
