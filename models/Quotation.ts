@@ -34,8 +34,8 @@ const quotationSchema = new mongoose.Schema(
       required: [true, "Quotation Status Is Required!"],
     },
     customer: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
+      type: String,
+      required: [true, "Customer Is Required!"],
     },
     job: {
       type: mongoose.Schema.Types.ObjectId,

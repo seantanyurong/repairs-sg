@@ -22,7 +22,7 @@ const Page = async () => {
       </h1>
       <Link
         className="self-end"
-        href="/staff/quote/create"
+        href="/staff/quote/edit"
       >
         <Button className="h-8 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />
@@ -43,6 +43,7 @@ const Page = async () => {
             columns={quotationColumns}
             data={JSON.parse(JSON.stringify(quotations))}
             noResultsMessage="No quotations found."
+            filterColumn="name"
           />
         </CardContent>
       </Card>
