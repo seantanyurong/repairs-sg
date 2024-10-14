@@ -5,6 +5,7 @@ import {
   updateQuotation,
 } from "@/lib/actions/quotations";
 import { getQuoteTemplates } from "@/lib/actions/quoteTemplates";
+import { redirect } from "next/navigation";
 import { LineItem } from "../../_components/LineItemColumns";
 import EditQuoteClient from "./clientPage";
 
@@ -32,14 +33,23 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
   };
 
   let templateFormValues: unknown = {};
-  let lineItems: Array<LineItem> = [];
+  let lineItems: Array<LineItem> = [
+    {
+      description: "Transport Fee",
+      quantity: 1,
+      total: 40,
+    },
+  ];
 
   if (params.quotationId) {
     const quotation = JSON.parse(await getOneQuotation(params.quotationId));
+    if (quotation.status !== "Draft")
+      redirect(`/staff/quote/view/${params.quotationId}`);
 
-    const customerEmail: string | undefined = JSON.parse(
-      await getCustomerById(quotation.customer)
-    ).emailAddresses[0].emailAddress;
+    const customerEmail: string = quotation.customer
+      ? JSON.parse(await getCustomerById(quotation.customer)).emailAddresses[0]
+          .emailAddress
+      : "";
 
     quotationFormValues = {
       quotationDate: new Date(),
