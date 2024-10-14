@@ -11,23 +11,32 @@ const fieldFriendlyNames: Record<string, string> = {
   dateIssued: 'Issued Date',
   dateDue: 'Due Date',
   totalAmount: 'Total Amount',
-  remainingAmount: 'Remaining Amount',
+  remainingDue: 'Remaining Due',
   paymentStatus: 'Payment Status',
   validityStatus: 'Validity Status',
   publicNote: 'Note',
 };
 
 const addInvoice = async (invoice: {
-  invoiceId: number;
   lineItems: Array<string>;
-  dateIssued: Date;
-  dateDue: Date;
   totalAmount: number;
-  remainingDue: number;
   paymentStatus: string;
   validityStatus: string;
   publicNote: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
+  // Fetch Latest Invoice
+  const getLatestInvoice = async () => {
+    const latestInvoice = await Invoice.findOne().populate('payments').sort({ invoiceId: -1 });
+    return latestInvoice;
+  };
+
+  // Calculated Fields
+  const latestInvoice = await getLatestInvoice();
+  const nextInvoiceId = latestInvoice ? latestInvoice.invoiceId + 1 : 1;
+  const dateIssued = new Date();
+  const dateDue = new Date(dateIssued.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const remainingDue = invoice.totalAmount;
+
   const invoiceSchema = z.object({
     invoiceId: z.number(),
     lineItems: z.array(z.string()).nonempty("Line Items Should Have At Least 1 Item!"),
@@ -46,17 +55,17 @@ const addInvoice = async (invoice: {
       message: "Remaining Due Cannot Be Negative!",
     }),
     paymentStatus: z.enum(['Unpaid', 'Paid']),
-    validityStatus: z.enum(['Draft', 'Active', 'Void']),
+    validityStatus: z.enum(['draft', 'active', 'void']),
     publicNote: z.string().max(500),
   });
 
   const response = invoiceSchema.safeParse({
-    invoiceId: invoice.invoiceId,
+    invoiceId: nextInvoiceId,
     lineItems: invoice.lineItems,
-    dateIssued: invoice.dateIssued,
-    dateDue: invoice.dateDue,
+    dateIssued: dateIssued,
+    dateDue: dateDue,
     totalAmount: invoice.totalAmount,
-    remainingDue: invoice.remainingDue,
+    remainingDue: remainingDue,
     paymentStatus: invoice.paymentStatus,
     validityStatus: invoice.validityStatus,
     publicNote: invoice.publicNote,
@@ -187,7 +196,11 @@ const getInvoices = async () => {
     .exec()
 
   return invoices;
-  
 };
 
-export { addInvoice, updateInvoice, getInvoice, getInvoices };
+export { 
+  addInvoice, 
+  updateInvoice, 
+  getInvoice, 
+  getInvoices, 
+};
