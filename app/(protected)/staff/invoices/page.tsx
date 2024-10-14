@@ -33,10 +33,19 @@ export default async function InvoicesPage() {
     // Convert the Mongoose document to a plain object
     const plainInvoice = invoice.toObject();
 
+    const serializePayment = (payment: any) => {
+      const plainPayment = payment.toObject();
+
+      return {
+        paymentMethod: plainPayment.paymentMethod,
+      };
+    };
+
     return {
       ...plainInvoice,
       // Ensure _id and dates are serialized to strings
-      _id: plainInvoice._id.toString(),
+      _id: plainInvoice._id.buffer.toString(),
+      // _id: undefined,
       dateIssued: plainInvoice.dateIssued
         ? plainInvoice.dateIssued.toISOString()
         : defaultDate,
@@ -49,6 +58,9 @@ export default async function InvoicesPage() {
       updatedAt: plainInvoice.updatedAt
         ? plainInvoice.updatedAt.toISOString()
         : defaultDate,
+      payments: plainInvoice.payment
+        ? serializePayment(plainInvoice.payment)
+        : [],
     };
   };
   const serializedInvoices = invoices.map(serializeInvoice);

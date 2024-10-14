@@ -46,9 +46,6 @@ export default function Invoices({
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
   const [searchQuery, setSearchQuery] = useState("");
 
-  console.log("initialInvoices", initialInvoices);
-  console.log("initialInvoices date issued", initialInvoices[0].dateIssued);
-
   const handleSearch = (query: string) => {
     setSearchQuery(query);
 
