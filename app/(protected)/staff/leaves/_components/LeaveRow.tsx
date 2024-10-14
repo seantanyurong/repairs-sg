@@ -15,8 +15,9 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { deleteLeave, updateLeave } from "@/lib/actions/leave";
 import { User } from "@clerk/backend";
+import LeaveDetails from "./LeaveDetails";
 
-function formatShortDate(dateString: string): string {
+export function formatShortDate(dateString: string): string {
   console.log("Date String: ", dateString);
   const date = new Date(dateString);
 
@@ -143,7 +144,17 @@ export default function LeaveRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            {/* <LeaveDetails /> */}
+            <LeaveDetails
+              _id={_id}
+              type={type}
+              status={status}
+              start={start}
+              end={end}
+              actor={actor}
+              actorRole={actorRole}
+              createdAt={createdAt}
+              disableEdit={status !== "PENDING"}
+            />
             {actorRole === "approver" && (
               <>
                 <DropdownMenuItem

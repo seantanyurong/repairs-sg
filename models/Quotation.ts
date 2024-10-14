@@ -30,12 +30,13 @@ const quotationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
+      enum: ["Draft", "Active", "Accepted", "Declined", "Expired"],
       default: "Draft",
       required: [true, "Quotation Status Is Required!"],
     },
     customer: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
+      type: String,
+      required: [true, "Customer Is Required!"],
     },
     job: {
       type: mongoose.Schema.Types.ObjectId,
