@@ -46,8 +46,8 @@ const invoiceSchema = new mongoose.Schema({
     },
     validityStatus: {
         type: String,
-        enum: ['Draft', 'Active', 'Void'],
-        default: 'Draft',
+        enum: ['draft', 'active', 'void'],
+        default: 'draft',
         required: [true, "Invoice Validity Status Is Required!"]
     },
     publicNote: {
@@ -66,11 +66,11 @@ const invoiceSchema = new mongoose.Schema({
         type: String,
         required: [true, "Customer Is Required!"]
     },
-    job: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Job",
-        required: [true, "Job Is Required!"]
-    },
+    // job: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Job",
+    //     required: [true, "Job Is Required!"]
+    // },
     files: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "File"
@@ -80,14 +80,12 @@ const invoiceSchema = new mongoose.Schema({
         ref: "Payment"
     }],
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Staff",
-        required: [true, "Created By Is Required!"]
+        type: String,
+        required: [true, "Customer Is Required!"]
     },
     lastUpdatedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Staff",
-        required: [true, "Last Updated By Is Required!"]
+        type: String,
+        required: [true, "Customer Is Required!"]
     }
 }, { versionKey: false, timestamps: true });
 
