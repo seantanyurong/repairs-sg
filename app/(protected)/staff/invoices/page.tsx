@@ -82,7 +82,7 @@ export default async function InvoicesPage() {
     };
   };
   const serializedInvoices = invoices.map(serializeInvoice);
-  console.log("serializedInvoices", serializedInvoices);
+  // console.log("serializedInvoices", serializedInvoices);
 
   // Fetch Customers
   const custClerk = createClerkClient({
