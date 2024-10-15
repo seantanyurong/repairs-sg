@@ -13,18 +13,10 @@ import { Schema } from "@pdfme/common";
 import { Input } from "@/components/ui/input";
 import { LineItemTotals } from "../edit/[[...quotationId]]/clientPage";
 
-const defaultData: LineItem[] = [
-  {
-    description: "Transport Fee",
-    quantity: 1,
-    total: 40,
-  },
-];
-
 interface TemplateFormProps {
   schema: Schema;
   form: UseFormReturn<FieldValues>;
-  initialData?: LineItem[];
+  initialData: LineItem[];
   setLineItems: {
     (value: SetStateAction<LineItem[]>): void;
     (arg0: LineItem[]): void;
@@ -116,7 +108,7 @@ export function QuoteTemplateForm({
           <p key={schema.name}>{schema.name}</p>
           <EditableTable
             key={`${schema.name}-${schema.type}`}
-            initialData={initialData ?? defaultData}
+            initialData={initialData}
             columns={lineItemColumns}
             onStateChange={(data) => calculateTotal(data)}
           />
