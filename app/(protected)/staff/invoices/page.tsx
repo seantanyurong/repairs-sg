@@ -24,12 +24,10 @@ interface CustomerMap {
 
 export default async function Invoices() {
   // Fetch Payment
-  const payment = await getPayments();
-  console.log(payment);
+  // const payments = await getPayments();
 
   // Fetch Invoice
   const invoices = await getInvoices();
-  console.log(invoices)
 
   // Fetch Customers
   const custClerk = createClerkClient({ secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY });
@@ -56,7 +54,7 @@ export default async function Invoices() {
             customer={fullName}
             totalAmount={invoice.totalAmount.toString()}
             lineItems={invoice.lineItems}
-            paymentStatus={invoice.paymentStatus}
+            paymentStatus={invoice.payments[0]? "Paid" : "Unpaid"}
             validityStatus={invoice.validityStatus}
             paymentMethod={invoice.payments[0]?.paymentMethod}
           />

@@ -62,10 +62,10 @@ const invoiceSchema = new mongoose.Schema({
     //     ref: "Customer",
     //     required: [true, "Customer Is Required!"]
     // },
-    // customer: {
-    //     type: String,
-    //     required: [true, "Customer Is Required!"]
-    // },
+    customer: {
+        type: String,
+        required: [true, "Customer Is Required!"]
+    },
     // job: {
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: "Job",
@@ -79,16 +79,14 @@ const invoiceSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Payment"
     }],
-    // createdBy: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Staff",
-    //     required: [true, "Created By Is Required!"]
-    // },
-    // lastUpdatedBy: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Staff",
-    //     required: [true, "Last Updated By Is Required!"]
-    // }
+    createdBy: {
+        type: String,
+        required: [true, "Customer Is Required!"]
+    },
+    lastUpdatedBy: {
+        type: String,
+        required: [true, "Customer Is Required!"]
+    }
 }, { versionKey: false, timestamps: true });
 
 invoiceSchema.plugin(uniqueValidator, { message: '{VALUE} already exists' });

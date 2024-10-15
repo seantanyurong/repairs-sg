@@ -23,6 +23,8 @@ const addInvoice = async (invoice: {
   paymentStatus: string;
   validityStatus: string;
   publicNote: string;
+  customer: string;
+  staff: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   // Fetch Latest Invoice
   const getLatestInvoice = async () => {
@@ -36,6 +38,8 @@ const addInvoice = async (invoice: {
   const dateIssued = new Date();
   const dateDue = new Date(dateIssued.getTime() + 7 * 24 * 60 * 60 * 1000);
   const remainingDue = invoice.totalAmount;
+  const createdBy = invoice.staff;
+  const lastUpdatedBy = invoice.staff;
 
   const invoiceSchema = z.object({
     invoiceId: z.number(),
@@ -57,6 +61,9 @@ const addInvoice = async (invoice: {
     paymentStatus: z.enum(['Unpaid', 'Paid']),
     validityStatus: z.enum(['draft', 'active', 'void']),
     publicNote: z.string().max(500),
+    customer: z.string(),
+    createdBy: z.string(),
+    lastUpdatedBy: z.string(),
   });
 
   const response = invoiceSchema.safeParse({
@@ -69,6 +76,9 @@ const addInvoice = async (invoice: {
     paymentStatus: invoice.paymentStatus,
     validityStatus: invoice.validityStatus,
     publicNote: invoice.publicNote,
+    customer: invoice.customer,
+    createdBy: createdBy,
+    lastUpdatedBy: lastUpdatedBy,
   });
 
   console.log(response.data);
