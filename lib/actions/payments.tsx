@@ -2,6 +2,10 @@
 
 import Payment from "@/models/Payment";
 
+const getPayment = async (paymentId: string) => {
+  return Payment.findById(paymentId);
+};
+
 const getPayments = async () => {
   return Payment
   .find()
@@ -9,4 +13,4 @@ const getPayments = async () => {
     .limit(20);
 };
 
-export { getPayments };
+export { getPayment, getPayments };

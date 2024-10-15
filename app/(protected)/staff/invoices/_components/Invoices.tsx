@@ -24,14 +24,19 @@ import InvoiceRow from "./InvoiceRow";
 import SearchBar from "@/app/(protected)/_components/SearchBar";
 
 interface Invoice {
-  invoiceId: string;
-  dateIssued: string;
-  customer: string;
-  totalAmount: string;
-  lineItems: any[];
+  invoiceId: string | number;
+  lineItems: string[];
+  dateIssued: string | Date;
+  dateDue: string | Date;
+  totalAmount: string | number;
+  remainingDue: string | number;
   paymentStatus: string;
   validityStatus: string;
-  payments: { paymentMethod: string }[];
+  publicNote: string;
+  customer: string;
+  payments: { paymentMethod: string }[] | never[];
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 interface InvoicesProps {
@@ -44,13 +49,10 @@ export default function Invoices({
   customerMap,
 }: InvoicesProps) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
-  const [searchQuery, setSearchQuery] = useState("");
   const [sortCriteria, setSortCriteria] = useState<string>("dateIssued");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query);
-
     if (query.trim() === "") {
       // If query is empty, reset the list to all initial invoices
       setInvoices(initialInvoices);
@@ -119,7 +121,7 @@ export default function Invoices({
           <InvoiceRow
             key={invoice.invoiceId.toString()}
             invoiceId={invoice.invoiceId.toString()}
-            dateIssued={invoice.dateIssued}
+            dateIssued={invoice.dateIssued.toString()}
             customer={fullName}
             totalAmount={invoice.totalAmount.toString()}
             lineItems={invoice.lineItems}

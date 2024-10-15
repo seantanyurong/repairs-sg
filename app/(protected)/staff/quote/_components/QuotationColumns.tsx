@@ -15,7 +15,7 @@ type Quotation = {
   _id: string;
   quotationId: number;
   name: string;
-  status: "Draft" | "Sent" | "Accepted" | "Declined" | "Expired";
+  status: "Draft" | "Active" | "Accepted" | "Declined" | "Expired";
   createdAt: string;
   totalAmount: number;
 };
@@ -32,14 +32,6 @@ const handleDelete = async (id: string, router: AppRouterInstance) => {
     } catch {
       toast.error("An error has occurred, please try again.");
     }
-};
-
-const handleDownload = async (id: string) => {
-  try {
-    console.log("Downloading PDF for quotation", id);
-  } catch {
-    toast.error("An error has occurred, please try again.");
-  }
 };
 
 const currencyFormat = new Intl.NumberFormat("en-SG", {
@@ -160,12 +152,8 @@ function ActionColumn({ row }: { row: Row<Quotation> }) {
       ) : (
         <>
           <Link href={`/staff/quote/view/${row.original._id}`}>
-            <Button variant="ghost">View</Button>
+            <Button variant="secondary">View</Button>
           </Link>
-
-          <Button onClick={() => handleDownload(row.original._id)}>
-            Download PDF
-          </Button>
         </>
       )}
     </div>
