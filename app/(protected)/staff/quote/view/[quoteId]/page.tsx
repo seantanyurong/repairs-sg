@@ -11,6 +11,8 @@ import QuoteDetailsClient from "./QuoteDetailsClient";
 import QuoteViewerClient from "./QuoteViewerClient";
 import QuoteActionsClient from "./QuoteActionsClient";
 import { getCustomerById } from "@/lib/actions/customers";
+import { generate } from "@pdfme/generator";
+import { font, plugins } from "../../templates/_components/pdfSchema";
 
 const populateTemplate = (
   oldTemplate: Template,
@@ -74,7 +76,14 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
 
   const sendEmailAction = async () => {
     "use server";
-    return sendQuoteEmail(params.quoteId);
+
+    const pdf = await generate({
+      template: updatedQuoteTemplate,
+      inputs,
+      options: { font },
+      plugins,
+    });
+    return sendQuoteEmail(params.quoteId, Buffer.from(pdf).toString("base64"));
   };
 
   const updateStatusAction = async (newStatus: string) => {

@@ -17,18 +17,19 @@ const QuoteActionsClient = ({
   updateStatusAction: (newStatus: string) => Promise<unknown>;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const router = useRouter();
 
   const sendQuoteEmail = async () => {
     try {
-      setIsLoading(true);
+      setIsSendingEmail(true);
       await sendEmailAction();
       toast.success("Email sent successfully");
     } catch (e) {
       console.error(e);
       toast.error("Error sending email");
     } finally {
-      setIsLoading(false);
+      setIsSendingEmail(false);
     }
   };
 
@@ -80,7 +81,7 @@ const QuoteActionsClient = ({
             onClick={() => sendQuoteEmail()}
             variant="secondary"
           >
-            {isLoading ? (
+            {isSendingEmail ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait
