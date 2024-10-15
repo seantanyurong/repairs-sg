@@ -4,8 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import JobRow from './_components/JobRow';
 import { clerkClient } from '@clerk/nextjs/server';
 import { getJobsForSchedule } from '@/lib/actions/jobs';
-// import { getSchedules } from '@/lib/actions/schedules';
-// import { getServices } from '@/lib/actions/services';
+import { getSchedules } from '@/lib/actions/schedules';
+import { getServices } from '@/lib/actions/services';
 import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
 import CalendarClient from './clientComponent';
 
@@ -17,8 +17,8 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
   const jobs = await getJobsForSchedule();
   // console.log(jobs);
 
-  // const services = await getServices();
-  // const schedules = await getSchedules();
+  const services = await getServices();
+  const schedules = await getSchedules();
 
   const staff = await clerkClient().users.getUserList();
 
