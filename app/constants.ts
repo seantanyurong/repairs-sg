@@ -9,5 +9,6 @@ export const NAVIGATION_LABELS = {
   CUSTOMERS: "Customers",
   VEHICLES: "Vehicles",
   ANALYTICS: "Analytics",
+  LEAVES: "Leaves",
   SETTINGS: "Settings",
 } as const;
