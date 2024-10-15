@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { useRouter } from 'next/navigation';
+import dayjs from "dayjs";
 
 export default function InvoiceRow({
   invoiceId,
@@ -33,11 +34,7 @@ export default function InvoiceRow({
   const router = useRouter();
 
   // Format Date
-  const dateSplit = dateIssued.toString().split(' ');
-  const day = dateSplit[2];
-  const month = String(new Date(Date.parse(dateSplit[1] + " 1, 2024")).getMonth() + 1).padStart(2, '0');
-  const year = dateSplit[3];
-  const formattedDateIssued = `${day}/${month}/${year}`;
+  const formattedDateIssued = dayjs(dateIssued).format("DD/MM/YYYY");
 
   return (
     <TableRow>
