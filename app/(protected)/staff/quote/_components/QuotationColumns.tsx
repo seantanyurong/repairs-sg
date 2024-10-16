@@ -2,57 +2,124 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { deleteQuotation } from "@/lib/actions/quotations";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import dayjs from "dayjs";
+import { ArrowUpDown } from "lucide-react";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Quotation = {
   _id: string;
   quotationId: number;
   name: string;
-  status: "Active" | "Inactive";
+  status: "Draft" | "Active" | "Accepted" | "Declined" | "Expired";
   createdAt: string;
+  totalAmount: number;
 };
 
-// const deleteQuotation = async (id: string, router: AppRouterInstance) => {
-//   try {
-//     const result = await setQuotationInactive(id);
-//     toast.success(result.message);
-//     router.refresh();
-//   } catch {
-//     toast.error("An error has occurred, please try again.");
-//   }
-// };
+const handleDelete = async (id: string, router: AppRouterInstance) => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this quotation?"
+  );
+  if (confirmed)
+    try {
+      const result = await deleteQuotation(id);
+      toast.success(result.message);
+      router.refresh();
+    } catch {
+      toast.error("An error has occurred, please try again.");
+    }
+};
+
+const currencyFormat = new Intl.NumberFormat("en-SG", {
+  style: "currency",
+  currency: "SGD",
+});
 
 export const quotationColumns: ColumnDef<Quotation>[] = [
   {
     accessorKey: "quotationId",
-    header: "Number",
-  },
-  {
-    accessorKey: "name",
-    header: "Customer",
-  },
-  {
-    id: "status",
-    header: "Status",
-    cell: ({ row }) => {
+    header: ({ column }) => {
       return (
-        <Badge
-          variant={row.original.status == "Active" ? "default" : "destructive"}
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {row.original.status}
-        </Badge>
+          Number
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       );
     },
   },
   {
+    id: "name",
+    accessorKey: "templateInputs.customer_name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Customer
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    id: "status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return <Badge variant="outline">{row.original.status}</Badge>;
+    },
+  },
+  {
     accessorKey: "totalAmount",
-    header: "Total",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Total
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return row.original.totalAmount
+        ? currencyFormat.format(row.original.totalAmount)
+        : "-";
+    },
   },
   {
     id: "createdAt",
-    header: "Created At",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    sortingFn: "datetime",
+    accessorKey: "createdAt",
     cell: ({ row }) => {
       return dayjs(row.original.createdAt).format("DD-MMM-YYYY HH:mm ");
     },
@@ -60,25 +127,35 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
   {
     header: "Actions",
     cell: ({ row }) => {
-      if (row.original.status === "Active") return <ActionColumn row={row} />;
+      return <ActionColumn row={row} />;
     },
   },
 ];
 
 function ActionColumn({ row }: { row: Row<Quotation> }) {
-  // const router = useRouter();
+  const router = useRouter();
 
   return (
     <div className="flex gap-2">
-      <Link href={`/staff/quote/edit/${row.original._id}`}>
-        <Button variant="ghost">Edit</Button>
-      </Link>
-      <Button
-        variant="destructive"
-        // onClick={() => deleteQuotation(row.original._id, router)}
-      >
-        Deactivate
-      </Button>
+      {row.original.status === "Draft" ? (
+        <>
+          <Link href={`/staff/quote/edit/${row.original._id}`}>
+            <Button variant="ghost">Edit</Button>
+          </Link>
+          <Button
+            variant="destructive"
+            onClick={() => handleDelete(row.original._id, router)}
+          >
+            Delete
+          </Button>
+        </>
+      ) : (
+        <>
+          <Link href={`/staff/quote/view/${row.original._id}`}>
+            <Button variant="secondary">View</Button>
+          </Link>
+        </>
+      )}
     </div>
   );
 }

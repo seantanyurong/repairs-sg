@@ -9,14 +9,17 @@ import { NextResponse } from "next/server";
 const isTechnicianRoute = createRouteMatcher([
   // To Be Updated When More Features Arrives In SR3 and Beyond
   "/staff",
+  "/staff/invoices(.*)",
 ]);
 const isAdminRoute = createRouteMatcher([
   // To Be Updated When More Features Arrives In SR3 and Beyond
   "/staff",
   "/staff/services(.*)",
+  "/staff/invoices(.*)",
   "/staff/quote(.*)",
   "/staff/vehicles(.*)",
-  "/staff/schedule(.*)"
+  "/staff/schedule(.*)",
+  "/staff/leaves(.*)"
 ]);
 const isSuperAdminRoute = createRouteMatcher([
   // To Be Updated When More Features Arrives In SR3 and Beyond

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+const uniqueValidator = require('mongoose-unique-validator');
 
 const invoiceSchema = new mongoose.Schema({
     invoiceId: {
@@ -37,28 +38,39 @@ const invoiceSchema = new mongoose.Schema({
         type: Number,
         required: [true, "Remaining Due Is Required!"]
     },
+    paymentStatus: {
+        type: String,
+        enum: ['Unpaid', 'Paid'],
+        default: 'Unpaid',
+        required: [true, "Invoice Payment Status Is Required!"]
+    },
+    validityStatus: {
+        type: String,
+        enum: ['draft', 'active', 'void'],
+        default: 'draft',
+        required: [true, "Invoice Validity Status Is Required!"]
+    },
     publicNote: {
         type: String,
         maxlength: [500, 'Public Note Can Have At Most 500 Characters']
     },
-    secret: {
-        type: String
-    },
-    status: {
-        type: String,
-        default: 'Draft',
-        required: [true, "Invoice Status Is Required!"]
-    },
-    job: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Job",
-        required: [true, "Job Is Required!"]
-    },
+    // secret: {
+    //     type: String
+    // },
+    // customer: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Customer",
+    //     required: [true, "Customer Is Required!"]
+    // },
     customer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Customer",
+        type: String,
         required: [true, "Customer Is Required!"]
     },
+    // job: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Job",
+    //     required: [true, "Job Is Required!"]
+    // },
     files: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "File"
@@ -68,15 +80,15 @@ const invoiceSchema = new mongoose.Schema({
         ref: "Payment"
     }],
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Staff",
-        required: [true, "Created By Is Required!"]
+        type: String,
+        required: [true, "Customer Is Required!"]
     },
     lastUpdatedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Staff",
-        required: [true, "Last Updated By Is Required!"]
+        type: String,
+        required: [true, "Customer Is Required!"]
     }
 }, { versionKey: false, timestamps: true });
+
+invoiceSchema.plugin(uniqueValidator, { message: '{VALUE} already exists' });
 
 export default mongoose.models.Invoice || mongoose.model('Invoice', invoiceSchema);

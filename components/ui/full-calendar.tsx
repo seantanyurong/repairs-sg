@@ -88,7 +88,6 @@ export type CalendarEvent = {
   timeStart: Date;
   timeEnd: Date;
   title: string;
-  staff: string;
   color?: VariantProps<typeof monthEventVariants>['variant'];
 };
 
@@ -252,11 +251,8 @@ const EventGroup = ({
                 }}
               >
                 <div className="event-content p-2"> {/* Add padding for better readability */}
-                  <div className="event-title font-bold text-lg overflow-hidden text-ellipsis whitespace-normal">
+                  <div className="event-title font-bold text-md overflow-hidden text-ellipsis whitespace-normal">
                     {event.title}
-                  </div>
-                  <div className="event-staff text-sm text-gray-600 overflow-hidden text-ellipsis whitespace-normal">
-                    {event.staff}
                   </div>
                 </div>
               </div>

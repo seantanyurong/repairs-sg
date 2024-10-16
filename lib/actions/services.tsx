@@ -34,6 +34,7 @@ const addService = async (service: {
 
   const newService = new Service(response.data);
   newService.save();
+  revalidatePath('/staff/services');
 
   return { message: 'Service added successfully' };
 };

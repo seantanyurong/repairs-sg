@@ -9,7 +9,9 @@ import {
   NotepadText,
   PanelLeft,
   Quote,
+  Receipt,
   Settings,
+  TreePalm,
   Truck,
   UserRound,
 } from "lucide-react";
@@ -61,7 +63,7 @@ export function generateBreadcrumbs(pathname: string | null): React.ReactNode {
           <BreadcrumbLink asChild>
             <Link
               href={`/${["staff", ...pathSegments.slice(0, index + 1)].join(
-                "/"
+                "/",
               )}`}
             >
               {kebabToTitleCase(segment)}
@@ -91,7 +93,7 @@ export default function PublicLayout({
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   if (!clerkPublishableKey) {
     throw new Error(
-      "Missing Clerk publishable key. Please add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to your environment variables."
+      "Missing Clerk publishable key. Please add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to your environment variables.",
     );
   }
 
@@ -134,7 +136,7 @@ export default function PublicLayout({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
+                href="/staff/schedule"
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${
                   pathname === "/staff/schedule"
                     ? "bg-accent text-accent-foreground"
@@ -170,7 +172,7 @@ export default function PublicLayout({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
+                href="/staff/invoices"
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${
                   pathname === "/staff/invoices"
                     ? "bg-accent text-accent-foreground"
@@ -205,7 +207,7 @@ export default function PublicLayout({
               {NAVIGATION_LABELS.QUOTATION_TEMPLATES}
             </TooltipContent>
           </Tooltip>
-          {/* <Tooltip>
+          <Tooltip>
             <TooltipTrigger asChild>
               <Link
                 href="/staff/quote/"
@@ -222,7 +224,7 @@ export default function PublicLayout({
             <TooltipContent side="right">
               {NAVIGATION_LABELS.QUOTATIONS}
             </TooltipContent>
-          </Tooltip> */}
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
@@ -277,6 +279,24 @@ export default function PublicLayout({
               {NAVIGATION_LABELS.ANALYTICS}
             </TooltipContent>
           </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/staff/leaves"
+                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                  pathname === "/staff/leaves"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                } transition-colors hover:text-foreground md:h-8 md:w-8`}
+              >
+                <TreePalm className="h-5 w-5" />
+                <span className="sr-only">{NAVIGATION_LABELS.LEAVES}</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {NAVIGATION_LABELS.LEAVES}
+            </TooltipContent>
+          </Tooltip>
         </nav>
         <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
           <Tooltip>
@@ -284,7 +304,7 @@ export default function PublicLayout({
               <Link
                 href="#"
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                  pathname === "/staff/schedule"
+                  pathname === "/staff"
                     ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground"
                 } transition-colors hover:text-foreground md:h-8 md:w-8`}
@@ -303,16 +323,9 @@ export default function PublicLayout({
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
           {/* Side Toggle Menu */}
-          <Sheet
-            open={isOpen}
-            onOpenChange={setIsOpen}
-          >
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button
-                size="icon"
-                variant="outline"
-                className="sm:hidden"
-              >
+              <Button size="icon" variant="outline" className="sm:hidden">
                 <PanelLeft className="h-5 w-5" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
@@ -367,9 +380,9 @@ export default function PublicLayout({
                   {NAVIGATION_LABELS.JOBS}
                 </Link>
                 <Link
-                  href="#"
+                  href="/staff/invoices"
                   className={`flex items-center gap-4 px-2.5 ${
-                    pathname === "/staff/invocies"
+                    pathname === "/staff/invoices"
                       ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
@@ -388,6 +401,18 @@ export default function PublicLayout({
                   onClick={handleLinkClick}
                 >
                   <Quote className="h-5 w-5" />
+                  {NAVIGATION_LABELS.QUOTATION_TEMPLATES}
+                </Link>
+                <Link
+                  href="/staff/quote/"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/quote/"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  onClick={handleLinkClick}
+                >
+                  <Receipt className="h-5 w-5" />
                   {NAVIGATION_LABELS.QUOTATIONS}
                 </Link>
                 <Link
@@ -425,6 +450,18 @@ export default function PublicLayout({
                 >
                   <LineChart className="h-5 w-5" />
                   {NAVIGATION_LABELS.ANALYTICS}
+                </Link>
+                <Link
+                  href="/staff/leaves"
+                  className={`flex items-center gap-4 px-2.5 ${
+                    pathname === "/staff/leaves"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  onClick={handleLinkClick}
+                >
+                  <TreePalm className="h-5 w-5" />
+                  {NAVIGATION_LABELS.LEAVES}
                 </Link>
                 <Link
                   href="#"

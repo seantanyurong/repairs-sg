@@ -2,6 +2,17 @@
 
 import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { MoreHorizontal } from 'lucide-react';
+import { deleteService } from '@/lib/actions/services';
+import { useRouter } from 'next/navigation';
 
 export default function JobRow({
   serviceName,
@@ -34,7 +45,7 @@ export default function JobRow({
         <Badge variant='outline'>{status}</Badge>
       </TableCell>
       <TableCell>
-        {/* <DropdownMenu>
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button aria-haspopup='true' size='icon' variant='ghost'>
               <MoreHorizontal className='h-4 w-4' />
@@ -52,7 +63,7 @@ export default function JobRow({
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu> */}
+        </DropdownMenu>
       </TableCell>
     </TableRow>
   );

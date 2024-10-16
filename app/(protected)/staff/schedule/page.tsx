@@ -34,7 +34,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
 
   // convert the staff attribute in jobs to hold the name of the staff instead of the id
   jobs.map((job) => {
-    job.staff = staffArray.find((staff) => staff.id === job.staff)?.name || 'Unknown Staff';
+    job.staff = staffArray.find((staff) => staff.id === job.staff)?.name || '';
   });
 
   const jobTableDisplay = () => {
