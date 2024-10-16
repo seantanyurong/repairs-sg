@@ -20,6 +20,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import InvoiceRow from "./InvoiceRow";
 import SearchBar from "@/app/(protected)/_components/SearchBar";
 
@@ -49,8 +58,7 @@ export default function Invoices({
   customerMap,
 }: InvoicesProps) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
-  const [sortCriteria, setSortCriteria] = useState<string>("dateIssued");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortDirection, setSortDirection] = useState<string>("");
 
   const handleSearch = (query: string) => {
     if (query.trim() === "") {
@@ -58,7 +66,7 @@ export default function Invoices({
       setInvoices(initialInvoices);
     } else {
       // Filter the invoices based on the customer name or invoice ID
-      const filteredInvoices = initialInvoices.filter((invoice) => {
+      const filteredInvoices = invoices.filter((invoice) => {
         const customer = customerMap[invoice.customer];
         const fullName = customer
           ? `${customer.firstName} ${customer.lastName}`.toLowerCase()
@@ -98,15 +106,7 @@ export default function Invoices({
     });
 
     setInvoices(sortedInvoices);
-  };
-
-  // Handling sort button click
-  const handleSortChange = (criteria: string) => {
-    const newDirection: "asc" | "desc" =
-      sortDirection === "asc" ? "desc" : "asc";
-    setSortCriteria(criteria);
-    setSortDirection(newDirection);
-    sortInvoices(criteria, newDirection);
+    console.log("sortedInvoices", sortedInvoices);
   };
 
   const invoiceDisplay = (validityStatus?: string) => {
@@ -217,19 +217,48 @@ export default function Invoices({
     <>
       <SearchBar onSearch={handleSearch} />
 
-      {/* Sort buttons */}
-      <div className="flex space-x-4">
-        <Button size="sm" onClick={() => handleSortChange("dateIssued")}>
-          Sort by Date{" "}
-          {sortCriteria === "dateIssued" && sortDirection === "asc" ? "▲" : "▼"}
-        </Button>
-        <Button size="sm" onClick={() => handleSortChange("totalAmount")}>
-          Sort by Amount{" "}
-          {sortCriteria === "totalAmount" && sortDirection === "asc"
-            ? "▲"
-            : "▼"}
-        </Button>
-      </div>
+      {/* Sort selects */}
+      <>
+        <Select
+          value={sortDirection}
+          onValueChange={(newDirection) => {
+            setSortDirection(newDirection);
+            if (newDirection === "asc" || newDirection === "desc")
+              sortInvoices("dateIssued", newDirection);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Date" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Sort by Date</SelectLabel>
+              <SelectItem value="asc">Date: Early to Late</SelectItem>
+              <SelectItem value="desc">Date: Late to Early</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={sortDirection}
+          onValueChange={(newDirection) => {
+            setSortDirection(newDirection);
+            if (newDirection === "asc" || newDirection === "desc")
+              sortInvoices("totalAmount", newDirection);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Amount" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Sort by Amount</SelectLabel>
+              <SelectItem value="asc">Amount: Low to High</SelectItem>
+              <SelectItem value="desc">Amount: High to Low</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </>
 
       <Tabs defaultValue="all">
         <div className="flex items-center">
