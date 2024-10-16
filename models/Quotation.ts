@@ -8,6 +8,10 @@ const quotationSchema = new mongoose.Schema(
       type: Date,
       required: [true, "Quotation Date Is Required!"],
     },
+    quotationExpiry: {
+      type: Date,
+      required: [true, "Quotation Expiry Date Is Required!"],
+    },
     //TODO: Make required if status is not draft
     lineItems: {
       type: Array,
@@ -33,6 +37,10 @@ const quotationSchema = new mongoose.Schema(
       enum: ["Draft", "Active", "Accepted", "Declined", "Expired"],
       default: "Draft",
       required: [true, "Quotation Status Is Required!"],
+    },
+    customerEmail: {
+      type: String,
+      required: [true, "Customer Email Is Required!"],
     },
     customer: {
       type: String,

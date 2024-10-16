@@ -26,6 +26,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
+import { User } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema } from "@pdfme/common";
 import { format } from "date-fns";
@@ -35,14 +36,15 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { LineItem } from "../../_components/LineItemColumns";
-import { QuoteTemplateForm } from "../../_components/TemplateForm";
 import { QuoteTemplateType } from "../../templates/_components/QuoteTemplateColumns";
-import { User } from "@clerk/nextjs/server";
+import { LineItem } from "./_components/LineItemColumns";
+import { QuoteTemplateForm } from "./_components/TemplateForm";
 
 const formSchema = z.object({
   quotationDate: z.date(),
-  quotationExpiry: z.date().optional(),
+  quotationExpiry: z
+    .date()
+    .min(new Date(), { message: "Expiry date must be after today" }),
   customerEmail: z.string().email(),
   quoteTemplate: z.string().min(1, { message: "Select a quote template" }),
   notes: z.string().optional(),
@@ -278,6 +280,7 @@ const EditQuoteClient = ({
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
+                        disabled={{ before: new Date() }}
                       />
                     </PopoverContent>
                   </Popover>

@@ -8,8 +8,9 @@ import { sendQuoteEmailPostmark } from "../postmark";
 
 const quotationSchema = z.object({
   quotationDate: z.string().min(1),
-  quotationExpiry: z.date().optional(),
+  quotationExpiry: z.date(),
   quoteTemplate: z.string().min(1),
+  customerEmail: z.string().email(),
   totalAmount: z.number(),
   notes: z.string().optional(),
   lineItems: z
