@@ -63,8 +63,10 @@ export default function Invoices({
 
   const handleSearch = (query: string) => {
     if (query.trim() === "") {
-      // If query is empty, reset the list to all initial invoices
+      // If query is empty, reset the search & sort
       setInvoices(initialInvoices);
+      setSortDateDirection("");
+      setSortPriceDirection("");
     } else {
       // Filter the invoices based on the customer name or invoice ID
       const filteredInvoices = invoices.filter((invoice) => {
