@@ -61,6 +61,11 @@ export default function Invoices({
   const [sortDateDirection, setSortDateDirection] = useState<string>("");
   const [sortPriceDirection, setSortPriceDirection] = useState<string>("");
 
+  // Filter states
+  const [validityStatus, setValidityStatus] = useState<string>("all");
+  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
+
   const handleSearch = (query: string) => {
     if (query.trim() === "") {
       // If query is empty, reset the search & sort
@@ -110,6 +115,54 @@ export default function Invoices({
 
     setInvoices(sortedInvoices);
     console.log("sortedInvoices", sortedInvoices);
+  };
+
+  // Filtering logic
+  const handleFilter = () => {
+    let filteredInvoices = initialInvoices;
+
+    // Filter by validity status
+    if (validityStatus !== "all") {
+      filteredInvoices = filteredInvoices.filter(
+        (invoice) => invoice.validityStatus === validityStatus,
+      );
+    }
+
+    // Filter by payment status
+    if (paymentStatus) {
+      filteredInvoices = filteredInvoices.filter(
+        (invoice) => invoice.paymentStatus === paymentStatus,
+      );
+    }
+
+    // Filter by payment method
+    if (paymentMethod) {
+      filteredInvoices = filteredInvoices.filter(
+        (invoice) =>
+          invoice.payments[0]?.paymentMethod ===
+          invoice.payments[0]?.paymentMethod,
+      );
+    }
+
+    setInvoices(filteredInvoices);
+  };
+
+  // Handling validity status filter change
+  const handleValidityStatusChange = (status: string) => {
+    setValidityStatus(status);
+    handleFilter();
+  };
+
+  // Handling payment status filter change
+  const handlePaymentStatusChange = (status: string | null) => {
+    setPaymentStatus(status);
+    handleFilter();
+  };
+
+  // Handling payment method filter change
+  const handlePaymentMethodChange = (method: string | null) => {
+    setPaymentMethod(method);
+    handleFilter();
   };
 
   const invoiceDisplay = (validityStatus?: string) => {
@@ -264,6 +317,66 @@ export default function Invoices({
             </SelectGroup>
           </SelectContent>
         </Select>
+      </div>
+      {/* Validity Status Filter */}
+      <div>
+        <h4>Validity Status</h4>
+        <select
+          value={validityStatus}
+          onChange={(e) => handleValidityStatusChange(e.target.value)}
+        >
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="draft">Draft</option>
+          <option value="void">Void</option>
+        </select>
+      </div>
+
+      {/* Payment Status Filter */}
+      <div>
+        <h4>Payment Status</h4>
+        <label>
+          <input
+            type="radio"
+            name="paymentStatus"
+            value="paid"
+            onChange={() => handlePaymentStatusChange("paid")}
+          />
+          Paid
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="paymentStatus"
+            value="unpaid"
+            onChange={() => handlePaymentStatusChange("unpaid")}
+          />
+          Unpaid
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="paymentStatus"
+            value=""
+            onChange={() => handlePaymentStatusChange(null)}
+          />
+          All
+        </label>
+      </div>
+
+      {/* Payment Method Filter */}
+      <div>
+        <h4>Payment Method</h4>
+        <select
+          value={paymentMethod || ""}
+          onChange={(e) => handlePaymentMethodChange(e.target.value || null)}
+        >
+          <option value="">All</option>
+          <option value="cash">Cash</option>
+          <option value="bankTransfer">Bank Transfer</option>
+          <option value="paynow">PayNow</option>
+          <option value="paylah">PayLah</option>
+        </select>
       </div>
 
       <Tabs defaultValue="all">
