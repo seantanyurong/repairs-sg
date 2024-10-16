@@ -65,22 +65,22 @@ const GraphDisplay: React.FC<GraphDisplayProps> = ({
 
       if (selectedGraph === 'job-type-dist') {
         label = 'Job Type Distribution';
-        dataUrl = `/analytics/${selectedGraph}-${timePeriod}-${summaryType}.json`;
+        dataUrl = `/analytics/job/${selectedGraph}-${timePeriod}-${summaryType}.json`;
       } else if (selectedGraph === 'job-duration-dist') {
         label = 'Average Job Duration Distribution';
-        dataUrl = `/analytics/${selectedGraph}-${timePeriod}.json`;
+        dataUrl = `/analytics/job/${selectedGraph}-${timePeriod}.json`;
       } else if (selectedGraph === 'job-delay-dist') {
         label = 'Average Job Delay Distribution';
-        dataUrl = `/analytics/${selectedGraph}-${timePeriod}.json`;
+        dataUrl = `/analytics/job/${selectedGraph}-${timePeriod}.json`;
       } else if (selectedGraph === 'job-revenue-dist') {
         label = 'Job Revenue Distribution';
-        dataUrl = `/analytics/${selectedGraph}-${timePeriod}-${summaryType}.json`;
+        dataUrl = `/analytics/job/${selectedGraph}-${timePeriod}-${summaryType}.json`;
       } else if (selectedGraph === 'job-revenue-forecast') {
         label = 'Job Revenue Forecast';
-        dataUrl = `/analytics/${selectedGraph}-${selectedJob}-${forecastPeriod}.json`;
+        dataUrl = `/analytics/job/${selectedGraph}-${selectedJob}-${forecastPeriod}.json`;
       } else if (selectedGraph === 'job-demand-forecast') {
         label = 'Job Demand Forecast';
-        dataUrl = `/analytics/${selectedGraph}-${selectedJob}-${forecastPeriod}.json`;
+        dataUrl = `/analytics/job/${selectedGraph}-${selectedJob}-${forecastPeriod}.json`;
       }
 
       try {
