@@ -58,7 +58,8 @@ export default function Invoices({
   customerMap,
 }: InvoicesProps) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
-  const [sortDirection, setSortDirection] = useState<string>("");
+  const [sortDateDirection, setSortDateDirection] = useState<string>("");
+  const [sortPriceDirection, setSortPriceDirection] = useState<string>("");
 
   const handleSearch = (query: string) => {
     if (query.trim() === "") {
@@ -218,11 +219,13 @@ export default function Invoices({
       <SearchBar onSearch={handleSearch} />
 
       {/* Sort selects */}
-      <>
+      <div className="flex items-center space-x-4 bg-secondary p-4 rounded">
+        <span className="text-sm font-bold">Sort by</span>
         <Select
-          value={sortDirection}
+          value={sortDateDirection}
           onValueChange={(newDirection) => {
-            setSortDirection(newDirection);
+            setSortDateDirection(newDirection);
+            setSortPriceDirection("");
             if (newDirection === "asc" || newDirection === "desc")
               sortInvoices("dateIssued", newDirection);
           }}
@@ -240,9 +243,10 @@ export default function Invoices({
         </Select>
 
         <Select
-          value={sortDirection}
+          value={sortPriceDirection}
           onValueChange={(newDirection) => {
-            setSortDirection(newDirection);
+            setSortPriceDirection(newDirection);
+            setSortDateDirection("");
             if (newDirection === "asc" || newDirection === "desc")
               sortInvoices("totalAmount", newDirection);
           }}
@@ -258,7 +262,7 @@ export default function Invoices({
             </SelectGroup>
           </SelectContent>
         </Select>
-      </>
+      </div>
 
       <Tabs defaultValue="all">
         <div className="flex items-center">
