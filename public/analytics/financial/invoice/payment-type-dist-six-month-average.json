@@ -1,0 +1,12 @@
+{
+    "labels": [
+        "PayNow",
+        "Cash",
+        "Bank Transfer"
+    ],
+    "data": [
+        198.0,
+        93.0,
+        66.0
+    ]
+}
