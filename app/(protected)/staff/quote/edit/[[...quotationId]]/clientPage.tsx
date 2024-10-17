@@ -136,6 +136,8 @@ const EditQuoteClient = ({
         result.fullName ?? `${result.firstName} ${result.lastName}`
       );
     } catch (err) {
+      quotationForm.setValue("customer", undefined);
+      templateForm.setValue("customer_name", "");
       console.error(err);
       toast.error(
         (err as Error).message ?? "An error has ocurred, please try again!"
