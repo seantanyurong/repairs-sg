@@ -56,7 +56,7 @@ interface InvoicesProps {
 
 type ValidityStatus = "active" | "draft" | "void";
 type PaymentStatus = "paid" | "unpaid";
-type PaymentMethod = "cash" | "bankTransfer" | "payNow";
+type PaymentMethod = "cash" | "banktransfer" | "paynow";
 
 export default function Invoices({
   initialInvoices,
@@ -91,8 +91,8 @@ export default function Invoices({
 
   const [paymentMethod, setPaymentMethod] = useState({
     cash: true,
-    bankTransfer: true,
-    payNow: true,
+    banktransfer: true,
+    paynow: true,
   });
 
   const handleSearch = (query: string) => {
