@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, 
   CategoryScale, 
   LinearScale, 
@@ -12,7 +12,7 @@ import { Chart as ChartJS,
   Tooltip, 
   Legend 
 } from 'chart.js';
-import { getLabels } from '../_components/label';
+import { getLabels } from './label';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -20,8 +20,8 @@ interface GraphDisplayProps {
   selectedGraph: string;
   timePeriod: string;
   summaryType: string;
-  forecastPeriod: string;
-  selectedJob: string;
+  paymentType: string;
+  selectedMonth: string;
 }
 
 interface ChartData {
@@ -38,9 +38,9 @@ interface ChartData {
 const GraphDisplay: React.FC<GraphDisplayProps> = ({ 
   selectedGraph, 
   timePeriod, 
-  summaryType, 
-  forecastPeriod, 
-  selectedJob 
+  summaryType,
+  paymentType,
+  selectedMonth,
 }) => {
   const [chartData, setChartData] = useState<ChartData>({
     labels: [],
@@ -63,25 +63,13 @@ const GraphDisplay: React.FC<GraphDisplayProps> = ({
       let dataUrl = '';
       let label = '';
 
-      if (selectedGraph === 'job-type-dist') {
-        label = 'Job Type Distribution';
-        dataUrl = `/analytics/job/${selectedGraph}-${timePeriod}-${summaryType}.json`;
-      } else if (selectedGraph === 'job-duration-dist') {
-        label = 'Average Job Duration Distribution';
-        dataUrl = `/analytics/job/${selectedGraph}-${timePeriod}.json`;
-      } else if (selectedGraph === 'job-delay-dist') {
-        label = 'Average Job Delay Distribution';
-        dataUrl = `/analytics/job/${selectedGraph}-${timePeriod}.json`;
-      } else if (selectedGraph === 'job-revenue-dist') {
-        label = 'Job Revenue Distribution';
-        dataUrl = `/analytics/job/${selectedGraph}-${timePeriod}-${summaryType}.json`;
-      } else if (selectedGraph === 'job-revenue-forecast') {
-        label = 'Job Revenue Forecast';
-        dataUrl = `/analytics/job/${selectedGraph}-${selectedJob}-${forecastPeriod}.json`;
-      } else if (selectedGraph === 'job-demand-forecast') {
-        label = 'Job Demand Forecast';
-        dataUrl = `/analytics/job/${selectedGraph}-${selectedJob}-${forecastPeriod}.json`;
-      }
+      if (selectedGraph === 'payment-type-dist') {
+        label = 'Payment Type Distribution';
+        dataUrl = `/analytics/financial/invoice/${selectedGraph}-${timePeriod}-${summaryType}.json`;
+      } else if (selectedGraph === 'payment-duration-dist') {
+        label = 'Payment Duration Distribution';
+        dataUrl = `/analytics/financial/invoice/${selectedGraph}-${paymentType}-${selectedMonth}.json`;
+      } 
 
       try {
         console.log('Fetching data from:', dataUrl);
@@ -107,23 +95,15 @@ const GraphDisplay: React.FC<GraphDisplayProps> = ({
       }      
     };
 
-    if (['job-type-dist', 'job-duration-dist', 'job-delay-dist', 'job-revenue-dist', 'job-revenue-forecast', 'job-demand-forecast'].includes(selectedGraph)) {
+    if (['payment-type-dist', 'payment-duration-dist'].includes(selectedGraph)) {
       fetchData();
     }
-  }, [selectedGraph, timePeriod, summaryType, forecastPeriod, selectedJob]);
+  }, [selectedGraph, timePeriod, summaryType, paymentType, selectedMonth]);
 
-  if (['job-type-dist', 'job-duration-dist', 'job-delay-dist', 'job-revenue-dist'].includes(selectedGraph)) {
+  if (['payment-type-dist', 'payment-duration-dist'].includes(selectedGraph)) {
     return (
       <div className="w-full h-96">
         <Bar data={chartData} options={options} />
-      </div>
-    );
-  }
-
-  if (['job-revenue-forecast', 'job-demand-forecast'].includes(selectedGraph)) {
-    return (
-      <div className="w-full h-96">
-        <Line data={chartData} options={options} /> 
       </div>
     );
   }

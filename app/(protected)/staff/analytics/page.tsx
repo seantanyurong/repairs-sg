@@ -19,12 +19,12 @@ export default function AnalyticsDashboard() {
           </div>
         </Link>
 
-        <Link href="/analytics/quotation-analytics">
+        <Link href="/staff/analytics/financial-analytics">
           <div className="p-4 border rounded-lg hover:shadow-md cursor-pointer">
-            <h2 className="text-lg font-semibold">Quotation Analytics</h2>
+            <h2 className="text-lg font-semibold">Financial Analytics</h2>
             <Image 
-              src="/images/quotation-analytics.svg" 
-              alt="Quotation Analytics" 
+              src="/images/financial-analytics.svg" 
+              alt="Financial Analytics" 
               width={500}
               height={300}
             />
@@ -32,20 +32,7 @@ export default function AnalyticsDashboard() {
           </div>
         </Link>
 
-        <Link href="/analytics/invoice-analytics">
-          <div className="p-4 border rounded-lg hover:shadow-md cursor-pointer">
-            <h2 className="text-lg font-semibold">Invoice Analytics</h2>
-            <Image 
-              src="/images/invoice-analytics.svg" 
-              alt="Invoice Analytics" 
-              width={500}
-              height={300}
-            />
-            {/* <a href="https://storyset.com/work">Work illustrations by Storyset</a> */}
-          </div>
-        </Link>
-
-        <Link href="/analytics/customer-analytics">
+        <Link href="/staff/analytics/customer-analytics">
           <div className="p-4 border rounded-lg hover:shadow-md cursor-pointer">
             <h2 className="text-lg font-semibold">Customer Analytics</h2>
             <Image 
@@ -55,6 +42,19 @@ export default function AnalyticsDashboard() {
               height={300}
             />
             {/* <a href="https://storyset.com/people">People illustrations by Storyset</a> */}
+          </div>
+        </Link>
+
+        <Link href="/staff/analytics/advanced-analytics">
+          <div className="p-4 border rounded-lg hover:shadow-md cursor-pointer">
+            <h2 className="text-lg font-semibold">Advanced Analytics</h2>
+            <Image 
+              src="/images/advanced-analytics.svg" 
+              alt="Advanced Analytics" 
+              width={500}
+              height={300}
+            />
+            {/* <a href="https://storyset.com/technology">Technology illustrations by Storyset</a> */}
           </div>
         </Link>
       </div>
