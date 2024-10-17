@@ -84,10 +84,11 @@ type ContextType = {
 const Context = createContext<ContextType>({} as ContextType);
 
 export type CalendarEvent = {
-  _id: string;
-  timeStart: Date;
-  timeEnd: Date;
-  title: string;
+  _id: string;                    
+  timeStart: Date;              
+  timeEnd: Date;                 
+  title: string;                   
+  staff: string;                 
   color?: VariantProps<typeof monthEventVariants>['variant'];
 };
 

@@ -136,9 +136,9 @@ export default function PublicLayout({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="/staff/schedule"
+                href="/staff/schedule?filters=all"
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                  pathname === "/staff/schedule"
+                  pathname === "/staff/schedule?filters=all"
                     ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground"
                 } transition-colors hover:text-foreground md:h-8 md:w-8`}
@@ -356,9 +356,9 @@ export default function PublicLayout({
                   {NAVIGATION_LABELS.SERVICES}
                 </Link>
                 <Link
-                  href="/staff/schedule"
+                  href="/staff/schedule?filters=all"
                   className={`flex items-center gap-4 px-2.5 ${
-                    pathname === "/staff/schedule"
+                    pathname === "/staff/schedule?filters=all"
                       ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
