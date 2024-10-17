@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import InvoiceRow from "./InvoiceRow";
 import SearchBar from "@/app/(protected)/_components/SearchBar";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Invoice {
   invoiceId: string | number;
@@ -53,20 +54,49 @@ interface InvoicesProps {
   customerMap: { [key: string]: { firstName: string; lastName: string } };
 }
 
+type ValidityStatus = "active" | "draft" | "void";
+type PaymentStatus = "paid" | "unpaid";
+type PaymentMethod = "cash" | "bankTransfer" | "payNow";
+
 export default function Invoices({
   initialInvoices,
   customerMap,
 }: InvoicesProps) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
+  const [filteredInvoices, setFilteredInvoices] =
+    useState<Invoice[]>(initialInvoices);
+  const [query, setQuery] = useState<string>("");
+
+  // Sort states
   const [sortDateDirection, setSortDateDirection] = useState<string>("");
   const [sortPriceDirection, setSortPriceDirection] = useState<string>("");
 
   // Filter states
-  const [validityStatus, setValidityStatus] = useState<string>("all");
-  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
+  const [validityStatus, setValidityStatus] = useState<{
+    active: boolean;
+    draft: boolean;
+    void: boolean;
+  }>({
+    active: true,
+    draft: true,
+    void: true,
+  });
+  const [paymentStatus, setPaymentStatus] = useState<{
+    paid: boolean;
+    unpaid: boolean;
+  }>({
+    paid: true,
+    unpaid: true,
+  });
+
+  const [paymentMethod, setPaymentMethod] = useState({
+    cash: true,
+    bankTransfer: true,
+    payNow: true,
+  });
 
   const handleSearch = (query: string) => {
+    setQuery(query);
     if (query.trim() === "") {
       // If query is empty, reset the search & sort
       setInvoices(initialInvoices);
@@ -87,6 +117,7 @@ export default function Invoices({
       });
 
       setInvoices(filteredInvoices);
+      console.log("search", filteredInvoices);
     }
   };
 
@@ -118,51 +149,59 @@ export default function Invoices({
   };
 
   // Filtering logic
+  const handleValidityChange = (filter: string, checked: boolean) => {
+    setValidityStatus((prevState) => ({
+      ...prevState,
+      [filter]: checked,
+    }));
+  };
+
+  const handlePaymentStatusChange = (filter: string, checked: boolean) => {
+    setPaymentStatus((prevState) => ({
+      ...prevState,
+      [filter]: checked,
+    }));
+  };
+
+  const handlePaymentMethodChange = (filter: string, checked: boolean) => {
+    setPaymentMethod((prevState) => ({
+      ...prevState,
+      [filter]: checked,
+    }));
+  };
+
+  useEffect(() => {
+    handleFilter();
+  }, [validityStatus]);
+
   const handleFilter = () => {
-    let filteredInvoices = initialInvoices;
+    handleSearch(query);
 
     // Filter by validity status
-    if (validityStatus !== "all") {
-      filteredInvoices = filteredInvoices.filter(
-        (invoice) => invoice.validityStatus === validityStatus,
-      );
-    }
+    const filteredInvoices = initialInvoices.filter((invoice) => {
+      const validityKey = invoice.validityStatus as ValidityStatus;
+      console.log("validityKey", validityKey);
+      console.log("filtering validity", validityStatus);
+      return validityStatus[validityKey];
+    });
 
     // Filter by payment status
-    if (paymentStatus) {
-      filteredInvoices = filteredInvoices.filter(
-        (invoice) => invoice.paymentStatus === paymentStatus,
-      );
-    }
+    filteredInvoices.filter((invoice) => {
+      const paymentStatusKey = invoice.paymentStatus as PaymentStatus;
+      return paymentStatus[paymentStatusKey];
+    });
 
     // Filter by payment method
-    if (paymentMethod) {
-      filteredInvoices = filteredInvoices.filter(
-        (invoice) =>
-          invoice.payments[0]?.paymentMethod ===
-          invoice.payments[0]?.paymentMethod,
-      );
-    }
+    filteredInvoices.filter((invoice) => {
+      if (invoice.payments[0]) {
+        const paymentMethodKey = invoice.payments[0]
+          .paymentMethod as PaymentMethod;
+        return paymentMethod[paymentMethodKey];
+      }
+    });
 
     setInvoices(filteredInvoices);
-  };
-
-  // Handling validity status filter change
-  const handleValidityStatusChange = (status: string) => {
-    setValidityStatus(status);
-    handleFilter();
-  };
-
-  // Handling payment status filter change
-  const handlePaymentStatusChange = (status: string | null) => {
-    setPaymentStatus(status);
-    handleFilter();
-  };
-
-  // Handling payment method filter change
-  const handlePaymentMethodChange = (method: string | null) => {
-    setPaymentMethod(method);
-    handleFilter();
+    console.log("filter", filteredInvoices);
   };
 
   const invoiceDisplay = (validityStatus?: string) => {
@@ -318,65 +357,163 @@ export default function Invoices({
           </SelectContent>
         </Select>
       </div>
-      {/* Validity Status Filter */}
-      <div>
-        <h4>Validity Status</h4>
-        <select
-          value={validityStatus}
-          onChange={(e) => handleValidityStatusChange(e.target.value)}
-        >
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="draft">Draft</option>
-          <option value="void">Void</option>
-        </select>
-      </div>
 
-      {/* Payment Status Filter */}
-      <div>
-        <h4>Payment Status</h4>
-        <label>
-          <input
-            type="radio"
-            name="paymentStatus"
-            value="paid"
-            onChange={() => handlePaymentStatusChange("paid")}
-          />
-          Paid
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="paymentStatus"
-            value="unpaid"
-            onChange={() => handlePaymentStatusChange("unpaid")}
-          />
-          Unpaid
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="paymentStatus"
-            value=""
-            onChange={() => handlePaymentStatusChange(null)}
-          />
-          All
-        </label>
-      </div>
+      <div className="p-4 border rounded">
+        <h2 className="text-lg font-bold mb-4">Search Filter</h2>
 
-      {/* Payment Method Filter */}
-      <div>
-        <h4>Payment Method</h4>
-        <select
-          value={paymentMethod || ""}
-          onChange={(e) => handlePaymentMethodChange(e.target.value || null)}
-        >
-          <option value="">All</option>
-          <option value="cash">Cash</option>
-          <option value="bankTransfer">Bank Transfer</option>
-          <option value="paynow">PayNow</option>
-          <option value="paylah">PayLah</option>
-        </select>
+        {/* Validity Status */}
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">Validity Status</h3>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="validityActive"
+                defaultChecked={true}
+                onCheckedChange={(checked) => {
+                  if (typeof checked === "boolean")
+                    handleValidityChange("active", checked);
+                }}
+              />
+              <label
+                htmlFor="validityActive"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Active
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="validityDraft"
+                defaultChecked={true}
+                onCheckedChange={(checked) => {
+                  if (typeof checked === "boolean")
+                    handleValidityChange("draft", checked);
+                }}
+              />
+              <label
+                htmlFor="validityDraft"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Draft
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="validityVoid"
+                defaultChecked={true}
+                onCheckedChange={(checked) => {
+                  if (typeof checked === "boolean")
+                    handleValidityChange("void", checked);
+                }}
+              />
+              <label
+                htmlFor="validityVoid"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Void
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Status */}
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">Payment Status</h3>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="paymentPaid"
+                defaultChecked={false}
+                onCheckedChange={(checked) => {
+                  if (typeof checked === "boolean")
+                    handlePaymentStatusChange("paid", checked);
+                }}
+              />
+              <label
+                htmlFor="paymentPaid"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Paid
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="paymentUnpaid"
+                defaultChecked={false}
+                onCheckedChange={(checked) => {
+                  if (typeof checked === "boolean")
+                    handlePaymentStatusChange("unpaid", checked);
+                }}
+              />
+              <label
+                htmlFor="paymentUnpaid"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Unpaid
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Method */}
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold">Payment Method</h3>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="paymentCash"
+                defaultChecked={false}
+                onCheckedChange={(checked) => {
+                  if (typeof checked === "boolean")
+                    handlePaymentMethodChange("cash", checked);
+                }}
+              />
+              <label
+                htmlFor="paymentCash"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Cash
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="paymentBankTransfer"
+                defaultChecked={false}
+                onCheckedChange={(checked) => {
+                  if (typeof checked === "boolean")
+                    handlePaymentMethodChange("bankTransfer", checked);
+                }}
+              />
+              <label
+                htmlFor="paymentBankTransfer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Bank Transfer
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="paymentPayNow"
+                defaultChecked={false}
+                onCheckedChange={(checked) => {
+                  if (typeof checked === "boolean")
+                    handlePaymentMethodChange("payNow", checked);
+                }}
+              />
+              <label
+                htmlFor="paymentPayNow"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                PayNow
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="all">
