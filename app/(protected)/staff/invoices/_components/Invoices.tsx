@@ -172,30 +172,29 @@ export default function Invoices({
 
   useEffect(() => {
     handleFilter();
-  }, [validityStatus]);
+  }, [validityStatus, paymentStatus, paymentMethod]);
 
   const handleFilter = () => {
     handleSearch(query);
 
     // Filter by validity status
-    const filteredInvoices = initialInvoices.filter((invoice) => {
+    let filteredInvoices = initialInvoices.filter((invoice) => {
       const validityKey = invoice.validityStatus as ValidityStatus;
-      console.log("validityKey", validityKey);
-      console.log("filtering validity", validityStatus);
       return validityStatus[validityKey];
     });
 
     // Filter by payment status
-    filteredInvoices.filter((invoice) => {
-      const paymentStatusKey = invoice.paymentStatus as PaymentStatus;
+    filteredInvoices = filteredInvoices.filter((invoice) => {
+      const paymentStatusKey =
+        invoice.paymentStatus.toLowerCase() as PaymentStatus;
       return paymentStatus[paymentStatusKey];
     });
 
     // Filter by payment method
-    filteredInvoices.filter((invoice) => {
+    filteredInvoices = filteredInvoices.filter((invoice) => {
       if (invoice.payments[0]) {
-        const paymentMethodKey = invoice.payments[0]
-          .paymentMethod as PaymentMethod;
+        const paymentMethodKey =
+          invoice.payments[0].paymentMethod.toLowerCase() as PaymentMethod;
         return paymentMethod[paymentMethodKey];
       }
     });
@@ -425,7 +424,7 @@ export default function Invoices({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="paymentPaid"
-                defaultChecked={false}
+                defaultChecked={true}
                 onCheckedChange={(checked) => {
                   if (typeof checked === "boolean")
                     handlePaymentStatusChange("paid", checked);
@@ -442,7 +441,7 @@ export default function Invoices({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="paymentUnpaid"
-                defaultChecked={false}
+                defaultChecked={true}
                 onCheckedChange={(checked) => {
                   if (typeof checked === "boolean")
                     handlePaymentStatusChange("unpaid", checked);
@@ -465,7 +464,7 @@ export default function Invoices({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="paymentCash"
-                defaultChecked={false}
+                defaultChecked={true}
                 onCheckedChange={(checked) => {
                   if (typeof checked === "boolean")
                     handlePaymentMethodChange("cash", checked);
@@ -482,7 +481,7 @@ export default function Invoices({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="paymentBankTransfer"
-                defaultChecked={false}
+                defaultChecked={true}
                 onCheckedChange={(checked) => {
                   if (typeof checked === "boolean")
                     handlePaymentMethodChange("bankTransfer", checked);
@@ -499,7 +498,7 @@ export default function Invoices({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="paymentPayNow"
-                defaultChecked={false}
+                defaultChecked={true}
                 onCheckedChange={(checked) => {
                   if (typeof checked === "boolean")
                     handlePaymentMethodChange("payNow", checked);
