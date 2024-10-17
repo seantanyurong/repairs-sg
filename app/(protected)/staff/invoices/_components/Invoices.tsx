@@ -66,8 +66,12 @@ export default function Invoices({
   const [query, setQuery] = useState<string>("");
 
   // Sort states
-  const [sortDateDirection, setSortDateDirection] = useState<string>("");
-  const [sortPriceDirection, setSortPriceDirection] = useState<string>("");
+  // const [sortDateDirection, setSortDateDirection] = useState<string>("");
+  // const [sortPriceDirection, setSortPriceDirection] = useState<string>("");
+  const [sortCriteria, setSortCriteria] = useState<
+    "dateIssued" | "totalAmount"
+  >("dateIssued");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   // Filter states
   const [validityStatus, setValidityStatus] = useState<{
@@ -94,59 +98,6 @@ export default function Invoices({
     unknown: true,
   });
 
-  const handleSearch = (query: string) => {
-    setQuery(query);
-    if (query.trim() === "") {
-      // If query is empty, reset the search & sort
-      setInvoices(initialInvoices);
-      setSortDateDirection("");
-      setSortPriceDirection("");
-    } else {
-      // Filter the invoices based on the customer name or invoice ID
-      const filteredInvoices = invoices.filter((invoice) => {
-        const customer = customerMap[invoice.customer];
-        const fullName = customer
-          ? `${customer.firstName} ${customer.lastName}`.toLowerCase()
-          : "unknown";
-
-        return (
-          fullName.includes(query.toLowerCase()) ||
-          invoice.invoiceId.toString().includes(query.toLowerCase())
-        );
-      });
-
-      setInvoices(filteredInvoices);
-      console.log("search", filteredInvoices);
-    }
-  };
-
-  // Sorting function
-  const sortInvoices = (criteria: string, direction: "asc" | "desc") => {
-    const sortedInvoices = [...invoices].sort((a, b) => {
-      let valueA: number | string;
-      let valueB: number | string;
-
-      if (criteria === "dateIssued") {
-        valueA = new Date(a.dateIssued).getTime();
-        valueB = new Date(b.dateIssued).getTime();
-      } else if (criteria === "totalAmount") {
-        valueA = a.totalAmount;
-        valueB = b.totalAmount;
-      } else {
-        return 0;
-      }
-
-      if (direction === "asc") {
-        return valueA > valueB ? 1 : -1;
-      } else {
-        return valueA < valueB ? 1 : -1;
-      }
-    });
-
-    setInvoices(sortedInvoices);
-    console.log("sortedInvoices", sortedInvoices);
-  };
-
   // Filtering logic
   const handleValidityChange = (filter: string, checked: boolean) => {
     setValidityStatus((prevState) => ({
@@ -170,14 +121,43 @@ export default function Invoices({
   };
 
   useEffect(() => {
-    handleFilter();
-  }, [validityStatus, paymentStatus, paymentMethod]);
+    handleSearchFilterSort(query);
+  }, [
+    validityStatus,
+    paymentStatus,
+    paymentMethod,
+    sortCriteria,
+    sortDirection,
+  ]);
 
-  const handleFilter = () => {
-    handleSearch(query);
+  const handleSearchFilterSort = (query: string) => {
+    // Search
+    let resultInvoices = initialInvoices;
+    setQuery(query);
+    if (query.trim() === "") {
+      // If query is empty, reset the search & sort
+      setInvoices(initialInvoices);
+      setSortCriteria("dateIssued");
+      setSortDirection("desc");
+    } else {
+      console.log("query", query);
+      // Filter the invoices based on the customer name or invoice ID
+      resultInvoices = initialInvoices.filter((invoice) => {
+        const customer = customerMap[invoice.customer];
+        const fullName = customer
+          ? `${customer.firstName} ${customer.lastName}`.toLowerCase()
+          : "unknown";
+
+        return (
+          fullName.includes(query.toLowerCase()) ||
+          invoice.invoiceId.toString().includes(query.toLowerCase())
+        );
+      });
+    }
+    // console.log("search", resultInvoices);
 
     // Filter by validity status
-    let filteredInvoices = initialInvoices.filter((invoice) => {
+    let filteredInvoices = resultInvoices.filter((invoice) => {
       const validityKey = invoice.validityStatus as ValidityStatus;
       return validityStatus[validityKey];
     });
@@ -194,19 +174,37 @@ export default function Invoices({
       if (invoice.payments[0]) {
         const paymentMethodKey =
           invoice.payments[0].paymentMethod.toLowerCase() as PaymentMethod;
-        console.log(
-          "paymentMethodKey",
-          paymentMethodKey,
-          paymentMethod[paymentMethodKey],
-        );
         return paymentMethod[paymentMethodKey];
       } else {
         return paymentMethod["unknown"];
       }
     });
+    // console.log("filter", filteredInvoices);
 
-    setInvoices(filteredInvoices);
-    console.log("filter", filteredInvoices);
+    // Sort
+    const sortedInvoices = [...filteredInvoices].sort((a, b) => {
+      let valueA: number | string;
+      let valueB: number | string;
+
+      if (sortCriteria === "dateIssued") {
+        valueA = new Date(a.dateIssued).getTime();
+        valueB = new Date(b.dateIssued).getTime();
+      } else if (sortCriteria === "totalAmount") {
+        valueA = a.totalAmount;
+        valueB = b.totalAmount;
+      } else {
+        return 0;
+      }
+
+      if (sortDirection === "asc") {
+        return valueA > valueB ? 1 : -1;
+      } else {
+        return valueA < valueB ? 1 : -1;
+      }
+    });
+
+    setInvoices(sortedInvoices);
+    // console.log("sorted", sortedInvoices);
   };
 
   const invoiceDisplay = (validityStatus?: string) => {
@@ -315,18 +313,17 @@ export default function Invoices({
 
   return (
     <>
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar onSearch={handleSearchFilterSort} />
 
       {/* Sort selects */}
       <div className="flex items-center space-x-4 bg-secondary p-4 rounded">
         <span className="text-sm font-bold">Sort by</span>
         <Select
-          value={sortDateDirection}
+          value={sortDirection}
           onValueChange={(newDirection) => {
-            setSortDateDirection(newDirection);
-            setSortPriceDirection("");
+            setSortCriteria("dateIssued");
             if (newDirection === "asc" || newDirection === "desc")
-              sortInvoices("dateIssued", newDirection);
+              setSortDirection(newDirection);
           }}
         >
           <SelectTrigger className="w-[180px]">
@@ -342,12 +339,11 @@ export default function Invoices({
         </Select>
 
         <Select
-          value={sortPriceDirection}
+          value={sortDirection}
           onValueChange={(newDirection) => {
-            setSortPriceDirection(newDirection);
-            setSortDateDirection("");
+            setSortCriteria("totalAmount");
             if (newDirection === "asc" || newDirection === "desc")
-              sortInvoices("totalAmount", newDirection);
+              setSortDirection(newDirection);
           }}
         >
           <SelectTrigger className="w-[180px]">
