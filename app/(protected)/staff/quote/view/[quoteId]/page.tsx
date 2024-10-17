@@ -67,7 +67,21 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
     quotation
   );
   const inputs = getInputFromTemplate(updatedQuoteTemplate);
-  const customer = JSON.parse(await getCustomerById(quotation.customer));
+  const customer = quotation.customer
+    ? JSON.parse(await getCustomerById(quotation.customer))
+    : undefined;
+
+  const customerDetails = customer
+    ? {
+        name: customer.fullName ?? `${customer.firstName} ${customer.lastName}`,
+        email: customer.emailAddresses[0].emailAddress,
+        phone: customer.primaryPhoneNumber?.phoneNumber ?? "NA",
+      }
+    : {
+        name: inputs[0].customer_name,
+        email: quotation.customerEmail,
+        phone: "NA",
+      };
 
   const submitQuotationAction = async (quote: string) => {
     "use server";
@@ -109,7 +123,7 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
       <div className="flex lg:flex-row flex-col gap-2 h-dvh">
         <QuoteDetailsClient
           quotation={quotation}
-          customer={customer}
+          customer={customerDetails}
           updateQuotationAction={submitQuotationAction}
         />
         <QuoteViewerClient

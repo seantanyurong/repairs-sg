@@ -49,8 +49,8 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
       redirect(`/staff/quote/view/${params.quotationId}`);
 
     quotationFormValues = {
-      quotationDate: quotation.quotationDate,
-      quotationExpiry: quotation.quotationExpiry,
+      quotationDate: new Date(quotation.quotationDate),
+      quotationExpiry: new Date(quotation.quotationExpiry),
       notes: quotation.notes,
       customerEmail: quotation.customerEmail,
       quoteTemplate: quotation.quoteTemplate,

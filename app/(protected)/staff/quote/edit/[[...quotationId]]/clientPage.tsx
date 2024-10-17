@@ -107,8 +107,9 @@ const EditQuoteClient = ({
   const templateForm = useForm({ defaultValues: templateFormValues });
 
   const getCustomerByEmail = async () => {
+    quotationForm.clearErrors("customerEmail");
     const fieldState = quotationForm.getFieldState("customerEmail");
-    if (!fieldState.isTouched || fieldState.invalid) {
+    if (fieldState.invalid) {
       quotationForm.setError("customerEmail", {
         type: "pattern",
         message: "Enter a valid email address",
@@ -116,7 +117,14 @@ const EditQuoteClient = ({
       return;
     }
     setIsLoading(true);
+
     try {
+      templateForm.setValue(
+        "sales_email",
+        user?.primaryEmailAddress?.emailAddress
+      );
+      templateForm.setValue("sales_mobile", user?.primaryPhoneNumber);
+
       const result: User = JSON.parse(
         await getCustomerAction(quotationForm.getValues("customerEmail"))
       );
@@ -127,11 +135,6 @@ const EditQuoteClient = ({
         "customer_name",
         result.fullName ?? `${result.firstName} ${result.lastName}`
       );
-      templateForm.setValue(
-        "sales_email",
-        user?.primaryEmailAddress?.emailAddress
-      );
-      templateForm.setValue("sales_mobile", user?.primaryPhoneNumber);
     } catch (err) {
       console.error(err);
       toast.error(
@@ -186,8 +189,10 @@ const EditQuoteClient = ({
   };
 
   const handleContinue = async () => {
+    quotationForm.trigger();
+    if (!quotationForm.formState.isValid) return;
     const quotationId = await onSubmit();
-    router.push(`/staff/quote/view/${quotationId}`);
+    if (quotationId) router.push(`/staff/quote/view/${quotationId}`);
   };
 
   return (

@@ -8,7 +8,7 @@ import { sendQuoteEmailPostmark } from "../postmark";
 
 const quotationSchema = z.object({
   quotationDate: z.string().min(1),
-  quotationExpiry: z.date(),
+  quotationExpiry: z.string().min(1),
   quoteTemplate: z.string().min(1),
   customerEmail: z.string().email(),
   totalAmount: z.number(),
@@ -110,8 +110,6 @@ const sendQuoteEmail = async (id: string, attachment: string) => {
   const customerEmail =
     customer.primaryEmailAddress?.emailAddress ??
     customer.emailAddresses[0].emailAddress;
-
-  console.log("hi", customerEmail);
 
   const customerName =
     customer.fullName ?? `${customer.firstName} ${customer.lastName}`;

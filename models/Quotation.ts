@@ -44,7 +44,6 @@ const quotationSchema = new mongoose.Schema(
     },
     customer: {
       type: String,
-      required: [true, "Customer Is Required!"],
     },
     job: {
       type: mongoose.Schema.Types.ObjectId,
