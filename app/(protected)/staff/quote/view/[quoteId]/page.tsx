@@ -115,6 +115,7 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
           Quotation #{quotation.quotationId}
         </h2>
         <QuoteActionsClient
+          quotationId={params.quoteId}
           status={quotation.status}
           sendEmailAction={sendEmailAction}
           updateStatusAction={updateStatusAction}

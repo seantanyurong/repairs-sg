@@ -4,14 +4,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const QuoteActionsClient = ({
+  quotationId,
   status,
   sendEmailAction,
   updateStatusAction,
 }: {
+  quotationId: string;
   status: string;
   sendEmailAction: () => Promise<void>;
   updateStatusAction: (newStatus: string) => Promise<unknown>;
@@ -55,6 +57,14 @@ const QuoteActionsClient = ({
       {status === "Draft" && (
         <>
           <Badge variant="outline">Draft</Badge>
+          <Button
+            type="button"
+            onClick={() => router.push(`/staff/quote/edit/${quotationId}`)}
+            className="w-auto"
+            variant="outline"
+          >
+            Edit
+          </Button>
           <Button
             type="button"
             onClick={() => updateStatus("Active")}
