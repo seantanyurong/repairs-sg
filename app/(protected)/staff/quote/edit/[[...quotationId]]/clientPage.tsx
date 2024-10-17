@@ -123,7 +123,8 @@ const EditQuoteClient = ({
         "sales_email",
         user?.primaryEmailAddress?.emailAddress
       );
-      templateForm.setValue("sales_mobile", user?.primaryPhoneNumber);
+
+      templateForm.setValue("sales_mobile", user?.unsafeMetadata.phone);
 
       const result: User = JSON.parse(
         await getCustomerAction(quotationForm.getValues("customerEmail"))
