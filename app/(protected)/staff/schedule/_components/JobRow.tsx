@@ -10,18 +10,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
-import { deleteService } from '@/lib/actions/services';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { updateJobStaff } from '@/lib/actions/jobs';
+import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 
 export default function JobRow({
+  id,
   serviceName,
   description,
   address,
   staffName,
   timeStart,
   timeEnd,
-  status
+  status,
+  staffArray,
 }: {
   id: string;
   serviceName: string;
@@ -31,7 +34,15 @@ export default function JobRow({
   timeStart: string;
   timeEnd: string;
   status: string;
+  staffArray: { id: string; name: string }[]; // List of staff to assign
 }) {
+
+  // const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
+
+  const handleAssignStaff = async (jobId: string, staffId: string) => {
+    // setSelectedStaff(staffId);
+    await updateJobStaff(jobId, staffId); // Call the parent function to update the job with selected staff
+  };
 
   return (
     <TableRow>
@@ -47,21 +58,21 @@ export default function JobRow({
       <TableCell>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button aria-haspopup='true' size='icon' variant='ghost'>
-              <MoreHorizontal className='h-4 w-4' />
-              <span className='sr-only'>Toggle menu</span>
+            <Button variant='outline'>
+              Assign Staff
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => router.push(`/staff/vehicles/edit-vehicle/${id}`)}
-              className='cursor-pointer'>
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => deleteVehicle(id)} className='cursor-pointer'>
-              Delete
-            </DropdownMenuItem>
+          <DropdownMenuLabel>Available Staff</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {staffArray.map((staff) => (
+              <DropdownMenuItem
+                key={staff.id}
+                onClick={() => handleAssignStaff(id, staff.id)}
+                className='cursor-pointer'>
+                {staff.name}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>

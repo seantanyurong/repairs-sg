@@ -8,6 +8,12 @@ import { getSchedules } from '@/lib/actions/schedules';
 import { getServices } from '@/lib/actions/services';
 import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
 import CalendarClient from './clientComponent';
+import { findAvailableStaff } from './_utils';
+import { getLeaves } from '@/lib/actions/leave';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
+
 
 type SearchParams = {
   filters?: string;
@@ -15,10 +21,14 @@ type SearchParams = {
 
 export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
   const jobs = await getJobsForSchedule();
-  // console.log(jobs);
 
+  // const onAssignStaff = async (jobId: string, staffId: string) => {
+  //   // Update the job with the new staff
+  //   await updateJobStaff({ _id: jobId, staff: staffId });
+  // }
   const services = await getServices();
   const schedules = await getSchedules();
+  const leaves = await getLeaves();
 
   const staff = await clerkClient().users.getUserList();
 
@@ -26,11 +36,11 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
   const staffArray = staff.data.map((staff) => {
     return { id: String(staff.id).trim(), name: staff.firstName + ' ' + staff.lastName };
   });
+
   console.log(staffArray);
 
   const filters = searchParams.filters;
   const filtersArray = filters ? filters.split(',') : [];
-  console.log(filtersArray);
 
   // convert the staff attribute in jobs to hold the name of the staff instead of the id
   jobs.map((job) => {
@@ -45,6 +55,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
     // return all if there is no filter param
     if (filtersArray[0] === 'all') {
       return jobs.map((job) => {
+
         return (
           <JobRow
             key={job._id.toString()}
@@ -56,6 +67,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
+            staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
           />
         );
       });
@@ -65,6 +77,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
     return jobs
       .filter((job) => filtersArray.includes(job.staff))
       .map((job) => {
+
         return (
           <JobRow
             key={job._id.toString()}
@@ -76,6 +89,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
+            staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
           />
         );
       });
@@ -149,16 +163,13 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
           items={staffArray.map((staff) => {
             return { label: staff.name };
           })}></DropdownMenuCheckboxes>
-        {/* <DropdownMenuCheckboxes
-          items={ services.map((service) => { return { label: service.name }; })}>
-        </DropdownMenuCheckboxes> */}
         <div className='ml-auto flex items-center gap-2'>
-          {/* <Link href='/staff/jobs/create-event'>
+          <Link href='/staff/jobs/create-event'>
             <Button size='sm' className='h-8 gap-1'>
               <PlusCircle className='h-3.5 w-3.5' />
               <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Create Event</span>
             </Button>
-          </Link> */}
+          </Link>
         </div>
       </div>
       <TabsContent value='calendar'>
