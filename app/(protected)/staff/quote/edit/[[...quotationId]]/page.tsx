@@ -71,9 +71,11 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
     "use server";
     console.log(params.quotationId);
     if (params.quotationId) {
-      return updateQuotation(params.quotationId, quote, templateInputs);
+      return JSON.stringify(
+        await updateQuotation(params.quotationId, quote, templateInputs)
+      );
     } else {
-      return addQuotation(quote, templateInputs);
+      return JSON.stringify(await addQuotation(quote, templateInputs));
     }
   };
 

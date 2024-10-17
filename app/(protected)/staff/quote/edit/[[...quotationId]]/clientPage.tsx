@@ -72,11 +72,7 @@ interface EditQuoteClientProps {
   submitQuotationAction: (
     quote: string,
     templateInputs: string
-  ) => Promise<{
-    message: string;
-    id?: string;
-    errors?: string | Record<string, unknown>;
-  }>;
+  ) => Promise<string>;
 }
 
 const EditQuoteClient = ({
@@ -167,7 +163,7 @@ const EditQuoteClient = ({
       })
     );
 
-    const result = await submitQuotationAction(
+    const response = await submitQuotationAction(
       JSON.stringify({
         ...quotationForm.getValues(),
         totalAmount: lineItemTotal.total,
@@ -180,6 +176,13 @@ const EditQuoteClient = ({
       }),
       JSON.stringify(templateForm.getValues())
     );
+
+    const result: {
+      message: string;
+      id?: string;
+      errors?: string | Record<string, unknown>;
+    } = JSON.parse(response);
+    console.log(response);
     if (result?.errors) {
       setErrors(result.errors);
       return;
