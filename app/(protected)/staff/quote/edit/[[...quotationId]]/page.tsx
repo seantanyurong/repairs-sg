@@ -25,6 +25,9 @@ const replaceNullsWithEmptyStrings = (obj: unknown): unknown => {
 
 const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
   const quoteTemplates = await getQuoteTemplates();
+  const activeTemplates = JSON.parse(quoteTemplates).filter(
+    (quote: { status: "Active" | "Inactive" }) => quote.status === "Active"
+  );
 
   let quotationFormValues = {
     quotationDate: new Date(),
@@ -76,7 +79,7 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
 
   return (
     <EditQuoteClient
-      templates={JSON.parse(quoteTemplates)}
+      templates={activeTemplates}
       getCustomerAction={getCustomerByEmail}
       quotationFormValues={quotationFormValues}
       templateFormValues={templateFormValues as { [x: string]: unknown }}
