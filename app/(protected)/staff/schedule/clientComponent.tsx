@@ -17,7 +17,17 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ModeToggle } from '@/components/ui/theme-toggle';
 import { useEffect, useState } from 'react';
 
-export default function CalendarClient({ filtersArray, jobs }: { filtersArray: string[]; jobs: any }) {
+// Infer types from Mongoose models
+export interface Job {
+  _id: string;                    // Converted to string
+  timeStart: Date;               // Formatted date as a string
+  timeEnd: Date;                 // Formatted date as a string
+  title: string;                   // Title for the job, corresponds to job.description
+  staff: string;                 // Staff remains an array of strings
+}
+
+
+export default function CalendarClient({ filtersArray, jobs }: { filtersArray: string[]; jobs: Job[] }) {
   const [filteredJobs, setFilteredJobs] = useState(jobs);
 
   useEffect(() => {
@@ -29,9 +39,9 @@ export default function CalendarClient({ filtersArray, jobs }: { filtersArray: s
         jobs.map((job) => {
           return {
             _id: job._id.toString(),
-            timeStart: new Date(job.timeStart),
-            timeEnd: new Date(job.timeEnd),
-            title: job.description,
+            timeStart:job.timeStart,
+            timeEnd: job.timeEnd,
+            title: job.title,
             staff: job.staff,
             color: 'blue',
           };
@@ -46,9 +56,9 @@ export default function CalendarClient({ filtersArray, jobs }: { filtersArray: s
       .map((job) => {
         return {
           _id: job._id.toString(),
-          timeStart: new Date(job.timeStart),
-          timeEnd: new Date(job.timeEnd),
-          title: job.description,
+          timeStart: job.timeStart,
+          timeEnd: job.timeEnd,
+          title: job.title,
           staff: job.staff,
           color: 'blue',
         };

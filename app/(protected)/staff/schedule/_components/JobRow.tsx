@@ -10,8 +10,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { updateJobStaff } from '@/lib/actions/jobs';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 

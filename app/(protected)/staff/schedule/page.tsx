@@ -4,8 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import JobRow from './_components/JobRow';
 import { clerkClient } from '@clerk/nextjs/server';
 import { getJobsForSchedule } from '@/lib/actions/jobs';
-import { getSchedules } from '@/lib/actions/schedules';
-import { getServices } from '@/lib/actions/services';
 import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
 import CalendarClient from './clientComponent';
 import { findAvailableStaff } from './_utils';
@@ -22,12 +20,6 @@ type SearchParams = {
 export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
   const jobs = await getJobsForSchedule();
 
-  // const onAssignStaff = async (jobId: string, staffId: string) => {
-  //   // Update the job with the new staff
-  //   await updateJobStaff({ _id: jobId, staff: staffId });
-  // }
-  const services = await getServices();
-  const schedules = await getSchedules();
   const leaves = await getLeaves();
 
   const staff = await clerkClient().users.getUserList();
@@ -144,8 +136,8 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
   const tempJobs = jobs.map((job) => {
     return {
       _id: job._id.toString(),
-      timeStart: job.schedule.timeStart.toISOString().replace('.000', ''),
-      timeEnd: job.schedule.timeEnd.toISOString().replace('.000', ''),
+      timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
+      timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
       title: job.description,
       staff: job.staff,
       color: 'blue',
