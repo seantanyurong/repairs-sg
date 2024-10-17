@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { User } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -39,7 +38,7 @@ const QuoteDetailsClient = ({
   updateQuotationAction,
 }: {
   quotation: any;
-  customer: User;
+  customer: { name: string; email: string; phone: string };
   updateQuotationAction: any;
 }) => {
   const [errors, setErrors] = useState({});
@@ -168,12 +167,9 @@ const QuoteDetailsClient = ({
       <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
         Customer Information
       </h4>
-      <p>
-        Name:{" "}
-        {customer.fullName ?? `${customer.firstName} ${customer.lastName}`}
-      </p>
-      <p>Email: {customer.emailAddresses[0].emailAddress}</p>
-      <p>Phone: {customer.primaryPhoneNumber?.phoneNumber ?? "NA"}</p>
+      <p>Name: {customer.name}</p>
+      <p>Email: {customer.email}</p>
+      <p>Phone: {customer.phone}</p>
     </div>
   );
 };
