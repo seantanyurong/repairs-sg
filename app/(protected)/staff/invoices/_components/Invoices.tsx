@@ -315,253 +315,251 @@ export default function Invoices({
     <>
       <SearchBar onSearch={handleSearchFilterSort} />
 
-      {/* Sort selects */}
-      <div className="flex items-center space-x-4 bg-secondary p-4 rounded">
-        <span className="text-sm font-bold">Sort by</span>
-        <Select
-          value={sortDateDirection}
-          onValueChange={(newDirection) => {
-            setSortCriteria("dateIssued");
-            setSortPriceDirection("");
-            if (newDirection === "asc" || newDirection === "desc")
-              setSortDateDirection(newDirection);
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Date" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Sort by Date</SelectLabel>
-              <SelectItem value="asc">Date: Early to Late</SelectItem>
-              <SelectItem value="desc">Date: Late to Early</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="flex justify-between">
+        <div className="w-1/4 border-r pr-6 ">
+          <div className="p-4 border rounded shadow-sm">
+            <h2 className="text-lg font-bold mb-4">SEARCH FILTER</h2>
 
-        <Select
-          value={sortPriceDirection}
-          onValueChange={(newDirection) => {
-            setSortCriteria("totalAmount");
-            setSortDateDirection("");
-            if (newDirection === "asc" || newDirection === "desc")
-              setSortPriceDirection(newDirection);
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Amount" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Sort by Amount</SelectLabel>
-              <SelectItem value="asc">Amount: Low to High</SelectItem>
-              <SelectItem value="desc">Amount: High to Low</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+            {/* Validity Status */}
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold">Validity Status</h3>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="validityActive"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handleValidityChange("active", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="validityActive"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Active
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="validityDraft"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handleValidityChange("draft", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="validityDraft"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Draft
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="validityVoid"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handleValidityChange("void", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="validityVoid"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Void
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Status */}
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold">Payment Status</h3>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="paymentPaid"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handlePaymentStatusChange("paid", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="paymentPaid"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Paid
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="paymentUnpaid"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handlePaymentStatusChange("unpaid", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="paymentUnpaid"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Unpaid
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Method */}
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold">Payment Method</h3>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="paymentCash"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handlePaymentMethodChange("cash", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="paymentCash"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Cash
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="paymentBankTransfer"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handlePaymentMethodChange("banktransfer", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="paymentBankTransfer"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Bank Transfer
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="paymentPayNow"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handlePaymentMethodChange("paynow", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="paymentPayNow"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    PayNow
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="paymentUnknown"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handlePaymentMethodChange("unknown", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="paymentPayNow"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Unknown
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-3/4 pl-6">
+          {/* Sort selects */}
+          <div className="flex items-center space-x-4 bg-secondary p-4 mb-2 rounded shadow-sm">
+            <span className="text-sm font-bold">Sort by</span>
+            <Select
+              value={sortDateDirection}
+              onValueChange={(newDirection) => {
+                setSortCriteria("dateIssued");
+                setSortPriceDirection("");
+                if (newDirection === "asc" || newDirection === "desc")
+                  setSortDateDirection(newDirection);
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Sort by Date</SelectLabel>
+                  <SelectItem value="asc">Date: Early to Late</SelectItem>
+                  <SelectItem value="desc">Date: Late to Early</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={sortPriceDirection}
+              onValueChange={(newDirection) => {
+                setSortCriteria("totalAmount");
+                setSortDateDirection("");
+                if (newDirection === "asc" || newDirection === "desc")
+                  setSortPriceDirection(newDirection);
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Amount" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Sort by Amount</SelectLabel>
+                  <SelectItem value="asc">Amount: Low to High</SelectItem>
+                  <SelectItem value="desc">Amount: High to Low</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Tabs defaultValue="all">
+            <div className="flex items-center">
+              <div className="ml-auto flex items-center gap-2">
+                <Link href="/staff/invoices/create-invoice">
+                  <Button size="sm" className="h-8 gap-1">
+                    <PlusCircle className="h-3.5 w-3.5" />
+                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                      Create Invoices
+                    </span>
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <TabsContent value="all">{cardDisplay("all")}</TabsContent>
+            <TabsContent value="active">{cardDisplay("active")}</TabsContent>
+            <TabsContent value="draft">{cardDisplay("draft")}</TabsContent>
+            <TabsContent value="void">{cardDisplay("void")}</TabsContent>
+          </Tabs>
+        </div>
       </div>
-
-      <div className="p-4 border rounded">
-        <h2 className="text-lg font-bold mb-4">Search Filter</h2>
-
-        {/* Validity Status */}
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold">Validity Status</h3>
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="validityActive"
-                defaultChecked={true}
-                onCheckedChange={(checked) => {
-                  if (typeof checked === "boolean")
-                    handleValidityChange("active", checked);
-                }}
-              />
-              <label
-                htmlFor="validityActive"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Active
-              </label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="validityDraft"
-                defaultChecked={true}
-                onCheckedChange={(checked) => {
-                  if (typeof checked === "boolean")
-                    handleValidityChange("draft", checked);
-                }}
-              />
-              <label
-                htmlFor="validityDraft"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Draft
-              </label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="validityVoid"
-                defaultChecked={true}
-                onCheckedChange={(checked) => {
-                  if (typeof checked === "boolean")
-                    handleValidityChange("void", checked);
-                }}
-              />
-              <label
-                htmlFor="validityVoid"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Void
-              </label>
-            </div>
-          </div>
-        </div>
-
-        {/* Payment Status */}
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold">Payment Status</h3>
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="paymentPaid"
-                defaultChecked={true}
-                onCheckedChange={(checked) => {
-                  if (typeof checked === "boolean")
-                    handlePaymentStatusChange("paid", checked);
-                }}
-              />
-              <label
-                htmlFor="paymentPaid"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Paid
-              </label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="paymentUnpaid"
-                defaultChecked={true}
-                onCheckedChange={(checked) => {
-                  if (typeof checked === "boolean")
-                    handlePaymentStatusChange("unpaid", checked);
-                }}
-              />
-              <label
-                htmlFor="paymentUnpaid"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Unpaid
-              </label>
-            </div>
-          </div>
-        </div>
-
-        {/* Payment Method */}
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold">Payment Method</h3>
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="paymentCash"
-                defaultChecked={true}
-                onCheckedChange={(checked) => {
-                  if (typeof checked === "boolean")
-                    handlePaymentMethodChange("cash", checked);
-                }}
-              />
-              <label
-                htmlFor="paymentCash"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Cash
-              </label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="paymentBankTransfer"
-                defaultChecked={true}
-                onCheckedChange={(checked) => {
-                  if (typeof checked === "boolean")
-                    handlePaymentMethodChange("banktransfer", checked);
-                }}
-              />
-              <label
-                htmlFor="paymentBankTransfer"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Bank Transfer
-              </label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="paymentPayNow"
-                defaultChecked={true}
-                onCheckedChange={(checked) => {
-                  if (typeof checked === "boolean")
-                    handlePaymentMethodChange("paynow", checked);
-                }}
-              />
-              <label
-                htmlFor="paymentPayNow"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                PayNow
-              </label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="paymentUnknown"
-                defaultChecked={true}
-                onCheckedChange={(checked) => {
-                  if (typeof checked === "boolean")
-                    handlePaymentMethodChange("unknown", checked);
-                }}
-              />
-              <label
-                htmlFor="paymentPayNow"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Unknown
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <Tabs defaultValue="all">
-        <div className="flex items-center">
-          <TabsList>
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="draft">Draft</TabsTrigger>
-            <TabsTrigger value="void" className="hidden sm:flex">
-              Void
-            </TabsTrigger>
-          </TabsList>
-          <div className="ml-auto flex items-center gap-2">
-            <Link href="/staff/invoices/create-invoice">
-              <Button size="sm" className="h-8 gap-1">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Create Invoices
-                </span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-        <TabsContent value="all">{cardDisplay("all")}</TabsContent>
-        <TabsContent value="active">{cardDisplay("active")}</TabsContent>
-        <TabsContent value="draft">{cardDisplay("draft")}</TabsContent>
-        <TabsContent value="void">{cardDisplay("void")}</TabsContent>
-      </Tabs>
     </>
   );
 }
