@@ -58,6 +58,10 @@ const jobSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Schedule',
     },
+    staff: {
+      type: String,
+    },
+    
   },
   { versionKey: false, timestamps: true },
 );

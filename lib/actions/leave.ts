@@ -126,6 +126,7 @@ const getLeavesByApproverId = async (approverId: string) => {
   return Leave.find({ approverId: approverId });
 };
 
+
 export {
   addLeave,
   updateLeave,
@@ -133,5 +134,5 @@ export {
   getLeave,
   getLeaves,
   getLeavesByRequesterId,
-  getLeavesByApproverId,
+  getLeavesByApproverId
 };

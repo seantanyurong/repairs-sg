@@ -1,6 +1,9 @@
 'use server';
 
 import Job from '@/models/Job';
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+import { ObjectId } from 'mongodb';
 
 // const addService = async (service: {
 //   name: string;
@@ -90,6 +93,8 @@ import Job from '@/models/Job';
 //   return Service.findById(serviceId);
 // };
 
+
+
 const getJobs = async () => {
   return Job.find();
 };
@@ -103,6 +108,30 @@ const getJobsForSchedule = async () => {
   return jobs;
 };
 
+const updateJobStaff = async (
+  _id: string,
+  staff: string
+): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
+  const jobSchema = z.object({
+    _id: z.string().min(1),
+    staff: z.string().min(1),
+  });
 
-// export { addService, updateService, deleteService, getService, getServices };
-export { getJobs, getJobsForSchedule};
+  const response = jobSchema.safeParse({
+    _id: _id,
+    staff: staff,
+  });
+
+  if (!response.success) {
+    return { message: 'Error', errors: response.error.flatten().fieldErrors };
+  }
+
+  const filter = { _id: new ObjectId(response.data._id) };
+  const update = { staff: response.data.staff };
+  await Job.findOneAndUpdate(filter, update);
+  revalidatePath('/staff/schedule');
+
+  return { message: 'Job updated successfully' };
+}
+
+export { getJobs, getJobsForSchedule, updateJobStaff };
