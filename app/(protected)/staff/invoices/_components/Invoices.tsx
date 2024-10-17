@@ -195,6 +195,11 @@ export default function Invoices({
       if (invoice.payments[0]) {
         const paymentMethodKey =
           invoice.payments[0].paymentMethod.toLowerCase() as PaymentMethod;
+        console.log(
+          "paymentMethodKey",
+          paymentMethodKey,
+          paymentMethod[paymentMethodKey],
+        );
         return paymentMethod[paymentMethodKey];
       }
     });
@@ -484,7 +489,7 @@ export default function Invoices({
                 defaultChecked={true}
                 onCheckedChange={(checked) => {
                   if (typeof checked === "boolean")
-                    handlePaymentMethodChange("bankTransfer", checked);
+                    handlePaymentMethodChange("banktransfer", checked);
                 }}
               />
               <label
@@ -501,7 +506,7 @@ export default function Invoices({
                 defaultChecked={true}
                 onCheckedChange={(checked) => {
                   if (typeof checked === "boolean")
-                    handlePaymentMethodChange("payNow", checked);
+                    handlePaymentMethodChange("paynow", checked);
                 }}
               />
               <label
