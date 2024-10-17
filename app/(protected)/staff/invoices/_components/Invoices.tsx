@@ -56,15 +56,13 @@ interface InvoicesProps {
 
 type ValidityStatus = "active" | "draft" | "void";
 type PaymentStatus = "paid" | "unpaid";
-type PaymentMethod = "cash" | "banktransfer" | "paynow";
+type PaymentMethod = "cash" | "banktransfer" | "paynow" | "unknown";
 
 export default function Invoices({
   initialInvoices,
   customerMap,
 }: InvoicesProps) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
-  const [filteredInvoices, setFilteredInvoices] =
-    useState<Invoice[]>(initialInvoices);
   const [query, setQuery] = useState<string>("");
 
   // Sort states
@@ -93,6 +91,7 @@ export default function Invoices({
     cash: true,
     banktransfer: true,
     paynow: true,
+    unknown: true,
   });
 
   const handleSearch = (query: string) => {
@@ -201,6 +200,8 @@ export default function Invoices({
           paymentMethod[paymentMethodKey],
         );
         return paymentMethod[paymentMethodKey];
+      } else {
+        return paymentMethod["unknown"];
       }
     });
 
@@ -514,6 +515,23 @@ export default function Invoices({
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 PayNow
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="paymentUnknown"
+                defaultChecked={true}
+                onCheckedChange={(checked) => {
+                  if (typeof checked === "boolean")
+                    handlePaymentMethodChange("unknown", checked);
+                }}
+              />
+              <label
+                htmlFor="paymentPayNow"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Unknown
               </label>
             </div>
           </div>
