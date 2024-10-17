@@ -66,12 +66,9 @@ export default function Invoices({
   const [query, setQuery] = useState<string>("");
 
   // Sort states
-  // const [sortDateDirection, setSortDateDirection] = useState<string>("");
-  // const [sortPriceDirection, setSortPriceDirection] = useState<string>("");
-  const [sortCriteria, setSortCriteria] = useState<
-    "dateIssued" | "totalAmount"
-  >("dateIssued");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [sortCriteria, setSortCriteria] = useState<string>("");
+  const [sortDateDirection, setSortDateDirection] = useState<string>("");
+  const [sortPriceDirection, setSortPriceDirection] = useState<string>("");
 
   // Filter states
   const [validityStatus, setValidityStatus] = useState<{
@@ -127,34 +124,33 @@ export default function Invoices({
     paymentStatus,
     paymentMethod,
     sortCriteria,
-    sortDirection,
+    sortDateDirection,
+    sortPriceDirection,
   ]);
 
   const handleSearchFilterSort = (query: string) => {
-    // Search
     let resultInvoices = initialInvoices;
+
+    // Search
     setQuery(query);
     if (query.trim() === "") {
-      // If query is empty, reset the search & sort
+      // If query is empty, reset the search
       setInvoices(initialInvoices);
-      setSortCriteria("dateIssued");
-      setSortDirection("desc");
     } else {
-      console.log("query", query);
       // Filter the invoices based on the customer name or invoice ID
-      resultInvoices = initialInvoices.filter((invoice) => {
+      resultInvoices = resultInvoices.filter((invoice) => {
         const customer = customerMap[invoice.customer];
         const fullName = customer
           ? `${customer.firstName} ${customer.lastName}`.toLowerCase()
           : "unknown";
 
+        // console.log("search", resultInvoices);
         return (
           fullName.includes(query.toLowerCase()) ||
           invoice.invoiceId.toString().includes(query.toLowerCase())
         );
       });
     }
-    // console.log("search", resultInvoices);
 
     // Filter by validity status
     let filteredInvoices = resultInvoices.filter((invoice) => {
@@ -185,13 +181,16 @@ export default function Invoices({
     const sortedInvoices = [...filteredInvoices].sort((a, b) => {
       let valueA: number | string;
       let valueB: number | string;
+      let sortDirection: string;
 
       if (sortCriteria === "dateIssued") {
         valueA = new Date(a.dateIssued).getTime();
         valueB = new Date(b.dateIssued).getTime();
+        sortDirection = sortDateDirection;
       } else if (sortCriteria === "totalAmount") {
         valueA = a.totalAmount;
         valueB = b.totalAmount;
+        sortDirection = sortPriceDirection;
       } else {
         return 0;
       }
@@ -204,6 +203,7 @@ export default function Invoices({
     });
 
     setInvoices(sortedInvoices);
+
     // console.log("sorted", sortedInvoices);
   };
 
@@ -319,11 +319,12 @@ export default function Invoices({
       <div className="flex items-center space-x-4 bg-secondary p-4 rounded">
         <span className="text-sm font-bold">Sort by</span>
         <Select
-          value={sortDirection}
+          value={sortDateDirection}
           onValueChange={(newDirection) => {
             setSortCriteria("dateIssued");
+            setSortPriceDirection("");
             if (newDirection === "asc" || newDirection === "desc")
-              setSortDirection(newDirection);
+              setSortDateDirection(newDirection);
           }}
         >
           <SelectTrigger className="w-[180px]">
@@ -339,11 +340,12 @@ export default function Invoices({
         </Select>
 
         <Select
-          value={sortDirection}
+          value={sortPriceDirection}
           onValueChange={(newDirection) => {
             setSortCriteria("totalAmount");
+            setSortDateDirection("");
             if (newDirection === "asc" || newDirection === "desc")
-              setSortDirection(newDirection);
+              setSortPriceDirection(newDirection);
           }}
         >
           <SelectTrigger className="w-[180px]">
