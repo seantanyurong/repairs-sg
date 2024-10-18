@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -116,31 +117,42 @@ const QuoteActionsClient = ({
             </DialogDescription>
           </DialogHeader>
           <form
-            className="grid gap-4 py-4"
+            className="flex flex-col gap-4"
             onSubmit={handleFormSubmit}
           >
-            <Select name="declineReason">
-              <SelectTrigger>
-                <SelectValue placeholder="Select a reason" />
-              </SelectTrigger>
-              <SelectContent>
-                {quotationDeclineReasons.map(
-                  (reason: string, index: number) => (
-                    <SelectItem
-                      key={index}
-                      value={reason}
-                    >
-                      {reason}
-                    </SelectItem>
-                  )
-                )}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="declineReason">
+                Reason for Declining Quotation
+              </Label>
+              <Select
+                name="declineReason"
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  {quotationDeclineReasons.map(
+                    (reason: string, index: number) => (
+                      <SelectItem
+                        key={index}
+                        value={reason}
+                      >
+                        {reason}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
 
-            <Textarea
-              name="declineDetails"
-              placeholder="More details"
-            />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="declineDetails">Details</Label>
+              <Textarea
+                name="declineDetails"
+                placeholder="More details"
+              />
+            </div>
             <DialogFooter>
               <Button type="submit">Decline Quote</Button>
             </DialogFooter>
