@@ -173,7 +173,10 @@ const updateInvoice = async (invoice: {
   const response = invoiceSchema.safeParse({
     _id: invoice._id,
     lineItems: invoice.lineItems,
+    dateIssued: invoice.dateIssued,
+    dateDue: invoice.dateDue,
     totalAmount: invoice.totalAmount,
+    remainingDue: invoice.remainingDue,
     paymentStatus: invoice.paymentStatus,
     validityStatus: invoice.validityStatus,
     publicNote: invoice.publicNote,
@@ -190,7 +193,10 @@ const updateInvoice = async (invoice: {
   const update = {
     _id: response.data._id,
     lineItems: response.data.lineItems,
+    dateIssued: response.data.dateIssued,
+    dateDue: response.data.dateDue,
     totalAmount: response.data.totalAmount,
+    remainingDue: response.data.remainingDue,
     paymentStatus: response.data.paymentStatus,
     validityStatus: response.data.validityStatus,
     publicNote: response.data.publicNote,

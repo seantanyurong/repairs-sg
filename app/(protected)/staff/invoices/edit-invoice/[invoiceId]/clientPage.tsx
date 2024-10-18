@@ -392,7 +392,11 @@ export default function EditInvoiceClient({
             return (
               <FormItem>
                 <FormLabel>Payment Status</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={true}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Payment Status" />
