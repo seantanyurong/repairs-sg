@@ -36,7 +36,7 @@ export default async function EditInvoice({
   };
 
   const transformLineItems = invoice.lineItems.map((lineItem: string) => {
-    const [quantity, ...description] = lineItem.split("x ");
+    const [quantity, description] = lineItem.split("x ");
     return {
       description: description,
       quantity: parseInt(quantity),
@@ -61,7 +61,10 @@ export default async function EditInvoice({
       invoice={{
         _id: invoice._id.toString(),
         lineItems: transformLineItems,
+        dateIssued: invoice.dateIssued,
+        dateDue: invoice.dateDue,
         totalAmount: invoice.totalAmount,
+        remainingDue: invoice.remainingDue,
         paymentStatus: invoice.paymentStatus,
         validityStatus: invoice.validityStatus,
         publicNote: invoice.publicNote,

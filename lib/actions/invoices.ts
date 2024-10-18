@@ -129,7 +129,10 @@ const updateInvoice = async (invoice: {
     description: string;
     quantity: number;
   }[];
+  dateIssued: Date;
+  dateDue: Date;
   totalAmount: number;
+  remainingDue: number;
   paymentStatus: "Unpaid";
   validityStatus: "draft" | "active";
   publicNote: string;
@@ -161,7 +164,7 @@ const updateInvoice = async (invoice: {
       message: "Remaining Due Cannot Be Negative!",
     }),
     paymentStatus: z.enum(["Unpaid", "Paid"]),
-    validityStatus: z.enum(["Draft", "Active", "Void"]),
+    validityStatus: z.enum(["draft", "active", "void"]),
     publicNote: z.string().max(500),
     customer: z.string(),
     staff: z.string(),

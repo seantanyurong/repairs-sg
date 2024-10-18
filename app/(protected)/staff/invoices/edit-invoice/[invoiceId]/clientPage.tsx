@@ -24,8 +24,16 @@ import {
   Select,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { updateInvoice } from "@/lib/actions/invoices";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 
 const formSchema = z.object({
   _id: z.string().min(1),
@@ -35,7 +43,10 @@ const formSchema = z.object({
       quantity: z.number().min(1, "Quantity Must Be Greater Than 0"),
     }),
   ),
+  dateIssued: z.date(),
+  dateDue: z.date(),
   totalAmount: z.number().min(0.01),
+  remainingDue: z.number().min(0),
   // invoiceTemplate: z.string().min(1),
   paymentStatus: z.enum(["Unpaid"]),
   validityStatus: z.enum(["draft", "active"]),
@@ -55,7 +66,10 @@ export default function EditInvoiceClient({
       description: string;
       quantity: number;
     }[];
+    dateIssued: Date;
+    dateDue: Date;
     totalAmount: number;
+    remainingDue: number;
     paymentStatus: "Unpaid";
     validityStatus: "draft" | "active";
     publicNote: string;
@@ -79,7 +93,10 @@ export default function EditInvoiceClient({
         description: lineItem.description,
         quantity: lineItem.quantity,
       })),
+      dateIssued: invoice.dateIssued,
+      dateDue: invoice.dateDue,
       totalAmount: invoice.totalAmount,
+      remainingDue: invoice.remainingDue,
       paymentStatus: invoice.paymentStatus,
       validityStatus: invoice.validityStatus,
       publicNote: invoice.publicNote,
@@ -272,12 +289,98 @@ export default function EditInvoiceClient({
                 <FormControl>
                   <Input
                     type="number"
-                    placeholder="totalAmount"
+                    placeholder="Total Amount"
                     {...field}
                     onChange={(event) => field.onChange(+event.target.value)}
                   />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name="remainingDue"
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Remaining Due</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Remaining Due"
+                    {...field}
+                    onChange={(event) => field.onChange(+event.target.value)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name="dateIssued"
+          render={({ field }) => {
+            return (
+              <FormItem className="flex flex-col">
+                <FormLabel>Date Issued</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button variant={"outline"}>
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name="dateDue"
+          render={({ field }) => {
+            return (
+              <FormItem className="flex flex-col">
+                <FormLabel>Date Due</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button variant={"outline"}>
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </FormItem>
             );
           }}
