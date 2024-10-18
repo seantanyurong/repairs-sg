@@ -1,7 +1,11 @@
-import { getService } from '@/lib/actions/services';
-import EditServiceClient from './clientPage';
+import { getService } from "@/lib/actions/services";
+import EditServiceClient from "./clientPage";
 
-export default async function EditService({ params }: { params: { serviceId: string } }) {
+export default async function EditService({
+  params,
+}: {
+  params: { serviceId: string };
+}) {
   const service = await getService(params.serviceId);
 
   return (

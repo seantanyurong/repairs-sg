@@ -124,18 +124,20 @@ const addInvoice = async (invoice: {
 };
 
 const updateInvoice = async (invoice: {
-  invoiceId: number;
-  lineItems: Array<string>;
-  dateIssued: Date;
-  dateDue: Date;
+  _id: string;
+  lineItems: {
+    description: string;
+    quantity: number;
+  }[];
   totalAmount: number;
-  remainingDue: number;
-  paymentStatus: string;
-  validityStatus: string;
+  paymentStatus: "Unpaid";
+  validityStatus: "draft" | "active";
   publicNote: string;
+  customer: string;
+  staff: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const invoiceSchema = z.object({
-    invoiceId: z.number(),
+    _id: z.string().min(1),
     lineItems: z
       .array(z.string())
       .nonempty("Line Items Should Have At Least 1 Item!"),
@@ -161,18 +163,19 @@ const updateInvoice = async (invoice: {
     paymentStatus: z.enum(["Unpaid", "Paid"]),
     validityStatus: z.enum(["Draft", "Active", "Void"]),
     publicNote: z.string().max(500),
+    customer: z.string(),
+    staff: z.string(),
   });
 
   const response = invoiceSchema.safeParse({
-    invoiceId: invoice.invoiceId,
+    _id: invoice._id,
     lineItems: invoice.lineItems,
-    dateIssued: invoice.dateIssued,
-    dateDue: invoice.dateDue,
     totalAmount: invoice.totalAmount,
-    remainingDue: invoice.remainingDue,
     paymentStatus: invoice.paymentStatus,
     validityStatus: invoice.validityStatus,
     publicNote: invoice.publicNote,
+    customer: invoice.customer,
+    staff: invoice.staff,
   });
 
   console.log(response.data);
@@ -180,17 +183,16 @@ const updateInvoice = async (invoice: {
     return { message: "", errors: response.error.flatten().fieldErrors };
   }
 
-  const filter = { invoiceId: response.data.invoiceId };
+  const filter = { invoiceId: response.data._id };
   const update = {
-    invoiceId: response.data.invoiceId,
+    _id: response.data._id,
     lineItems: response.data.lineItems,
-    dateIssued: response.data.dateIssued,
-    dateDue: response.data.dateDue,
     totalAmount: response.data.totalAmount,
-    remainingDue: response.data.remainingDue,
     paymentStatus: response.data.paymentStatus,
     validityStatus: response.data.validityStatus,
     publicNote: response.data.publicNote,
+    customer: response.data.customer,
+    staff: response.data.staff,
   };
   const context = { runValidators: true, context: "query" };
 
@@ -221,7 +223,7 @@ const updateInvoice = async (invoice: {
   }
 };
 
-const getInvoice = async (invoiceId: number) => {
+const getInvoice = async (invoiceId: string) => {
   return Invoice.findById(invoiceId);
 };
 
