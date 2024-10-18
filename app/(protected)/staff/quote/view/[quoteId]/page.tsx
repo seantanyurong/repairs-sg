@@ -100,12 +100,19 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
     return sendQuoteEmail(params.quoteId, Buffer.from(pdf).toString("base64"));
   };
 
-  const updateStatusAction = async (newStatus: string) => {
+  const updateQuotationAction = async (
+    newStatus: string,
+    declineReasons?: {
+      declineReason: string;
+      declineDetails?: string;
+    }
+  ) => {
     "use server";
-    return updateQuotation(
-      params.quoteId,
-      JSON.stringify({ status: newStatus })
-    );
+
+    const payload = declineReasons
+      ? { status: newStatus, ...declineReasons }
+      : { status: newStatus };
+    return updateQuotation(params.quoteId, JSON.stringify(payload));
   };
 
   return (
@@ -118,7 +125,7 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
           quotationId={params.quoteId}
           status={quotation.status}
           sendEmailAction={sendEmailAction}
-          updateStatusAction={updateStatusAction}
+          updateQuotationAction={updateQuotationAction}
         />
       </div>
       <div className="flex lg:flex-row flex-col gap-2 h-dvh">

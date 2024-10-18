@@ -45,6 +45,12 @@ const quotationSchema = new mongoose.Schema(
     customer: {
       type: String,
     },
+    declineReason: {
+      type: String,
+    },
+    declineDetails: {
+      type: String,
+    },
     job: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Job",

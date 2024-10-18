@@ -164,6 +164,12 @@ const QuoteDetailsClient = ({
           ) : null}
         </form>
       </Form>
+      {quotation.status === "Declined" && (
+        <div className="flex flex-col gap-2">
+          <p>Quote Decline Reason: {quotation.declineReason}</p>
+          <p>Quote Decline Details: {quotation.declineDetails}</p>
+        </div>
+      )}
       <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
         Customer Information
       </h4>

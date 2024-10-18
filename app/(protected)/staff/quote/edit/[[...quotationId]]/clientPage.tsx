@@ -182,7 +182,7 @@ const EditQuoteClient = ({
       id?: string;
       errors?: string | Record<string, unknown>;
     } = JSON.parse(response);
-    console.log(response);
+
     if (result?.errors) {
       setErrors(result.errors);
       return;
@@ -190,8 +190,8 @@ const EditQuoteClient = ({
       router.refresh();
       quotationForm.reset(quotationForm.getValues());
       toast.success(result.message);
+      return result.id;
     }
-    return result.id;
   };
 
   const handleContinue = async () => {
