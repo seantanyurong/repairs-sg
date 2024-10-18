@@ -12,14 +12,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -27,13 +19,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 
 const quotationDeclineReasons = [
   "Too Expensive",
@@ -62,7 +51,6 @@ const QuoteActionsClient = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
-  const [open, setOpen] = useState(false);
   const router = useRouter();
 
   const sendQuoteEmail = async () => {
@@ -92,19 +80,17 @@ const QuoteActionsClient = ({
     }
   };
 
-  const declineFormSchema = z.object({
-    declineReason: z.string(),
-    declineDetails: z.string().optional(),
-  });
-
-  const declineForm = useForm<z.infer<typeof declineFormSchema>>({
-    resolver: zodResolver(declineFormSchema),
-  });
-
-  const onSubmit = async () => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const declineReason = formData.get("declineReason")?.toString() ?? "";
+    const declineDetails = formData.get("declineDetails")?.toString() ?? "";
     try {
-      await updateQuotationAction("Declined", declineForm.getValues());
-      setOpen(false);
+      await updateQuotationAction("Declined", {
+        declineReason,
+        declineDetails,
+      });
+
       router.refresh();
       toast.success("Quote Declined Successfully");
     } catch (err) {
@@ -115,86 +101,50 @@ const QuoteActionsClient = ({
 
   const DeclineQuoteDialog = () => {
     return (
-      <Dialog
-        open={open}
-        onOpenChange={setOpen}
-      >
-        <DialogTrigger>
+      <Dialog>
+        <DialogTrigger asChild>
           <Button variant="destructive">Decline Quote</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent
+          className="sm:max-w-[425px]"
+          onClick={(e) => e.stopPropagation()}
+        >
           <DialogHeader>
             <DialogTitle>Decline Quote</DialogTitle>
             <DialogDescription>
               Please provide a reason for declining the quotation
             </DialogDescription>
           </DialogHeader>
-          <Form {...declineForm}>
-            <form
-              className="grid gap-4 py-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                declineForm.handleSubmit(onSubmit)();
-              }}
-            >
-              <FormField
-                control={declineForm.control}
-                name="declineReason"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Reason for Declining Quote</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a reason" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {quotationDeclineReasons.map(
-                              (reason: string, index: number) => (
-                                <SelectItem
-                                  key={index}
-                                  value={reason}
-                                >
-                                  {reason}
-                                </SelectItem>
-                              )
-                            )}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+          <form
+            className="grid gap-4 py-4"
+            onSubmit={handleFormSubmit}
+          >
+            <Select name="declineReason">
+              <SelectTrigger>
+                <SelectValue placeholder="Select a reason" />
+              </SelectTrigger>
+              <SelectContent>
+                {quotationDeclineReasons.map(
+                  (reason: string, index: number) => (
+                    <SelectItem
+                      key={index}
+                      value={reason}
+                    >
+                      {reason}
+                    </SelectItem>
+                  )
+                )}
+              </SelectContent>
+            </Select>
 
-              <FormField
-                control={declineForm.control}
-                name="declineDetails"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Details</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="More details"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <DialogFooter>
-                <Button type="submit">Decline Quote</Button>
-              </DialogFooter>
-            </form>
-          </Form>
+            <Textarea
+              name="declineDetails"
+              placeholder="More details"
+            />
+            <DialogFooter>
+              <Button type="submit">Decline Quote</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     );
