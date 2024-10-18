@@ -1,12 +1,13 @@
-import { getCustomerByEmail, getCustomerById } from "@/lib/actions/customers";
+import { getCustomerByEmail } from "@/lib/actions/customers";
 import {
   addQuotation,
   getOneQuotation,
   updateQuotation,
 } from "@/lib/actions/quotations";
 import { getQuoteTemplates } from "@/lib/actions/quoteTemplates";
+import dayjs from "dayjs";
 import { redirect } from "next/navigation";
-import { LineItem } from "../../_components/LineItemColumns";
+import { LineItem } from "./_components/LineItemColumns";
 import EditQuoteClient from "./clientPage";
 
 const replaceNullsWithEmptyStrings = (obj: unknown): unknown => {
@@ -24,9 +25,13 @@ const replaceNullsWithEmptyStrings = (obj: unknown): unknown => {
 
 const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
   const quoteTemplates = await getQuoteTemplates();
+  const activeTemplates = JSON.parse(quoteTemplates).filter(
+    (quote: { status: "Active" | "Inactive" }) => quote.status === "Active"
+  );
 
   let quotationFormValues = {
     quotationDate: new Date(),
+    quotationExpiry: dayjs().add(30, "days").toDate(),
     notes: "",
     customerEmail: "",
     quoteTemplate: "",
@@ -46,15 +51,11 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
     if (quotation.status !== "Draft")
       redirect(`/staff/quote/view/${params.quotationId}`);
 
-    const customerEmail: string = quotation.customer
-      ? JSON.parse(await getCustomerById(quotation.customer)).emailAddresses[0]
-          .emailAddress
-      : "";
-
     quotationFormValues = {
-      quotationDate: new Date(),
+      quotationDate: new Date(quotation.quotationDate),
+      quotationExpiry: new Date(quotation.quotationExpiry),
       notes: quotation.notes,
-      customerEmail: customerEmail ?? "",
+      customerEmail: quotation.customerEmail,
       quoteTemplate: quotation.quoteTemplate,
     };
 
@@ -70,15 +71,17 @@ const EditQuote = async ({ params }: { params: { quotationId?: string } }) => {
     "use server";
     console.log(params.quotationId);
     if (params.quotationId) {
-      return updateQuotation(params.quotationId, quote, templateInputs);
+      return JSON.stringify(
+        await updateQuotation(params.quotationId, quote, templateInputs)
+      );
     } else {
-      return addQuotation(quote, templateInputs);
+      return JSON.stringify(await addQuotation(quote, templateInputs));
     }
   };
 
   return (
     <EditQuoteClient
-      templates={JSON.parse(quoteTemplates)}
+      templates={activeTemplates}
       getCustomerAction={getCustomerByEmail}
       quotationFormValues={quotationFormValues}
       templateFormValues={templateFormValues as { [x: string]: unknown }}

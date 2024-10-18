@@ -11,7 +11,7 @@ import { EditableTable } from "./EditableTable/EditableTable";
 import { LineItem, lineItemColumns } from "./LineItemColumns";
 import { Schema } from "@pdfme/common";
 import { Input } from "@/components/ui/input";
-import { LineItemTotals } from "../edit/[[...quotationId]]/clientPage";
+import { LineItemTotals } from "../clientPage";
 
 interface TemplateFormProps {
   schema: Schema;

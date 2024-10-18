@@ -2,40 +2,75 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
+const quotationDeclineReasons = [
+  "Too Expensive",
+  "Found a Better Offer",
+  "Not Interested Anymore",
+  "Project Postponed",
+  "Others",
+];
+
 const QuoteActionsClient = ({
+  quotationId,
   status,
   sendEmailAction,
-  updateStatusAction,
+  updateQuotationAction,
 }: {
+  quotationId: string;
   status: string;
   sendEmailAction: () => Promise<void>;
-  updateStatusAction: (newStatus: string) => Promise<unknown>;
+  updateQuotationAction: (
+    newStatus: string,
+    declineReasons?: {
+      declineReason: string;
+      declineDetails?: string;
+    }
+  ) => Promise<unknown>;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const router = useRouter();
 
   const sendQuoteEmail = async () => {
     try {
-      setIsLoading(true);
+      setIsSendingEmail(true);
       await sendEmailAction();
       toast.success("Email sent successfully");
     } catch (e) {
       console.error(e);
       toast.error("Error sending email");
     } finally {
-      setIsLoading(false);
+      setIsSendingEmail(false);
     }
   };
 
   const updateStatus = async (newStatus: string) => {
     try {
       setIsLoading(true);
-      await updateStatusAction(newStatus);
+      await updateQuotationAction(newStatus);
       toast.success("Status updated successfully");
       router.refresh();
     } catch (e) {
@@ -46,6 +81,87 @@ const QuoteActionsClient = ({
     }
   };
 
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const declineReason = formData.get("declineReason")?.toString() ?? "";
+    const declineDetails = formData.get("declineDetails")?.toString() ?? "";
+    try {
+      await updateQuotationAction("Declined", {
+        declineReason,
+        declineDetails,
+      });
+
+      router.refresh();
+      toast.success("Quote Declined Successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("An error has occurred, please try again.");
+    }
+  };
+
+  const DeclineQuoteDialog = () => {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="destructive">Decline Quote</Button>
+        </DialogTrigger>
+        <DialogContent
+          className="sm:max-w-[425px]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <DialogHeader>
+            <DialogTitle>Decline Quote</DialogTitle>
+            <DialogDescription>
+              Please provide a reason for declining the quotation
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleFormSubmit}
+          >
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="declineReason">
+                Reason for Declining Quotation
+              </Label>
+              <Select
+                name="declineReason"
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a reason" />
+                </SelectTrigger>
+                <SelectContent>
+                  {quotationDeclineReasons.map(
+                    (reason: string, index: number) => (
+                      <SelectItem
+                        key={index}
+                        value={reason}
+                      >
+                        {reason}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="declineDetails">Details</Label>
+              <Textarea
+                name="declineDetails"
+                placeholder="More details"
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit">Decline Quote</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
     <div className="flex flex-row gap-2">
       {status !== "Draft" && status !== "Active" && (
@@ -54,6 +170,14 @@ const QuoteActionsClient = ({
       {status === "Draft" && (
         <>
           <Badge variant="outline">Draft</Badge>
+          <Button
+            type="button"
+            onClick={() => router.push(`/staff/quote/edit/${quotationId}`)}
+            className="w-auto"
+            variant="outline"
+          >
+            Edit
+          </Button>
           <Button
             type="button"
             onClick={() => updateStatus("Active")}
@@ -80,7 +204,7 @@ const QuoteActionsClient = ({
             onClick={() => sendQuoteEmail()}
             variant="secondary"
           >
-            {isLoading ? (
+            {isSendingEmail ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait
@@ -104,21 +228,7 @@ const QuoteActionsClient = ({
               <>Accept Quote</>
             )}
           </Button>
-          <Button
-            type="button"
-            onClick={() => updateStatus("Declined")}
-            variant="destructive"
-            className="w-auto"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </>
-            ) : (
-              <>Decline Quote</>
-            )}
-          </Button>
+          <DeclineQuoteDialog />
         </>
       )}
     </div>
