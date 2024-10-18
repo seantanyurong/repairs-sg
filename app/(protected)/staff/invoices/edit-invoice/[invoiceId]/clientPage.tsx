@@ -71,8 +71,6 @@ export default function EditInvoiceClient({
   const [isStaffLoading, setIsStaffLoading] = useState(false);
   const router = useRouter();
 
-  console.log(invoice);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

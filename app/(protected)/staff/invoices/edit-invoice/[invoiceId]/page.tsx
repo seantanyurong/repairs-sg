@@ -1,6 +1,8 @@
 import { getInvoice } from "@/lib/actions/invoices";
 import EditInvoiceClient from "./clientPage";
 import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
+import { getCustomerById } from "@/lib/actions/customers";
+import { line } from "@pdfme/schemas";
 
 export default async function EditInvoice({
   params,
@@ -34,21 +36,24 @@ export default async function EditInvoice({
       : staff.data[0].id.toString();
   };
 
+  const transformLineItems = invoice.lineItems.map((lineItem: string) => {
+    const [quantity, ...description] = lineItem.split("x ");
+    return {
+      description: description,
+      quantity: parseInt(quantity),
+    };
+  });
+
   return (
     <EditInvoiceClient
       invoice={{
         _id: invoice._id.toString(),
-        lineItems: invoice.lineItems.map(
-          (lineItem: { description: string; quantity: number }) => ({
-            description: lineItem.description,
-            quantity: lineItem.quantity,
-          }),
-        ),
+        lineItems: transformLineItems,
         totalAmount: invoice.totalAmount,
         paymentStatus: invoice.paymentStatus,
         validityStatus: invoice.validityStatus,
         publicNote: invoice.publicNote,
-        customer: invoice.customer,
+        customer: await getCustomerById(invoice.customer),
         staff: invoice.staff,
       }}
       getCustomerAction={getCustomerAction}
