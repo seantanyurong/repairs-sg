@@ -2,7 +2,6 @@ import { getInvoice } from "@/lib/actions/invoices";
 import EditInvoiceClient from "./clientPage";
 import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
 import { getCustomerById } from "@/lib/actions/customers";
-import { line } from "@pdfme/schemas";
 
 export default async function EditInvoice({
   params,
@@ -49,6 +48,14 @@ export default async function EditInvoice({
     return customerObject.emailAddresses[0].emailAddress;
   };
 
+  const getStaffEmail = async (staffId: string) => {
+    const staff = await clerkClient().users.getUser(staffId);
+
+    if (!staff) throw new Error("No customer found with that id");
+
+    return staff.primaryEmailAddress?.emailAddress || "";
+  };
+
   return (
     <EditInvoiceClient
       invoice={{
@@ -59,7 +66,7 @@ export default async function EditInvoice({
         validityStatus: invoice.validityStatus,
         publicNote: invoice.publicNote,
         customer: await getCustomerEmail(invoice.customer),
-        staff: invoice.staff,
+        staff: await getStaffEmail(invoice.lastUpdatedBy),
       }}
       getCustomerAction={getCustomerAction}
       getStaffAction={getStaffAction}
