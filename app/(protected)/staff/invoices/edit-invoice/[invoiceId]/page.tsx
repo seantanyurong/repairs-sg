@@ -44,6 +44,11 @@ export default async function EditInvoice({
     };
   });
 
+  const getCustomerEmail = async (customer: string) => {
+    const customerObject = JSON.parse(await getCustomerById(customer));
+    return customerObject.emailAddresses[0].emailAddress;
+  };
+
   return (
     <EditInvoiceClient
       invoice={{
@@ -53,7 +58,7 @@ export default async function EditInvoice({
         paymentStatus: invoice.paymentStatus,
         validityStatus: invoice.validityStatus,
         publicNote: invoice.publicNote,
-        customer: await getCustomerById(invoice.customer),
+        customer: await getCustomerEmail(invoice.customer),
         staff: invoice.staff,
       }}
       getCustomerAction={getCustomerAction}
