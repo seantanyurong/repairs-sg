@@ -93,7 +93,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             serviceName={job.service.name}
             description={job.description}
             address={job.jobAddress}
-            customerName={job.custome}
+            customerName={job.customer}
             staffName={job.staff}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
