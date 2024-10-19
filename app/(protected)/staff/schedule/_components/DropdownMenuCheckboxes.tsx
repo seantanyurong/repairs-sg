@@ -91,7 +91,7 @@ export function DropdownMenuCheckboxes({ items }: DropdownMenuCheckboxesProps) {
     }
 
     // Push the updated query params while preserving other parameters
-    router.push(`/staff/scheduling?${currentParams.toString()}`);
+    router.push(`/staff/schedule?${currentParams.toString()}`);
   };
 
   return (

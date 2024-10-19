@@ -11,6 +11,8 @@ import QuoteDetailsClient from "./QuoteDetailsClient";
 import QuoteViewerClient from "./QuoteViewerClient";
 import QuoteActionsClient from "./QuoteActionsClient";
 import { getCustomerById } from "@/lib/actions/customers";
+import { generate } from "@pdfme/generator";
+import { font, plugins } from "../../templates/_components/pdfSchema";
 
 const populateTemplate = (
   oldTemplate: Template,
@@ -65,7 +67,21 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
     quotation
   );
   const inputs = getInputFromTemplate(updatedQuoteTemplate);
-  const customer = JSON.parse(await getCustomerById(quotation.customer));
+  const customer = quotation.customer
+    ? JSON.parse(await getCustomerById(quotation.customer))
+    : undefined;
+
+  const customerDetails = customer
+    ? {
+        name: customer.fullName ?? `${customer.firstName} ${customer.lastName}`,
+        email: customer.emailAddresses[0].emailAddress,
+        phone: customer.primaryPhoneNumber?.phoneNumber ?? "NA",
+      }
+    : {
+        name: inputs[0].customer_name,
+        email: quotation.customerEmail,
+        phone: "NA",
+      };
 
   const submitQuotationAction = async (quote: string) => {
     "use server";
@@ -74,15 +90,29 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
 
   const sendEmailAction = async () => {
     "use server";
-    return sendQuoteEmail(params.quoteId);
+
+    const pdf = await generate({
+      template: updatedQuoteTemplate,
+      inputs,
+      options: { font },
+      plugins,
+    });
+    return sendQuoteEmail(params.quoteId, Buffer.from(pdf).toString("base64"));
   };
 
-  const updateStatusAction = async (newStatus: string) => {
+  const updateQuotationAction = async (
+    newStatus: string,
+    declineReasons?: {
+      declineReason: string;
+      declineDetails?: string;
+    }
+  ) => {
     "use server";
-    return updateQuotation(
-      params.quoteId,
-      JSON.stringify({ status: newStatus })
-    );
+
+    const payload = declineReasons
+      ? { status: newStatus, ...declineReasons }
+      : { status: newStatus };
+    return updateQuotation(params.quoteId, JSON.stringify(payload));
   };
 
   return (
@@ -92,15 +122,16 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
           Quotation #{quotation.quotationId}
         </h2>
         <QuoteActionsClient
+          quotationId={params.quoteId}
           status={quotation.status}
           sendEmailAction={sendEmailAction}
-          updateStatusAction={updateStatusAction}
+          updateQuotationAction={updateQuotationAction}
         />
       </div>
       <div className="flex lg:flex-row flex-col gap-2 h-dvh">
         <QuoteDetailsClient
           quotation={quotation}
-          customer={customer}
+          customer={customerDetails}
           updateQuotationAction={submitQuotationAction}
         />
         <QuoteViewerClient

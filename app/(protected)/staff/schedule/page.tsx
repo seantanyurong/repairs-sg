@@ -1,38 +1,117 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, CalendarCurrentDate, CalendarDayView, CalendarMonthView, CalendarNextTrigger, CalendarPrevTrigger, CalendarTodayTrigger, CalendarViewTrigger, CalendarWeekView, CalendarYearView } from '@/components/ui/full-calendar';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import JobRow from './_components/JobRow';
 import { getJobsForSchedule } from '@/lib/actions/jobs';
+import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
+import CalendarClient from './clientComponent';
+import { findAvailableStaff } from './_utils';
+import { getLeaves } from '@/lib/actions/leave';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
+import { getSchedules } from '@/lib/actions/schedules';
+import { getServices } from '@/lib/actions/services';
+import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
 
 
-export default async function Schedule() {
+type SearchParams = {
+  filters?: string;
+};
 
+export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
   const jobs = await getJobsForSchedule();
+  await getSchedules();
+  await getServices();
+
+  const leaves = await getLeaves();
+
+  const staff = await clerkClient().users.getUserList();
+
+  const custClerk = createClerkClient({
+    secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY,
+  });
+  const customers = await custClerk.users.getUserList();
+
+  // convert this PaginatedResourceResponse<User[]>into an array
+  const staffArray = staff.data.map((staff) => {
+    return { id: String(staff.id).trim(), name: staff.firstName + ' ' + staff.lastName };
+  });
+
+  const customerArray = customers.data.map((customer) => {
+    return { id: String(customer.id).trim(), name: customer.firstName + ' ' + customer.lastName };
+  });
+
+  console.log(staffArray);
+  console.log(customerArray);
+
+  const filters = searchParams.filters;
+  const filtersArray = filters ? filters.split(',') : [];
+
+  // convert the staff attribute in jobs to hold the name of the staff instead of the id
+  jobs.map((job) => {
+    job.staff = staffArray.find((staff) => staff.id === job.staff)?.name || '';
+    job.customer = customerArray.find((customer) => customer.id === job.customer)?.name || '';
+  });
 
   const jobTableDisplay = () => {
     if (jobs.length === 0) {
       return <div>No jobs found</div>;
     }
 
-    return jobs.map((job) => {
-      return (
-        <JobRow
-          key={job._id.toString()}
-          id={job._id.toString()}
-          serviceName={job.service.name}
-          description={job.description}
-          address={job.jobAddress}
-          timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
-          timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
-        />
-      );
-    });
+    // return all if there is no filter param
+    if (filtersArray[0] === 'all') {
+      return jobs.map((job) => {
+
+        return (
+          <JobRow
+            key={job._id.toString()}
+            id={job._id.toString()}
+            serviceName={job.service.name}
+            description={job.description}
+            address={job.jobAddress}
+            customerName={job.customer}
+            staffName={job.staff}
+            timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
+            timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
+            status={job.status}
+            staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
+          />
+        );
+      });
+    }
+
+    // Filter by staff in filtersArray
+    return jobs
+      .filter((job) => filtersArray.includes(job.staff))
+      .map((job) => {
+
+        return (
+          <JobRow
+            key={job._id.toString()}
+            id={job._id.toString()}
+            serviceName={job.service.name}
+            description={job.description}
+            address={job.jobAddress}
+            customerName={job.customer}
+            staffName={job.staff}
+            timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
+            timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
+            status={job.status}
+            staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
+          />
+        );
+      });
   };
 
-  const jobCount = () => {
+  const jobCount = (filtersArray: string[]) => {
+    if (filtersArray[0] === 'all') {
       return jobs.length;
+    } else if (filtersArray.length === 0) {
+      return 0;
+    }
+
+    return jobs.filter((job) => filtersArray.includes(job.staff)).length;
   };
 
   const tableDisplay = () => {
@@ -49,8 +128,11 @@ export default async function Schedule() {
                 <TableHead>Service</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Address</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Staff</TableHead>
                 <TableHead>Start</TableHead>
                 <TableHead>End</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>{jobTableDisplay()}</TableBody>
@@ -60,102 +142,52 @@ export default async function Schedule() {
           <div className='text-xs text-muted-foreground'>
             Showing{' '}
             <strong>
-              {jobCount() === 0 ? '0' : '1'}-{jobCount()}
+              {jobCount(filtersArray) === 0 ? '0' : '1'}-{jobCount(filtersArray)}
             </strong>{' '}
-            of <strong>{jobCount()}</strong> jobs
+            of <strong>{jobCount(filtersArray)}</strong> jobs
           </div>
         </CardFooter>
       </Card>
     );
   };
 
-  const calendarDisplay = () => {
-    return (
-      <Card x-chunk='dashboard-06-chunk-0'>
-        <CardHeader>
-          <CardTitle>Scheduling</CardTitle>
-          <CardDescription>Manage your job schedule Calendar</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Calendar
-          events={
-            jobs
-            .map((job) => {
-              return {
-                _id: job._id.toString(),
-                timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
-                timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
-                title: job.service.name,
-                color: 'blue',
-              };
-            })
-          }
-        >
-          <div className="h-dvh py-6 flex flex-col">
-            <div className="flex px-6 items-center gap-2 mb-6">
-              <CalendarViewTrigger className="aria-[current=true]:bg-accent" view="day">
-                Day
-              </CalendarViewTrigger>
-              <CalendarViewTrigger
-                view="week"
-                className="aria-[current=true]:bg-accent"
-              >
-                Week
-              </CalendarViewTrigger>
-              <CalendarViewTrigger
-                view="month"
-                className="aria-[current=true]:bg-accent"
-              >
-                Month
-              </CalendarViewTrigger>
-              <CalendarViewTrigger
-                view="year"
-                className="aria-[current=true]:bg-accent"
-              >
-                Year
-              </CalendarViewTrigger>
-              <span className="flex-1" />
-
-              <CalendarCurrentDate />
-
-              <CalendarPrevTrigger>
-                <ChevronLeft size={20} />
-                <span className="sr-only">Previous</span>
-              </CalendarPrevTrigger>
-
-              <CalendarTodayTrigger>Today</CalendarTodayTrigger>
-
-              <CalendarNextTrigger>
-                <ChevronRight size={20} />
-                <span className="sr-only">Next</span>
-              </CalendarNextTrigger>
-            </div>
-
-            <div className="flex-1 overflow-auto px-6 relative">
-              <CalendarDayView />
-              <CalendarWeekView />
-              <CalendarMonthView />
-              <CalendarYearView />
-            </div>
-          </div>
-        </Calendar>
-        </CardContent>
-      </Card>
-    );
-  };
+  const tempJobs = jobs.map((job) => {
+    return {
+      _id: job._id.toString(),
+      timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
+      timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
+      title: job.description,
+      staff: job.staff,
+      color: 'blue',
+    };
+  });
 
   return (
-    <Tabs defaultValue='calendar'>
+    <Tabs defaultValue='table'>
       <div className='flex items-center'>
         <TabsList>
           <TabsTrigger value='table'>Table</TabsTrigger>
           <TabsTrigger value='calendar'>Calendar</TabsTrigger>
         </TabsList>
+        <DropdownMenuCheckboxes
+          items={staffArray.map((staff) => {
+            return { label: staff.name };
+          })}></DropdownMenuCheckboxes>
         <div className='ml-auto flex items-center gap-2'>
+          <Link href='/staff/schedule/create-job'>
+            <Button size='sm' className='h-8 gap-1'>
+              <PlusCircle className='h-3.5 w-3.5' />
+              <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Create Event</span>
+            </Button>
+          </Link>
         </div>
       </div>
-          <TabsContent value='calendar'>{calendarDisplay()}</TabsContent>
-          <TabsContent value='table'>{tableDisplay()}</TabsContent>
+      <TabsContent value='calendar'>
+        <CalendarClient filtersArray={filtersArray} jobs={tempJobs} />
+      </TabsContent>
+      <TabsContent value='table'>{tableDisplay()}</TabsContent>
     </Tabs>
   );
 }
+
+//

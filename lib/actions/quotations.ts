@@ -4,11 +4,13 @@ import Quotation from "@/models/Quotation";
 import { z } from "zod";
 import { getCustomerById } from "./customers";
 import { User } from "@clerk/nextjs/server";
+import { sendQuoteEmailPostmark } from "../postmark";
 
 const quotationSchema = z.object({
   quotationDate: z.string().min(1),
-  quotationExpiry: z.date().optional(),
+  quotationExpiry: z.string().min(1),
   quoteTemplate: z.string().min(1),
+  customerEmail: z.string().email(),
   totalAmount: z.number(),
   notes: z.string().optional(),
   lineItems: z
@@ -20,6 +22,8 @@ const quotationSchema = z.object({
     .array()
     .optional(),
   customer: z.string().optional(),
+  declineReason: z.string().optional(),
+  declineDetails: z.string().optional(),
 });
 
 const addQuotation = async (
@@ -100,7 +104,8 @@ const deleteQuotation = async (id: string) => {
   return { message: "Quotation Deleted" };
 };
 
-const sendQuoteEmail = async (id: string) => {
+const sendQuoteEmail = async (id: string, attachment: string) => {
+  console.log("id", id);
   const quotation = await Quotation.findById(id).exec();
 
   const customer: User = JSON.parse(await getCustomerById(quotation.customer));
@@ -108,8 +113,19 @@ const sendQuoteEmail = async (id: string) => {
     customer.primaryEmailAddress?.emailAddress ??
     customer.emailAddresses[0].emailAddress;
 
-  console.log(customerEmail);
+  const customerName =
+    customer.fullName ?? `${customer.firstName} ${customer.lastName}`;
+
+  await sendQuoteEmailPostmark(
+    customerEmail,
+    "Quotation from Repair.sg",
+    QUOTE_EMAIL_COPY.replace("{ customerName }", customerName),
+    attachment
+  );
 };
+
+const QUOTE_EMAIL_COPY =
+  "Hi { customerName },\n\nThank you considering Repair.sg. We help make repair, installation, and maintenance easy for more than 15,000 businesses and homeowners. Let us help you next!\nPlease find attached your quote.\nShould you require any further information, please do not hesitate to contact us.\n\nBest Regards,\nRepair.sg Team";
 
 export {
   addQuotation,
