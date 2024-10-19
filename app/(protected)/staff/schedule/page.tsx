@@ -2,7 +2,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import JobRow from './_components/JobRow';
-import { clerkClient } from '@clerk/nextjs/server';
 import { getJobsForSchedule } from '@/lib/actions/jobs';
 import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
 import CalendarClient from './clientComponent';
@@ -11,6 +10,9 @@ import { getLeaves } from '@/lib/actions/leave';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
+import { getSchedules } from '@/lib/actions/schedules';
+import { getServices } from '@/lib/actions/services';
+import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
 
 
 type SearchParams = {
@@ -19,17 +21,29 @@ type SearchParams = {
 
 export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
   const jobs = await getJobsForSchedule();
+  await getSchedules();
+  await getServices();
 
   const leaves = await getLeaves();
 
   const staff = await clerkClient().users.getUserList();
+
+  const custClerk = createClerkClient({
+    secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY,
+  });
+  const customers = await custClerk.users.getUserList();
 
   // convert this PaginatedResourceResponse<User[]>into an array
   const staffArray = staff.data.map((staff) => {
     return { id: String(staff.id).trim(), name: staff.firstName + ' ' + staff.lastName };
   });
 
+  const customerArray = customers.data.map((customer) => {
+    return { id: String(customer.id).trim(), name: customer.firstName + ' ' + customer.lastName };
+  });
+
   console.log(staffArray);
+  console.log(customerArray);
 
   const filters = searchParams.filters;
   const filtersArray = filters ? filters.split(',') : [];
@@ -37,6 +51,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
   // convert the staff attribute in jobs to hold the name of the staff instead of the id
   jobs.map((job) => {
     job.staff = staffArray.find((staff) => staff.id === job.staff)?.name || '';
+    job.customer = customerArray.find((customer) => customer.id === job.customer)?.name || '';
   });
 
   const jobTableDisplay = () => {
@@ -55,6 +70,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             serviceName={job.service.name}
             description={job.description}
             address={job.jobAddress}
+            customerName={job.customer}
             staffName={job.staff}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
@@ -77,6 +93,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             serviceName={job.service.name}
             description={job.description}
             address={job.jobAddress}
+            customerName={job.custome}
             staffName={job.staff}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
@@ -111,6 +128,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
                 <TableHead>Service</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Address</TableHead>
+                <TableHead>Customer</TableHead>
                 <TableHead>Staff</TableHead>
                 <TableHead>Start</TableHead>
                 <TableHead>End</TableHead>
@@ -156,7 +174,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             return { label: staff.name };
           })}></DropdownMenuCheckboxes>
         <div className='ml-auto flex items-center gap-2'>
-          <Link href='/staff/jobs/create-event'>
+          <Link href='/staff/schedule/create-job'>
             <Button size='sm' className='h-8 gap-1'>
               <PlusCircle className='h-3.5 w-3.5' />
               <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Create Event</span>

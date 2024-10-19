@@ -18,6 +18,7 @@ export default function JobRow({
   serviceName,
   description,
   address,
+  customerName,
   staffName,
   timeStart,
   timeEnd,
@@ -28,6 +29,7 @@ export default function JobRow({
   serviceName: string;
   description: string;
   address: string;
+  customerName: string;
   staffName: string;
   timeStart: string;
   timeEnd: string;
@@ -35,10 +37,8 @@ export default function JobRow({
   staffArray: { id: string; name: string }[]; // List of staff to assign
 }) {
 
-  // const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
 
   const handleAssignStaff = async (jobId: string, staffId: string) => {
-    // setSelectedStaff(staffId);
     await updateJobStaff(jobId, staffId); // Call the parent function to update the job with selected staff
   };
 
@@ -47,6 +47,7 @@ export default function JobRow({
       <TableCell className='font-medium'>{serviceName}</TableCell>
       <TableCell className='font-medium'>{description}</TableCell>
       <TableCell className='font-medium'>{address}</TableCell>
+      <TableCell className='font-medium'>{customerName}</TableCell>
       <TableCell className='font-medium'>{staffName}</TableCell>
       <TableCell className='font-medium'>{timeStart}</TableCell>
       <TableCell className='font-medium'>{timeEnd}</TableCell>
