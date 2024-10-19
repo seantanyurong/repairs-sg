@@ -24,7 +24,7 @@ import {
   Select,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, InfoIcon, Loader2 } from "lucide-react";
 import { updateInvoice } from "@/lib/actions/invoices";
 import {
   Popover,
@@ -33,6 +33,11 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const formSchema = z.object({
   _id: z.string().min(1),
@@ -58,6 +63,8 @@ export default function EditInvoiceClient({
   invoice,
   getCustomerAction,
   getStaffAction,
+  getCustomerEmail,
+  getStaffEmail,
 }: {
   invoice: {
     _id: string;
@@ -77,11 +84,19 @@ export default function EditInvoiceClient({
   };
   getCustomerAction: (email: string) => Promise<string>;
   getStaffAction: (email: string) => Promise<string>;
+  getCustomerEmail: (customer: string) => Promise<any>;
+  getStaffEmail: (staff: string) => Promise<any>;
 }) {
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
   const [isCustLoading, setIsCustLoading] = useState(false);
   const [isStaffLoading, setIsStaffLoading] = useState(false);
+  const [currentCustEmail, setCurrentCustEmail] = useState(
+    getCustomerEmail(invoice.customer),
+  );
+  const [currentStaffEmail, setCurrentStaffEmail] = useState(
+    getStaffEmail(invoice.lastUpdatedBy),
+  );
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -128,6 +143,7 @@ export default function EditInvoiceClient({
       } else {
         toast.success("Customer Found!");
         form.setValue("customer", result);
+        setCurrentCustEmail(getCustomerEmail(result));
       }
 
       // templateForm.setValue("customer_name", result);
@@ -163,6 +179,7 @@ export default function EditInvoiceClient({
       } else {
         toast.success("Staff Found!");
         form.setValue("lastUpdatedBy", result);
+        setCurrentStaffEmail(getStaffEmail(result));
       }
       // templateForm.setValue("customer_name", result);
       // templateForm.setValue(
@@ -468,7 +485,21 @@ export default function EditInvoiceClient({
           render={({ field }) => {
             return (
               <FormItem>
-                <FormLabel>Customer Email</FormLabel>
+                <div className="flex items-center">
+                  <FormLabel>Customer Email</FormLabel>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoIcon className="ml-2 h-4 w-4 text-gray-500 cursor-pointer" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <span>
+                        Current Customer Email:{" "}
+                        {currentCustEmail || "No email selected"}
+                      </span>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+
                 <FormControl>
                   <Input placeholder="Customer Email" {...field} />
                 </FormControl>
@@ -498,7 +529,20 @@ export default function EditInvoiceClient({
           render={({ field }) => {
             return (
               <FormItem>
-                <FormLabel>Staff Email</FormLabel>
+                <div className="flex items-center">
+                  <FormLabel>Staff Email</FormLabel>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoIcon className="ml-2 h-4 w-4 text-gray-500 cursor-pointer" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <span>
+                        Current Staff Email:{" "}
+                        {currentStaffEmail || "No email selected"}
+                      </span>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
                 <FormControl>
                   <Input placeholder="Staff Email" {...field} />
                 </FormControl>
