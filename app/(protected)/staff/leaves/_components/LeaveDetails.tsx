@@ -15,7 +15,7 @@ import Image from "next/image";
 import { User } from "@clerk/backend";
 import { formatShortDate } from "./LeaveRow";
 import { OctagonAlert } from "lucide-react";
-// import { CustomMenuButton } from "@/components/ui/customMenuButton";
+import { CustomMenuButton } from "@/components/ui/customMenuButton";
 
 export default function LeaveDetails({
   _id,
@@ -43,7 +43,7 @@ export default function LeaveDetails({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost">View Details</Button>
+        <CustomMenuButton className="w-[110%]" variant="ghost">View Details</CustomMenuButton>
       </SheetTrigger>
       <SheetContent className="bg-white">
         <SheetHeader>
