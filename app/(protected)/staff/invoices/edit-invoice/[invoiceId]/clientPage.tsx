@@ -365,6 +365,7 @@ export default function EditInvoiceClient({
           control={form.control}
           name="dateDue"
           render={({ field }) => {
+            const dateIssued = form.watch("dateIssued");
             return (
               <FormItem className="flex flex-col">
                 <FormLabel>Date Due</FormLabel>
@@ -387,6 +388,9 @@ export default function EditInvoiceClient({
                       selected={field.value}
                       onSelect={field.onChange}
                       initialFocus
+                      disabled={(date) =>
+                        dateIssued ? date < dateIssued : false
+                      }
                     />
                   </PopoverContent>
                 </Popover>
