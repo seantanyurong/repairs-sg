@@ -22,6 +22,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
 
 export function formatShortDate(dateString: string): string {
   const date = new Date(dateString);
@@ -180,6 +181,7 @@ export default function LeaveRow({
               disableEdit={status !== "PENDING"}
               clash={clash}
             />
+            <Separator />
             {actorRole === "approver" && (
               <>
                 <DropdownMenuItem
