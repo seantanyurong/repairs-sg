@@ -26,23 +26,25 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
+import { User } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schema } from "@pdfme/common";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { LineItem } from "../../_components/LineItemColumns";
-import { QuoteTemplateForm } from "../../_components/TemplateForm";
 import { QuoteTemplateType } from "../../templates/_components/QuoteTemplateColumns";
-import { User } from "@clerk/nextjs/server";
+import { LineItem } from "./_components/LineItemColumns";
+import { QuoteTemplateForm } from "./_components/TemplateForm";
 
 const formSchema = z.object({
   quotationDate: z.date(),
-  quotationExpiry: z.date().optional(),
+  quotationExpiry: z
+    .date()
+    .min(new Date(), { message: "Expiry date must be after today" }),
   customerEmail: z.string().email(),
   quoteTemplate: z.string().min(1, { message: "Select a quote template" }),
   notes: z.string().optional(),
@@ -70,11 +72,7 @@ interface EditQuoteClientProps {
   submitQuotationAction: (
     quote: string,
     templateInputs: string
-  ) => Promise<{
-    message: string;
-    id?: string;
-    errors?: string | Record<string, unknown>;
-  }>;
+  ) => Promise<string>;
 }
 
 const EditQuoteClient = ({
@@ -91,6 +89,7 @@ const EditQuoteClient = ({
   const [lineItemTotal, setTotals] = useState<LineItemTotals>(defaultTotals);
   const { user } = useUser();
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const quotationForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -105,8 +104,9 @@ const EditQuoteClient = ({
   const templateForm = useForm({ defaultValues: templateFormValues });
 
   const getCustomerByEmail = async () => {
+    quotationForm.clearErrors("customerEmail");
     const fieldState = quotationForm.getFieldState("customerEmail");
-    if (!fieldState.isTouched || fieldState.invalid) {
+    if (fieldState.invalid) {
       quotationForm.setError("customerEmail", {
         type: "pattern",
         message: "Enter a valid email address",
@@ -114,7 +114,15 @@ const EditQuoteClient = ({
       return;
     }
     setIsLoading(true);
+
     try {
+      templateForm.setValue(
+        "sales_email",
+        user?.primaryEmailAddress?.emailAddress
+      );
+
+      templateForm.setValue("sales_mobile", user?.unsafeMetadata.phone);
+
       const result: User = JSON.parse(
         await getCustomerAction(quotationForm.getValues("customerEmail"))
       );
@@ -125,12 +133,9 @@ const EditQuoteClient = ({
         "customer_name",
         result.fullName ?? `${result.firstName} ${result.lastName}`
       );
-      templateForm.setValue(
-        "sales_email",
-        user?.primaryEmailAddress?.emailAddress
-      );
-      templateForm.setValue("sales_mobile", user?.primaryPhoneNumber);
     } catch (err) {
+      quotationForm.setValue("customer", "");
+      templateForm.setValue("customer_name", "");
       console.error(err);
       toast.error(
         (err as Error).message ?? "An error has ocurred, please try again!"
@@ -159,7 +164,7 @@ const EditQuoteClient = ({
       })
     );
 
-    const result = await submitQuotationAction(
+    const response = await submitQuotationAction(
       JSON.stringify({
         ...quotationForm.getValues(),
         totalAmount: lineItemTotal.total,
@@ -172,6 +177,13 @@ const EditQuoteClient = ({
       }),
       JSON.stringify(templateForm.getValues())
     );
+
+    const result: {
+      message: string;
+      id?: string;
+      errors?: string | Record<string, unknown>;
+    } = JSON.parse(response);
+
     if (result?.errors) {
       setErrors(result.errors);
       return;
@@ -179,19 +191,24 @@ const EditQuoteClient = ({
       router.refresh();
       quotationForm.reset(quotationForm.getValues());
       toast.success(result.message);
+      return result.id;
     }
-    return result.id;
   };
 
   const handleContinue = async () => {
+    const formValidity = formRef.current?.reportValidity();
+
+    quotationForm.trigger();
+    if (!quotationForm.formState.isValid || !formValidity) return;
     const quotationId = await onSubmit();
-    router.push(`/staff/quote/view/${quotationId}`);
+    if (quotationId) router.push(`/staff/quote/view/${quotationId}`);
   };
 
   return (
     <>
       <Form {...quotationForm}>
         <form
+          ref={formRef}
           onSubmit={(e) => {
             e.preventDefault();
             quotationForm.handleSubmit(onSubmit)();
@@ -278,6 +295,7 @@ const EditQuoteClient = ({
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
+                        disabled={{ before: new Date() }}
                       />
                     </PopoverContent>
                   </Popover>

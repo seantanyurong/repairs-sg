@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { User } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -39,7 +38,7 @@ const QuoteDetailsClient = ({
   updateQuotationAction,
 }: {
   quotation: any;
-  customer: User;
+  customer: { name: string; email: string; phone: string };
   updateQuotationAction: any;
 }) => {
   const [errors, setErrors] = useState({});
@@ -83,70 +82,78 @@ const QuoteDetailsClient = ({
           <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
             Quotation Information
           </h4>
-
-          <FormField
-            control={quotationForm.control}
-            name="quotationExpiry"
-            render={({ field }) => {
-              return (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Quotation Expiry Date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0"
-                      align="start"
-                    >
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        initialFocus
+          <fieldset
+            disabled={
+              quotation.status === "Declined" || quotation.status === "Accepted"
+            }
+          >
+            <FormField
+              control={quotationForm.control}
+              name="quotationExpiry"
+              render={({ field }) => {
+                return (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Quotation Expiry Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-auto p-0"
+                        align="start"
+                      >
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={quotationForm.control}
+              name="notes"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Notes"
+                        {...field}
                       />
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={quotationForm.control}
-            name="notes"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>Notes</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Notes"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </fieldset>
           <div className="flex flex-row gap-2 justify-end">
             <Button
+              disabled={
+                quotation.status === "Declined" ||
+                quotation.status === "Accepted"
+              }
               type="submit"
               className="w-auto"
             >
@@ -165,15 +172,18 @@ const QuoteDetailsClient = ({
           ) : null}
         </form>
       </Form>
+      {quotation.status === "Declined" && (
+        <div className="flex flex-col gap-2">
+          <p>Quote Decline Reason: {quotation.declineReason}</p>
+          <p>Quote Decline Details: {quotation.declineDetails}</p>
+        </div>
+      )}
       <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
         Customer Information
       </h4>
-      <p>
-        Name:{" "}
-        {customer.fullName ?? `${customer.firstName} ${customer.lastName}`}
-      </p>
-      <p>Email: {customer.emailAddresses[0].emailAddress}</p>
-      <p>Phone: {customer.primaryPhoneNumber?.phoneNumber ?? "NA"}</p>
+      <p>Name: {customer.name}</p>
+      <p>Email: {customer.email}</p>
+      <p>Phone: {customer.phone}</p>
     </div>
   );
 };
