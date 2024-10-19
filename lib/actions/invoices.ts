@@ -137,36 +137,41 @@ const updateInvoice = async (invoice: {
   customer: string;
   lastUpdatedBy: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
-  const invoiceSchema = z.object({
-    _id: z.string().min(1),
-    lineItems: z
-      .array(z.string())
-      .nonempty("Line Items Should Have At Least 1 Item!"),
-    dateIssued: z
-      .date()
-      .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
-        message: "Invalid Date",
+  const invoiceSchema = z
+    .object({
+      _id: z.string().min(1),
+      lineItems: z
+        .array(z.string())
+        .nonempty("Line Items Should Have At Least 1 Item!"),
+      dateIssued: z
+        .date()
+        .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
+          message: "Invalid Date",
+        }),
+      dateDue: z
+        .date()
+        .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
+          message: "Invalid Date",
+        })
+        .refine((date) => date instanceof Date && date > new Date(), {
+          message: "Date Must Be In The Future!",
+        }),
+      totalAmount: z.number().min(0.01, {
+        message: "Total Amount Must Be Greater Than 0!",
       }),
-    dateDue: z
-      .date()
-      .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
-        message: "Invalid Date",
-      })
-      .refine((date) => date instanceof Date && date > new Date(), {
-        message: "Date Must Be In The Future!",
+      remainingDue: z.number().min(0, {
+        message: "Remaining Due Cannot Be Negative!",
       }),
-    totalAmount: z.number().min(0.01, {
-      message: "Total Amount Must Be Greater Than 0!",
-    }),
-    remainingDue: z.number().min(0, {
-      message: "Remaining Due Cannot Be Negative!",
-    }),
-    paymentStatus: z.enum(["Unpaid", "Paid"]),
-    validityStatus: z.enum(["draft", "active", "void"]),
-    publicNote: z.string().max(500),
-    customer: z.string(),
-    lastUpdatedBy: z.string(),
-  });
+      paymentStatus: z.enum(["Unpaid", "Paid"]),
+      validityStatus: z.enum(["draft", "active", "void"]),
+      publicNote: z.string().max(500),
+      customer: z.string(),
+      lastUpdatedBy: z.string(),
+    })
+    .refine((data) => data.remainingDue <= data.totalAmount, {
+      path: ["remainingDue"],
+      message: "Remaining Due cannot be more than Total Amount!",
+    });
 
   const response = invoiceSchema.safeParse({
     _id: invoice._id,

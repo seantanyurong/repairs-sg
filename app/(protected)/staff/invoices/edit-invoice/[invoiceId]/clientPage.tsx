@@ -39,25 +39,30 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const formSchema = z.object({
-  _id: z.string().min(1),
-  lineItems: z.array(
-    z.object({
-      description: z.string().min(1, "Description Is Required"),
-      quantity: z.number().min(1, "Quantity Must Be Greater Than 0"),
-    }),
-  ),
-  dateIssued: z.date(),
-  dateDue: z.date(),
-  totalAmount: z.number().min(0.01),
-  remainingDue: z.number().min(0),
-  // invoiceTemplate: z.string().min(1),
-  paymentStatus: z.enum(["Unpaid"]),
-  validityStatus: z.enum(["draft", "active"]),
-  publicNote: z.string().max(500),
-  customer: z.string(),
-  lastUpdatedBy: z.string(),
-});
+const formSchema = z
+  .object({
+    _id: z.string().min(1),
+    lineItems: z.array(
+      z.object({
+        description: z.string().min(1, "Description Is Required"),
+        quantity: z.number().min(1, "Quantity Must Be Greater Than 0"),
+      }),
+    ),
+    dateIssued: z.date(),
+    dateDue: z.date(),
+    totalAmount: z.number().min(0.01),
+    remainingDue: z.number().min(0),
+    // invoiceTemplate: z.string().min(1),
+    paymentStatus: z.enum(["Unpaid"]),
+    validityStatus: z.enum(["draft", "active"]),
+    publicNote: z.string().max(500),
+    customer: z.string(),
+    lastUpdatedBy: z.string(),
+  })
+  .refine((data) => data.remainingDue <= data.totalAmount, {
+    path: ["remainingDue"],
+    message: "Remaining due cannot be more than total amount",
+  });
 
 export default function EditInvoiceClient({
   invoice,
