@@ -16,7 +16,7 @@
     "@pdfme/common": "^5.0.0",
     "@pdfme/generator": "^5.0.0",
     "@pdfme/schemas": "^5.0.0",
-    "@pdfme/ui": "^3.2.1",
+    "@pdfme/ui": "^5.0.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-checkbox": "^1.1.1",
