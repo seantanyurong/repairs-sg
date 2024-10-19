@@ -10,15 +10,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, OctagonAlert } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { deleteLeave, updateLeave } from "@/lib/actions/leave";
 import { User } from "@clerk/backend";
 import LeaveDetails from "./LeaveDetails";
+import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function formatShortDate(dateString: string): string {
-  console.log("Date String: ", dateString);
   const date = new Date(dateString);
 
   if (isNaN(date.getTime())) {
@@ -58,6 +63,7 @@ export default function LeaveRow({
   actorRole,
   userId,
   createdAt,
+  clash,
 }: {
   _id: string;
   type: string;
@@ -68,9 +74,9 @@ export default function LeaveRow({
   actorRole: string;
   userId: string;
   createdAt: string;
+  clash: boolean;
 }) {
   const router = useRouter();
-  console.log("start: ", start);
 
   const handleAction = async (action: string) => {
     const confirmed = window.confirm(
@@ -89,6 +95,7 @@ export default function LeaveRow({
         requesterId: actor.id,
         approverId: userId,
       });
+      toast(`Leave has been ${action}ed`);
       router.refresh();
     }
   };
@@ -117,23 +124,40 @@ export default function LeaveRow({
       <TableCell className="font-medium">
         {actor?.firstName + " " + actor?.lastName}
       </TableCell>
-      <TableCell>
+      <TableCell className="hidden md:table-cell">
         <Badge variant="outline">{type}</Badge>
       </TableCell>
       <TableCell className="hidden md:table-cell">
         {formatShortDate(start)}
-        {/* {start} */}
       </TableCell>
       <TableCell className="hidden md:table-cell">
         {formatShortDate(end)}
-        {/* {end as string} */}
       </TableCell>
-      <TableCell className="hidden md:table-cell">
+      <TableCell>
         <Badge variant="outline">{status}</Badge>
       </TableCell>
       <TableCell className="hidden md:table-cell">
         {formatShortDate(createdAt)}
       </TableCell>
+
+      <TableCell>
+        {clash ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <OctagonAlert color="red" />
+            </TooltipTrigger>
+            <TooltipContent className="text-wrap">
+              {actorRole === "requester" &&
+                "Clashing leave and scheduled job! Please reassign job to other technicians before approving!"}
+              {actorRole === "approver" &&
+                "Clashing leave and scheduled job! Please inform admin to reassign job to other technician!"}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          ""
+        )}
+      </TableCell>
+
       <TableCell>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -154,6 +178,7 @@ export default function LeaveRow({
               actorRole={actorRole}
               createdAt={createdAt}
               disableEdit={status !== "PENDING"}
+              clash={clash}
             />
             {actorRole === "approver" && (
               <>
@@ -173,14 +198,16 @@ export default function LeaveRow({
               </>
             )}
 
-            {actorRole === "requester" && (
+            {actorRole === "requester" && status == "PENDING" && (
               <>
                 <DropdownMenuItem
                   onClick={() => handleAction("approve")}
                   className="cursor-pointer"
+                  disabled={clash}
                 >
                   Approve
                 </DropdownMenuItem>
+
                 <DropdownMenuItem
                   onClick={() => handleAction("reject")}
                   className="cursor-pointer"

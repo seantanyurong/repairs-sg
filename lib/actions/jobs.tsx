@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import Job from '@/models/Job';
 import { z } from 'zod';
@@ -76,10 +76,7 @@ const getJobs = async () => {
 };
 
 const getJobsForSchedule = async () => {
-  const jobs = await Job.find()
-  .populate('schedule')
-  .populate('service')
-  .exec();
+  const jobs = await Job.find().populate("schedule").populate("service").exec();
 
   return jobs;
 };
@@ -99,15 +96,19 @@ const updateJobStaff = async (
   });
 
   if (!response.success) {
-    return { message: 'Error', errors: response.error.flatten().fieldErrors };
+    return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
 
   const filter = { _id: new ObjectId(response.data._id) };
   const update = { staff: response.data.staff };
   await Job.findOneAndUpdate(filter, update);
-  revalidatePath('/staff/schedule');
+  revalidatePath("/staff/schedule");
 
-  return { message: 'Job updated successfully' };
-}
+  return { message: "Job updated successfully" };
+};
 
-export { addJob, getJobs, getJobsForSchedule, updateJobStaff };
+const getJobsByStaffId = async (staffId: string) => {
+  return Job.find({ staff: staffId });
+};
+
+export { addJob, getJobs, getJobsForSchedule, updateJobStaff, getJobsByStaffId };
