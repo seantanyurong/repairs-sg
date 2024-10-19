@@ -31,7 +31,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 
@@ -182,8 +181,18 @@ export default function EditInvoiceClient({
   const onSubmit = async () => {
     setMessage("");
     setErrors({});
-    console.log(form.getValues());
-    const result = await updateInvoice(form.getValues());
+
+    // Format Line Items
+    const formatLineItems = form
+      .getValues()
+      .lineItems.map((item) => `${item.quantity}x ${item.description}`);
+
+    const formData = {
+      ...form.getValues(),
+      lineItems: formatLineItems,
+    };
+    console.log(formData);
+    const result = await updateInvoice(formData);
     if (result?.errors) {
       setMessage(result.message);
       setErrors(result.errors);

@@ -4,6 +4,7 @@ import Invoice from "@/models/Invoice";
 import mongoose from "mongoose";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { ObjectId } from "mongodb";
 
 const fieldFriendlyNames: Record<string, string> = {
   invoiceId: "Invoice ID",
@@ -125,10 +126,7 @@ const addInvoice = async (invoice: {
 
 const updateInvoice = async (invoice: {
   _id: string;
-  lineItems: {
-    description: string;
-    quantity: number;
-  }[];
+  lineItems: Array<string>;
   dateIssued: Date;
   dateDue: Date;
   totalAmount: number;
@@ -189,9 +187,8 @@ const updateInvoice = async (invoice: {
     return { message: "", errors: response.error.flatten().fieldErrors };
   }
 
-  const filter = { invoiceId: response.data._id };
+  const filter = { _id: new ObjectId(response.data._id) };
   const update = {
-    _id: response.data._id,
     lineItems: response.data.lineItems,
     dateIssued: response.data.dateIssued,
     dateDue: response.data.dateDue,
