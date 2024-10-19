@@ -32,7 +32,7 @@ import { Schema } from "@pdfme/common";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -89,6 +89,7 @@ const EditQuoteClient = ({
   const [lineItemTotal, setTotals] = useState<LineItemTotals>(defaultTotals);
   const { user } = useUser();
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const quotationForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -133,7 +134,7 @@ const EditQuoteClient = ({
         result.fullName ?? `${result.firstName} ${result.lastName}`
       );
     } catch (err) {
-      quotationForm.setValue("customer", undefined);
+      quotationForm.setValue("customer", "");
       templateForm.setValue("customer_name", "");
       console.error(err);
       toast.error(
@@ -195,8 +196,10 @@ const EditQuoteClient = ({
   };
 
   const handleContinue = async () => {
+    const formValidity = formRef.current?.reportValidity();
+
     quotationForm.trigger();
-    if (!quotationForm.formState.isValid) return;
+    if (!quotationForm.formState.isValid || !formValidity) return;
     const quotationId = await onSubmit();
     if (quotationId) router.push(`/staff/quote/view/${quotationId}`);
   };
@@ -205,6 +208,7 @@ const EditQuoteClient = ({
     <>
       <Form {...quotationForm}>
         <form
+          ref={formRef}
           onSubmit={(e) => {
             e.preventDefault();
             quotationForm.handleSubmit(onSubmit)();

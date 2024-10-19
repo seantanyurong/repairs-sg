@@ -1,97 +1,75 @@
 "use server";
 
-import Job from "@/models/Job";
-import { z } from "zod";
-import { revalidatePath } from "next/cache";
-import { ObjectId } from "mongodb";
+import Job from '@/models/Job';
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+import { ObjectId } from 'mongodb';
+import Schedule from '@/models/Schedule';
 
-// const addService = async (service: {
-//   name: string;
-//   description: string;
-//   price: number;
-//   volumeDiscountPercentage: number;
-//   status: string;
-// }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
-//   const serviceSchema = z.object({
-//     name: z.string().min(1),
-//     description: z.string().min(1),
-//     price: z.number(),
-//     volumeDiscountPercentage: z.number(),
-//     status: z.enum(['Draft', 'Active', 'Disabled']),
-//   });
+const addJob = async (job: {
+  quantity: number;
+  jobAddress: string;
+  schedule: string;
+  description: string;
+  serviceId: string;
+  price: number;
+  customer: string;
+}): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
 
-//   const response = serviceSchema.safeParse({
-//     name: service.name,
-//     description: service.description,
-//     price: service.price,
-//     volumeDiscountPercentage: service.volumeDiscountPercentage,
-//     status: service.status,
-//   });
+  // Add price to description
+  job.description += `\n\nPrice: $${job.price}`;
 
-//   if (!response.success) {
-//     return { message: 'Error', errors: response.error.flatten().fieldErrors };
-//   }
+  // Create Schedule
+  const scheduleSchema = z.object({
+    timeStart: z.date(),
+    timeEnd: z.date(),
+  });
 
-//   const newService = new Service(response.data);
-//   newService.save();
+  const formattedSchedule = JSON.parse(job.schedule);
 
-//   return { message: 'Service added successfully' };
-// };
+  const scheduleResponse = scheduleSchema.safeParse({
+    timeStart: new Date(formattedSchedule.timeStart),
+    timeEnd: new Date(formattedSchedule.timeEnd),
+  });
 
-// const updateService = async (service: {
-//   _id: string;
-//   name: string;
-//   description: string;
-//   price: number;
-//   volumeDiscountPercentage: number;
-//   status: string;
-// }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
-//   const serviceSchema = z.object({
-//     _id: z.string().min(1),
-//     name: z.string().min(1),
-//     description: z.string().min(1),
-//     price: z.number(),
-//     volumeDiscountPercentage: z.number(),
-//     status: z.enum(['Draft', 'Active', 'Disabled']),
-//   });
+  if (!scheduleResponse.success) {
+    return {
+      message: 'Error',
+      errors: scheduleResponse.error.flatten().fieldErrors,
+    };
+  }
 
-//   const response = serviceSchema.safeParse({
-//     _id: service._id,
-//     name: service.name,
-//     description: service.description,
-//     price: service.price,
-//     volumeDiscountPercentage: service.volumeDiscountPercentage,
-//     status: service.status,
-//   });
+  const newSchedule = new Schedule(scheduleResponse.data);
+  newSchedule.save();
 
-//   console.log(response.data);
+  // Create Job
+  const jobSchema = z.object({
+    quantity: z.number(),
+    jobAddress: z.string(),
+    schedule: z.instanceof(ObjectId),
+    description: z.string(),
+    service: z.instanceof(ObjectId),
+    customer: z.string(),
+  });
 
-//   if (!response.success) {
-//     return { message: 'Error', errors: response.error.flatten().fieldErrors };
-//   }
+  const response = jobSchema.safeParse({
+    quantity: job.quantity,
+    jobAddress: job.jobAddress,
+    schedule: newSchedule._id,
+    description: job.description,
+    service: new ObjectId(job.serviceId),
+    customer: job.customer,
+  });
 
-//   const filter = { _id: new ObjectId(response.data._id) };
-//   const update = {
-//     name: response.data.name,
-//     description: response.data.description,
-//     price: response.data.price,
-//     volumeDiscountPercentage: response.data.volumeDiscountPercentage,
-//     status: response.data.status,
-//   };
-//   await Service.findOneAndUpdate(filter, update);
-//   revalidatePath('/staff/services');
+  if (!response.success) {
+    return { message: 'Error', errors: response.error.flatten().fieldErrors };
+  }
 
-//   return { message: 'Service updated successfully' };
-// };
+  const newJob = new Job(response.data);
+  newJob.save();
 
-// const deleteService = async (serviceId: string) => {
-//   await Service.findByIdAndDelete(serviceId);
-//   revalidatePath('/staff/services');
-// };
-
-// const getService = async (serviceId: string) => {
-//   return Service.findById(serviceId);
-// };
+  return { message: 'Job booked successfully' };
+};
 
 const getJobs = async () => {
   return Job.find();
@@ -133,4 +111,4 @@ const getJobsByStaffId = async (staffId: string) => {
   return Job.find({ staff: staffId });
 };
 
-export { getJobs, getJobsForSchedule, updateJobStaff, getJobsByStaffId };
+export { addJob, getJobs, getJobsForSchedule, updateJobStaff, getJobsByStaffId };
