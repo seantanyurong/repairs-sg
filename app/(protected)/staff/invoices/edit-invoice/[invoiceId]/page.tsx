@@ -1,7 +1,6 @@
 import { getInvoice } from "@/lib/actions/invoices";
 import EditInvoiceClient from "./clientPage";
 import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
-import { getCustomerById } from "@/lib/actions/customers";
 
 export default async function EditInvoice({
   params,
@@ -43,18 +42,18 @@ export default async function EditInvoice({
     };
   });
 
-  const getCustomerEmail = async (customer: string) => {
-    const customerObject = JSON.parse(await getCustomerById(customer));
-    return customerObject.emailAddresses[0].emailAddress;
-  };
+  // const getCustomerEmail = async (customer: string) => {
+  //   const customerObject = JSON.parse(await getCustomerById(customer));
+  //   return customerObject.emailAddresses[0].emailAddress;
+  // };
 
-  const getStaffEmail = async (staffId: string) => {
-    const staff = await clerkClient().users.getUser(staffId);
+  // const getStaffEmail = async (staffId: string) => {
+  //   const staff = await clerkClient().users.getUser(staffId);
 
-    if (!staff) throw new Error("No customer found with that id");
+  //   if (!staff) throw new Error("No customer found with that id");
 
-    return staff.primaryEmailAddress?.emailAddress || "";
-  };
+  //   return staff.primaryEmailAddress?.emailAddress || "";
+  // };
 
   return (
     <EditInvoiceClient
@@ -68,8 +67,8 @@ export default async function EditInvoice({
         paymentStatus: invoice.paymentStatus,
         validityStatus: invoice.validityStatus,
         publicNote: invoice.publicNote,
-        customer: await getCustomerEmail(invoice.customer),
-        staff: await getStaffEmail(invoice.lastUpdatedBy),
+        customer: invoice.customer,
+        lastUpdatedBy: invoice.lastUpdatedBy,
       }}
       getCustomerAction={getCustomerAction}
       getStaffAction={getStaffAction}

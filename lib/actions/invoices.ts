@@ -135,7 +135,7 @@ const updateInvoice = async (invoice: {
   validityStatus: "draft" | "active";
   publicNote: string;
   customer: string;
-  staff: string;
+  lastUpdatedBy: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const invoiceSchema = z.object({
     _id: z.string().min(1),
@@ -165,7 +165,7 @@ const updateInvoice = async (invoice: {
     validityStatus: z.enum(["draft", "active", "void"]),
     publicNote: z.string().max(500),
     customer: z.string(),
-    staff: z.string(),
+    lastUpdatedBy: z.string(),
   });
 
   const response = invoiceSchema.safeParse({
@@ -179,7 +179,7 @@ const updateInvoice = async (invoice: {
     validityStatus: invoice.validityStatus,
     publicNote: invoice.publicNote,
     customer: invoice.customer,
-    staff: invoice.staff,
+    lastUpdatedBy: invoice.lastUpdatedBy,
   });
 
   console.log(response.data);
@@ -198,7 +198,7 @@ const updateInvoice = async (invoice: {
     validityStatus: response.data.validityStatus,
     publicNote: response.data.publicNote,
     customer: response.data.customer,
-    staff: response.data.staff,
+    lastUpdatedBy: response.data.lastUpdatedBy,
   };
   const context = { runValidators: true, context: "query" };
 

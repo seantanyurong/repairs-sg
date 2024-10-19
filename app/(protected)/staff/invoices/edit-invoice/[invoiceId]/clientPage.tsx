@@ -51,7 +51,7 @@ const formSchema = z.object({
   validityStatus: z.enum(["draft", "active"]),
   publicNote: z.string().max(500),
   customer: z.string(),
-  staff: z.string(),
+  lastUpdatedBy: z.string(),
 });
 
 export default function EditInvoiceClient({
@@ -73,7 +73,7 @@ export default function EditInvoiceClient({
     validityStatus: "draft" | "active";
     publicNote: string;
     customer: string;
-    staff: string;
+    lastUpdatedBy: string;
   };
   getCustomerAction: (email: string) => Promise<string>;
   getStaffAction: (email: string) => Promise<string>;
@@ -100,7 +100,7 @@ export default function EditInvoiceClient({
       validityStatus: invoice.validityStatus,
       publicNote: invoice.publicNote,
       customer: invoice.customer,
-      staff: invoice.staff,
+      lastUpdatedBy: invoice.lastUpdatedBy,
     },
   });
 
@@ -145,10 +145,10 @@ export default function EditInvoiceClient({
   };
 
   const getStaffByEmail = async () => {
-    const fieldState = form.getFieldState("staff");
+    const fieldState = form.getFieldState("lastUpdatedBy");
     if (!fieldState.isTouched || fieldState.invalid) {
       form.setError(
-        "staff",
+        "lastUpdatedBy",
         { type: "pattern", message: "Enter A Valid Email!" },
         { shouldFocus: true },
       );
@@ -156,13 +156,13 @@ export default function EditInvoiceClient({
     }
     setIsStaffLoading(true);
     try {
-      const result = await getStaffAction(form.getValues("staff"));
+      const result = await getStaffAction(form.getValues("lastUpdatedBy"));
       if (result === "No Staff Found!") {
         toast.error(result);
         return;
       } else {
         toast.success("Staff Found!");
-        form.setValue("staff", result);
+        form.setValue("lastUpdatedBy", result);
       }
       // templateForm.setValue("customer_name", result);
       // templateForm.setValue(
@@ -490,7 +490,7 @@ export default function EditInvoiceClient({
         </Button>
         <FormField
           control={form.control}
-          name="staff"
+          name="lastUpdatedBy"
           render={({ field }) => {
             return (
               <FormItem>
