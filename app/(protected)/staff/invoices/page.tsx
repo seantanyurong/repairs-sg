@@ -56,7 +56,7 @@ export default async function InvoicesPage() {
     };
 
     return {
-      _id: invoice._id,
+      _id: invoice._id.toString(),
       invoiceId: invoice.invoiceId.toString(),
       lineItems: invoice.lineItems,
       dateIssued: invoice.dateIssued
