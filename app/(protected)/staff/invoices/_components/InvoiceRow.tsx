@@ -61,6 +61,14 @@ export default function InvoiceRow({
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() =>
+                router.push(`/staff/invoices/view-invoice/${invoiceId}`)
+              }
+              className="cursor-pointer"
+            >
+              View
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
                 router.push(`/staff/invoices/edit-invoice/${invoiceId}`)
               }
               className="cursor-pointer"
