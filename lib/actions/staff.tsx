@@ -1,10 +1,10 @@
-// "use server";
-// import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
+"use server";
+
+// import Staff from "@/models/Staff";
+import { clerkClient } from "@clerk/nextjs/server";
 // import { z } from "zod";
 
-// const staffClerk = createClerkClient({
-//   secretKey: process.env.CLERK_SECRET_KEY,
-// });
+const staffClerk = clerkClient();
 
 // const addStaff = async (staff: {
 //   firstName: string;
@@ -146,4 +146,12 @@
 //   await clerkClient().users.deleteUser(staffId);
 // };
 
-// export { addStaff, updateStaff, getStaff, getAllStaffEmail, deleteStaff };
+const getStaffById = async (id: string) => {
+    const user = await staffClerk.users.getUser(id);
+  
+    if (!user) throw new Error("No staff found with that id");
+  
+    return JSON.stringify(user);
+  }
+
+export { /*addStaff, updateStaff, getStaff, getAllStaffEmail, deleteStaff*/ getStaffById };
