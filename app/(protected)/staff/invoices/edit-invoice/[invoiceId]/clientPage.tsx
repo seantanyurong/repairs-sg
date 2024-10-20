@@ -70,6 +70,8 @@ export default function EditInvoiceClient({
   getStaffAction,
   getCustomerEmail,
   getStaffEmail,
+  currCustEmail,
+  currStaffEmail,
 }: {
   invoice: {
     _id: string;
@@ -89,19 +91,17 @@ export default function EditInvoiceClient({
   };
   getCustomerAction: (email: string) => Promise<string>;
   getStaffAction: (email: string) => Promise<string>;
-  getCustomerEmail: (customer: string) => Promise<any>;
-  getStaffEmail: (staff: string) => Promise<any>;
+  getCustomerEmail: (customer: string) => Promise<string>;
+  getStaffEmail: (staff: string) => Promise<string>;
+  currCustEmail: string;
+  currStaffEmail: string;
 }) {
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
   const [isCustLoading, setIsCustLoading] = useState(false);
   const [isStaffLoading, setIsStaffLoading] = useState(false);
-  const [currentCustEmail, setCurrentCustEmail] = useState(
-    getCustomerEmail(invoice.customer),
-  );
-  const [currentStaffEmail, setCurrentStaffEmail] = useState(
-    getStaffEmail(invoice.lastUpdatedBy),
-  );
+  const [currentCustEmail, setCurrentCustEmail] = useState(currCustEmail);
+  const [currentStaffEmail, setCurrentStaffEmail] = useState(currStaffEmail);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -148,7 +148,7 @@ export default function EditInvoiceClient({
       } else {
         toast.success("Customer Found!");
         form.setValue("customer", result);
-        setCurrentCustEmail(getCustomerEmail(result));
+        setCurrentCustEmail(await getCustomerEmail(result));
       }
 
       // templateForm.setValue("customer_name", result);
@@ -184,7 +184,7 @@ export default function EditInvoiceClient({
       } else {
         toast.success("Staff Found!");
         form.setValue("lastUpdatedBy", result);
-        setCurrentStaffEmail(getStaffEmail(result));
+        setCurrentStaffEmail(await getStaffEmail(result));
       }
       // templateForm.setValue("customer_name", result);
       // templateForm.setValue(

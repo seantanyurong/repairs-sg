@@ -46,7 +46,7 @@ export default async function EditInvoice({
   const getCustomerEmail = async (customer: string) => {
     "use server";
     const customerObject = JSON.parse(await getCustomerById(customer));
-    return customerObject.emailAddresses[0].emailAddress;
+    return customerObject.emailAddresses[0].emailAddress as string;
   };
 
   const getStaffEmail = async (staffId: string) => {
@@ -55,7 +55,7 @@ export default async function EditInvoice({
 
     if (!staff) throw new Error("No customer found with that id");
 
-    return staff.primaryEmailAddress?.emailAddress || "";
+    return (staff.primaryEmailAddress?.emailAddress as string) || "";
   };
 
   return (
@@ -77,6 +77,8 @@ export default async function EditInvoice({
       getStaffAction={getStaffAction}
       getCustomerEmail={getCustomerEmail}
       getStaffEmail={getStaffEmail}
+      currCustEmail={await getCustomerEmail(invoice.customer)}
+      currStaffEmail={await getStaffEmail(invoice.lastUpdatedBy)}
     />
   );
 }
