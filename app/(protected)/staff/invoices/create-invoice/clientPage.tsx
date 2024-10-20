@@ -2,8 +2,7 @@
 
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from "lucide-react";
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,12 +28,14 @@ import {
 import { toast } from "sonner";
 
 const formSchema = z.object({
+  invoiceTemplate: z.string().min(1),
+  job: z.string(),
   lineItems: z.array(z.object({
     description: z.string().min(1, "Description Is Required"),
-    quantity: z.number().min(1, "Quantity Must Be Greater Than 0")
+    quantity: z.number().min(1, "Quantity Must Be Greater Than 0"),
+    amount: z.number().min(1, "Amount Must Be Greater Than 0"),
   })),
-  totalAmount: z.number().min(0.01),
-  // invoiceTemplate: z.string().min(1),
+  totalAmount: z.number().min(1),
   paymentStatus: z.enum(['Unpaid']),
   validityStatus: z.enum(['draft', 'active']),
   publicNote: z.string().max(500),
@@ -43,19 +44,57 @@ const formSchema = z.object({
 });
 
 export default function CreateInvoiceClient({
-  // template,
   getCustomerAction,
   getStaffAction,
+  getJobsAction,
 }: {
-  // template: string,
   getCustomerAction: (email: string) => Promise<string>,
   getStaffAction: (email: string) => Promise<string>,
+  getJobsAction: () => Promise<{
+    id: string,
+    description: string,
+    quantity: string,
+    customer: string
+  }[]>
 }) {
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
   const [isCustLoading, setIsCustLoading] = useState(false);
   const [isStaffLoading, setIsStaffLoading] = useState(false);
+  const [jobs, setJobs] = useState<{ id: string, description: string, quantity: string, customer: string }[]>([]);
+  const [isLoadingJobs, setIsLoadingJobs] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<{ id: string, description: string, quantity: string, customer: string } | null>(null);
   const router = useRouter();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      invoiceTemplate: '670befb8e46e44da50d1ceea',
+      job: '',
+      lineItems: [{ description: 'Transport Fee', quantity: 1, amount: 40 }],
+      totalAmount: 0,
+      publicNote: '',
+      customer: '',
+      staff: '',
+    },
+  });
+
+  const fetchJobs = async () => {
+    setIsLoadingJobs(true);
+    try {
+      const jobList = await getJobsAction();
+      setJobs(jobList);
+    } catch (err) {
+      console.error(err);
+      toast.error("An error occurred while fetching jobs.");
+    } finally {
+      setIsLoadingJobs(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
   const getCustomerByEmail = async () => {
     const fieldState = form.getFieldState("customer");
@@ -72,20 +111,17 @@ export default function CreateInvoiceClient({
       const result = await getCustomerAction(
         form.getValues("customer")
       );
-      if (result === "No Customer Found!") {
+      if (result === "No Customer Found") {
         toast.error(result);
         return;
       } else {
-        toast.success("Customer Found!");
-        form.setValue("customer", result);
+        if (result === selectedJob?.customer) {
+          toast.success("Customer Found!");
+          form.setValue("customer", result);
+        } else {
+          toast.error("Searched Customer Does Not Match With Selected Job Customer");
+        }
       }
-      
-      // templateForm.setValue("customer_name", result);
-      // templateForm.setValue(
-      //   "sales_email",
-      //   user?.primaryEmailAddress?.emailAddress
-      // );
-      // templateForm.setValue("sales_mobile", user?.primaryPhoneNumber);
     } catch (err) {
       console.error(err);
       toast.error("An Error Has Ocurred, Please Try Again!");
@@ -109,19 +145,13 @@ export default function CreateInvoiceClient({
       const result = await getStaffAction(
         form.getValues("staff")
       );
-      if (result === "No Staff Found!") {
+      if (result === "No Staff Found") {
         toast.error(result);
         return;
       } else {
         toast.success("Staff Found!");
         form.setValue("staff", result);
       }
-      // templateForm.setValue("customer_name", result);
-      // templateForm.setValue(
-      //   "sales_email",
-      //   user?.primaryEmailAddress?.emailAddress
-      // );
-      // templateForm.setValue("sales_mobile", user?.primaryPhoneNumber);
     } catch (err) {
       console.error(err);
       toast.error("An Error Has Ocurred, Please Try Again!");
@@ -130,28 +160,30 @@ export default function CreateInvoiceClient({
     }
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      lineItems: [{ description: '', quantity: 1 }],
-      totalAmount: 0,
-      publicNote: '',
-      // invoiceTemplate: "",
-    },
-  });
-
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'lineItems',
   });
 
+  const calculateTotalAmount = () => {
+    const total = form.getValues('lineItems').reduce((sum, item) => {
+      return sum + (item.amount || 0) * (item.quantity || 0);
+    }, 0);
+    form.setValue('totalAmount', total);
+  };
+
+  useEffect(() => {
+    calculateTotalAmount();
+  }, [form.watch('lineItems')]);
+
   const onSubmit = async () => {
+    console.log("onSubmit");
     setMessage('');
     setErrors({});
 
     // Format Line Items
     const formatLineItems = form.getValues().lineItems.map(
-      (item) => `${item.quantity}x ${item.description}`
+      (item) => `Description: ${item.description} Quantity: ${item.quantity} Amount: ${item.amount}`
     );
 
     const formData = {
@@ -175,12 +207,63 @@ export default function CreateInvoiceClient({
     <Form {...form}>
       <form
         onSubmit={(e) => {
+          console.log("Form Submitting...")
+          const formData = form.getValues();
+          console.log("Form Data Before Prevent Default:", formData);
           e.preventDefault();
           form.handleSubmit(onSubmit)();
         }}
-        className='max-w-md w-full flex flex-col gap-4'>
+        className='max-w-2xl w-full flex flex-col gap-4'>
+        
+        <FormField
+          control={form.control}
+          name="job"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Select Job:</FormLabel>
+              <FormControl>
+                <Select 
+                  value={field.value || ""}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    const selectedJob = jobs.find(job => job.id === value);
+                    if (selectedJob) {
+                      setSelectedJob(selectedJob);
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder='Select Job' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {isLoadingJobs ? (
+                      <SelectItem value="loading" disabled>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading jobs...
+                      </SelectItem>
+                    ) : (
+                      jobs.map(job => {
+                        const priceMatch = job.description.match(/Price:\s*\$(\d+(\.\d+)?)/);
+                        const price = priceMatch && priceMatch[1] ? parseFloat(priceMatch[1]) : 0;
+                        const quantityPrice = (price / Number(job.quantity)).toFixed(2);
+
+                        return (
+                          <SelectItem key={job.id} value={job.id}>
+                            {job.id} (Desc: {job.description.replace(/Price:\s*\$(\d+(\.\d+)?)/, `Price: $ ${quantityPrice}`)} Qty: {job.quantity})
+                          </SelectItem>
+                        );
+                      })
+                    )}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
         <div className='mb-4'>
-          <FormLabel>Line Items</FormLabel>
+          <FormLabel>Line Items (Description | Quantity | Amount)</FormLabel>
           {fields.map((item, index) => (
             <div key={item.id} className='flex gap-2 mb-2'>
               {/* Line Item Description */}
@@ -208,17 +291,48 @@ export default function CreateInvoiceClient({
                         type='number'
                         placeholder='Quantity'
                         {...field}
-                        onChange={(event) => field.onChange(+event.target.value)}
+                        value={field.value ?? ''}
+                        onChange={(event) => {
+                          field.onChange(+event.target.value || 1);
+                          calculateTotalAmount();
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {/* Line Item Amount */}
+              <FormField
+                control={form.control}
+                name={`lineItems.${index}.amount`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        placeholder='Amount'
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(event) => {
+                          field.onChange(+event.target.value || 1);
+                          calculateTotalAmount();
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button
                 type='button'
                 className='bg-red-500 text-white'
-                onClick={() => remove(index)}>
+                onClick={() => {
+                  remove(index);
+                  calculateTotalAmount();
+                  }}>
                 Remove
               </Button>
             </div>
@@ -226,10 +340,11 @@ export default function CreateInvoiceClient({
           <Button
             type='button'
             className='mt-2 bg-primary text-white'
-            onClick={() => append({ description: '', quantity: 1 })}>
+            onClick={() => append({ description: '', quantity: 1, amount: 1 })}>
             + Add Line Item
           </Button>
         </div>
+        
         <FormField
           control={form.control}
           name='totalAmount'
@@ -242,7 +357,7 @@ export default function CreateInvoiceClient({
                     type='number'
                     placeholder='totalAmount'
                     {...field}
-                    onChange={(event) => field.onChange(+event.target.value)}
+                    readOnly
                   />
                 </FormControl>
                 <FormMessage />
@@ -316,11 +431,12 @@ export default function CreateInvoiceClient({
           render={({ field }) => {
             return (
               <FormItem>
-                <FormLabel>Customer Email</FormLabel>
+                <FormLabel>Customer ID</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Customer Email"
                     {...field}
+                    value={field.value ?? ''}
                   />
                 </FormControl>
                 <FormMessage />
@@ -349,11 +465,12 @@ export default function CreateInvoiceClient({
           render={({ field }) => {
             return (
               <FormItem>
-                <FormLabel>Staff Email</FormLabel>
+                <FormLabel>Staff ID</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Staff Email"
                     {...field}
+                    value={field.value ?? ''}
                   />
                 </FormControl>
                 <FormMessage />
@@ -391,4 +508,3 @@ export default function CreateInvoiceClient({
     </Form>
   );
 }
-

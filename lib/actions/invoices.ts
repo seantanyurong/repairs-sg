@@ -2,8 +2,10 @@
 
 import Invoice from "@/models/Invoice";
 import mongoose from "mongoose";
+import { ObjectId } from 'mongodb';
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import PaynowQR from 'paynowqr';
 
 const fieldFriendlyNames: Record<string, string> = {
   invoiceId: "Invoice ID",
@@ -15,6 +17,12 @@ const fieldFriendlyNames: Record<string, string> = {
   paymentStatus: "Payment Status",
   validityStatus: "Validity Status",
   publicNote: "Note",
+  invoiceTemplate: "Invoice Template",
+  qrCode: "QR Code",
+  customer: "Customer",
+  job: "Job",
+  createdBy: "Created By",
+  lastUpdatedBy: "Last Updated By",
 };
 
 const addInvoice = async (invoice: {
@@ -23,7 +31,9 @@ const addInvoice = async (invoice: {
   paymentStatus: string;
   validityStatus: string;
   publicNote: string;
+  invoiceTemplate: string;
   customer: string;
+  job: string;
   staff: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   // Fetch Latest Invoice
@@ -40,8 +50,16 @@ const addInvoice = async (invoice: {
   const dateIssued = new Date();
   const dateDue = new Date(dateIssued.getTime() + 7 * 24 * 60 * 60 * 1000);
   const remainingDue = invoice.totalAmount;
-  const createdBy = invoice.staff;
-  const lastUpdatedBy = invoice.staff;
+  const jobId = new ObjectId(invoice.job);
+
+  //Outputs the qrcode to a UTF-8 string format, which can be passed to a QR code generation script to generate the paynow QR
+  const paynowQRCode = new PaynowQR({
+    uen:'202100025M',                     //Required: UEN of company
+    amount : invoice.totalAmount,         //Specify amount of money to pay.
+    refNumber: nextInvoiceId.toString(),  //Reference number for Paynow Transaction. Useful if you need to track payments for recouncilation.
+    company:  'Repair.sg'                 //Company name to embed in the QR code. Optional.               
+  });
+  const qrString = paynowQRCode.output();
 
   const invoiceSchema = z.object({
     invoiceId: z.number(),
@@ -70,9 +88,12 @@ const addInvoice = async (invoice: {
     paymentStatus: z.enum(["Unpaid", "Paid"]),
     validityStatus: z.enum(["draft", "active", "void"]),
     publicNote: z.string().max(500),
-    customer: z.string(),
-    createdBy: z.string(),
-    lastUpdatedBy: z.string(),
+    invoiceTemplate: z.string(),
+    qrCode: z.string(),
+    customer: z.string().min(32, "Invalid Customer ID").max(32, "Invalid Customer ID"),
+    job: z.custom<ObjectId>(),
+    createdBy: z.string().min(32, "Invalid Staff ID").max(32, "Invalid Staff ID"),
+    lastUpdatedBy: z.string().min(32, "Invalid Staff ID").max(32, "Invalid Staff ID"),
   });
 
   const response = invoiceSchema.safeParse({
@@ -85,9 +106,12 @@ const addInvoice = async (invoice: {
     paymentStatus: invoice.paymentStatus,
     validityStatus: invoice.validityStatus,
     publicNote: invoice.publicNote,
+    invoiceTemplate: invoice.invoiceTemplate,
+    qrCode: qrString,
     customer: invoice.customer,
-    createdBy: createdBy,
-    lastUpdatedBy: lastUpdatedBy,
+    job: jobId,
+    createdBy: invoice.staff,
+    lastUpdatedBy: invoice.staff,
   });
 
   console.log(response.data);
@@ -222,7 +246,7 @@ const updateInvoice = async (invoice: {
 };
 
 const getInvoice = async (invoiceId: number) => {
-  return Invoice.findById(invoiceId);
+  return Invoice.findOne({'invoiceId': invoiceId});
 };
 
 const getInvoices = async () => {
