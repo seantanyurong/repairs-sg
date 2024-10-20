@@ -247,4 +247,66 @@ const getInvoices = async () => {
   return invoices;
 };
 
-export { addInvoice, updateInvoice, getInvoice, getInvoices };
+const voidInvoice = async (invoice: {
+  _id: string;
+  validityStatus: "void";
+  voidReason: string;
+  lastUpdatedBy: string;
+}): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
+  const invoiceSchema = z.object({
+    _id: z.string().min(1),
+    validityStatus: z.enum(["void"]),
+    voidReason: z.string(),
+    lastUpdatedBy: z.string(),
+  });
+
+  const response = invoiceSchema.safeParse({
+    _id: invoice._id,
+    validityStatus: invoice.validityStatus,
+    voidReason: invoice.voidReason,
+    lastUpdatedBy: invoice.lastUpdatedBy,
+  });
+
+  console.log(response.data);
+  if (!response.success) {
+    return { message: "", errors: response.error.flatten().fieldErrors };
+  }
+
+  const filter = { _id: new ObjectId(response.data._id) };
+  const update = {
+    validityStatus: response.data.validityStatus,
+    voidReason: response.data.voidReason,
+    lastUpdatedBy: response.data.lastUpdatedBy,
+  };
+
+  const context = { runValidators: true, context: "query" };
+
+  try {
+    await Invoice.findOneAndUpdate(filter, update, context);
+    revalidatePath("/staff/invoices");
+    console.log("voiddd");
+    return { message: "Invoices Voided Successfully" };
+  } catch (error: unknown) {
+    if (error instanceof mongoose.Error.ValidationError && error.errors) {
+      // Mongoose validation errors (including unique-validator errors)
+      const mongooseErrors = Object.keys(error.errors).reduce(
+        (acc, key) => {
+          const friendlyKey = fieldFriendlyNames[key] || key;
+          const errorMessage = error.errors[key].message.replace(
+            key,
+            friendlyKey,
+          );
+          acc[friendlyKey] = [errorMessage];
+          return acc;
+        },
+        {} as Record<string, string[]>,
+      );
+
+      return { message: "Validation Error", errors: mongooseErrors };
+    }
+
+    return { message: "An Unexpected Error Occurred" };
+  }
+};
+
+export { addInvoice, updateInvoice, getInvoice, getInvoices, voidInvoice };

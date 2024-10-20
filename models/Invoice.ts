@@ -1,58 +1,62 @@
 import mongoose from "mongoose";
-const uniqueValidator = require('mongoose-unique-validator');
+const uniqueValidator = require("mongoose-unique-validator");
 
-const invoiceSchema = new mongoose.Schema({
+const invoiceSchema = new mongoose.Schema(
+  {
     invoiceId: {
-        type: Number,
-        required: [true, "Invoice ID Is Required!"],
-        unique: true
+      type: Number,
+      required: [true, "Invoice ID Is Required!"],
+      unique: true,
     },
-    lineItems: [{
+    lineItems: [
+      {
         type: String,
         required: [true, "Line Items Are Required!"],
         validate: {
-            validator: (v: String[]) => v.length >= 1, 
-            message: "Line Items Should Have At Least 1 Item!"
-        }
-    }],
+          validator: (v: string[]) => v.length >= 1,
+          message: "Line Items Should Have At Least 1 Item!",
+        },
+      },
+    ],
     dateIssued: {
-        type: Date,
-        required: [true, "Date Issued Is Required!"]
+      type: Date,
+      required: [true, "Date Issued Is Required!"],
     },
     dateDue: {
-        type: Date,
-        required: [true, "Date Due Is Required!"],
-        validate: {
-            validator: function (value: Date) {
-                return value > new Date();
-            },
-            message: "Date Must Be In The Future!"
-        }
+      type: Date,
+      required: [true, "Date Due Is Required!"],
+      validate: {
+        validator: function (value: Date) {
+          return value > new Date();
+        },
+        message: "Date Must Be In The Future!",
+      },
     },
     totalAmount: {
-        type: Number,
-        required: [true, "Total Amount Is Required!"],
-        min: [0.01, 'Total Amount Must Be Greater Than 0!'],
+      type: Number,
+      required: [true, "Total Amount Is Required!"],
+      min: [0.01, "Total Amount Must Be Greater Than 0!"],
     },
     remainingDue: {
-        type: Number,
-        required: [true, "Remaining Due Is Required!"]
+      type: Number,
+      required: [true, "Remaining Due Is Required!"],
     },
     paymentStatus: {
-        type: String,
-        enum: ['Unpaid', 'Paid'],
-        default: 'Unpaid',
-        required: [true, "Invoice Payment Status Is Required!"]
+      type: String,
+      enum: ["Unpaid", "Paid"],
+      default: "Unpaid",
+      required: [true, "Invoice Payment Status Is Required!"],
     },
     validityStatus: {
-        type: String,
-        enum: ['draft', 'active', 'void'],
-        default: 'draft',
-        required: [true, "Invoice Validity Status Is Required!"]
+      type: String,
+      enum: ["draft", "active", "void"],
+      default: "draft",
+      required: [true, "Invoice Validity Status Is Required!"],
     },
+    voidReason: { type: String },
     publicNote: {
-        type: String,
-        maxlength: [500, 'Public Note Can Have At Most 500 Characters']
+      type: String,
+      maxlength: [500, "Public Note Can Have At Most 500 Characters"],
     },
     // secret: {
     //     type: String
@@ -63,32 +67,39 @@ const invoiceSchema = new mongoose.Schema({
     //     required: [true, "Customer Is Required!"]
     // },
     customer: {
-        type: String,
-        required: [true, "Customer Is Required!"]
+      type: String,
+      required: [true, "Customer Is Required!"],
     },
     // job: {
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: "Job",
     //     required: [true, "Job Is Required!"]
     // },
-    files: [{
+    files: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "File"
-    }],
-    payments: [{
+        ref: "File",
+      },
+    ],
+    payments: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Payment"
-    }],
+        ref: "Payment",
+      },
+    ],
     createdBy: {
-        type: String,
-        required: [true, "Customer Is Required!"]
+      type: String,
+      required: [true, "Customer Is Required!"],
     },
     lastUpdatedBy: {
-        type: String,
-        required: [true, "Customer Is Required!"]
-    }
-}, { versionKey: false, timestamps: true });
+      type: String,
+      required: [true, "Customer Is Required!"],
+    },
+  },
+  { versionKey: false, timestamps: true },
+);
 
-invoiceSchema.plugin(uniqueValidator, { message: '{VALUE} already exists' });
+invoiceSchema.plugin(uniqueValidator, { message: "{VALUE} already exists" });
 
-export default mongoose.models.Invoice || mongoose.model('Invoice', invoiceSchema);
+export default mongoose.models.Invoice ||
+  mongoose.model("Invoice", invoiceSchema);
