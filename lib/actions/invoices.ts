@@ -48,7 +48,7 @@ const addInvoice = async (invoice: {
   const latestInvoice = await getLatestInvoice();
   const nextInvoiceId = latestInvoice ? latestInvoice.invoiceId + 1 : 1;
   const dateIssued = new Date();
-  const dateDue = new Date(dateIssued.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const dateDue = new Date(dateIssued.getTime() + 14 * 24 * 60 * 60 * 1000);
   const remainingDue = invoice.totalAmount;
   const jobId = new ObjectId(invoice.job);
 
