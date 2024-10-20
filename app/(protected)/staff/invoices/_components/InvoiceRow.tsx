@@ -23,6 +23,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { voidInvoice } from "@/lib/actions/invoices";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 export default function InvoiceRow({
   _id,
@@ -51,6 +53,7 @@ export default function InvoiceRow({
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [voidReason, setVoidReason] = useState<string>("");
+  const { toast } = useToast();
   const handleVoidAction = () => {
     setIsDialogOpen(true);
   };
@@ -64,8 +67,17 @@ export default function InvoiceRow({
       voidReason: voidReason,
       lastUpdatedBy: "gmail",
     });
+
     handleCloseDialog();
-    // router.refresh();
+    router.refresh();
+
+    // TODO: link to view invoice
+    toast({
+      title: "Void Successfully!",
+      action: (
+        <ToastAction altText="Go to voided invoice">View Invoice</ToastAction>
+      ),
+    });
   };
 
   return (

@@ -284,7 +284,6 @@ const voidInvoice = async (invoice: {
   try {
     await Invoice.findOneAndUpdate(filter, update, context);
     revalidatePath("/staff/invoices");
-    console.log("voiddd");
     return { message: "Invoices Voided Successfully" };
   } catch (error: unknown) {
     if (error instanceof mongoose.Error.ValidationError && error.errors) {
