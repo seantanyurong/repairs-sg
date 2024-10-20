@@ -115,10 +115,6 @@ export default async function InvoicesPage() {
   };
 
   return (
-    <Invoices
-      initialInvoices={serializedInvoices}
-      customerMap={customerMap}
-      getCustomerAction={getCustomerAction}
-    />
+    <Invoices initialInvoices={serializedInvoices} customerMap={customerMap} />
   );
 }

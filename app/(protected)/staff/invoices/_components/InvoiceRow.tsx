@@ -36,7 +36,6 @@ export default function InvoiceRow({
   paymentStatus,
   paymentMethod,
   customer,
-  getCustomerAction,
 }: {
   _id: string;
   invoiceId: string;
@@ -47,7 +46,6 @@ export default function InvoiceRow({
   validityStatus: string;
   paymentMethod: string;
   customer: string;
-  getCustomerAction: (email: string) => Promise<string>;
 }) {
   const router = useRouter();
   const { user } = useUser();
@@ -65,23 +63,35 @@ export default function InvoiceRow({
     setIsDialogOpen(false);
   };
   const handleVoidInvoice = async () => {
-    await voidInvoice({
-      _id: _id,
-      validityStatus: "void",
-      voidReason: voidReason,
-      lastUpdatedBy: user?.id || "",
-    });
+    console.log("Start voiding invoice");
+    try {
+      const response = await voidInvoice({
+        _id: _id,
+        validityStatus: "void",
+        voidReason: voidReason,
+        lastUpdatedBy: user?.id || "",
+      });
+      console.log("Invoice voided successfully", response);
 
-    handleCloseDialog();
-    router.refresh();
+      handleCloseDialog();
 
-    // TODO: link to view invoice
-    toast({
-      title: "Void Successfully!",
-      action: (
-        <ToastAction altText="Go to voided invoice">View Invoice</ToastAction>
-      ),
-    });
+      // TODO: link to view invoice
+      toast({
+        title: "Invoice Void Successfully",
+        action: (
+          <ToastAction altText="Go to voided invoice">View Invoice</ToastAction>
+        ),
+      });
+
+      // router.refresh();
+      // console.log("Page refreshed");
+    } catch (error) {
+      console.error("Error voiding invoice:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while voiding the invoice.",
+      });
+    }
   };
 
   return (
@@ -99,56 +109,55 @@ export default function InvoiceRow({
         <TableCell className="font-medium">{paymentStatus}</TableCell>
         <TableCell className="font-medium">{paymentMethod}</TableCell>
         <TableCell>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button aria-haspopup="true" size="icon" variant="ghost">
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() =>
-                  router.push(`/staff/invoices/edit-invoice/${_id}`)
-                }
-                className="cursor-pointer"
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={handleVoidAction}
-                className="cursor-pointer"
-              >
-                Void
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <Button aria-haspopup="true" size="icon" variant="ghost">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() =>
+                    router.push(`/staff/invoices/edit-invoice/${_id}`)
+                  }
+                  className="cursor-pointer"
+                >
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleVoidAction}
+                  className="cursor-pointer"
+                >
+                  Void
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently void the
+                  customer&apos;s invoice.
+                </DialogDescription>
+              </DialogHeader>
+              <Label>Void Reason</Label>
+              <Input
+                value={voidReason}
+                placeholder="Enter void reason..."
+                onChange={(e) => setVoidReason(e.target.value)}
+              />
+              <div className="flex justify-end">
+                <Button variant="destructive" onClick={handleVoidInvoice}>
+                  Void Invoice
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </TableCell>
       </TableRow>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently void the
-              customer's invoice.
-            </DialogDescription>
-          </DialogHeader>
-          <Label>Void Reason</Label>
-          <Input
-            value={voidReason}
-            placeholder="Enter void reason..."
-            onChange={(e) => setVoidReason(e.target.value)}
-          />
-          <div className="flex justify-end">
-            <Button variant="destructive" onClick={handleVoidInvoice}>
-              Void Invoice
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
