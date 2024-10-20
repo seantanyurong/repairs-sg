@@ -148,47 +148,56 @@ const addInvoice = async (invoice: {
 };
 
 const updateInvoice = async (invoice: {
-  invoiceId: number;
+  _id: string;
   lineItems: Array<string>;
   dateIssued: Date;
   dateDue: Date;
   totalAmount: number;
   remainingDue: number;
-  paymentStatus: string;
-  validityStatus: string;
+  paymentStatus: "Unpaid";
+  validityStatus: "draft" | "active";
   publicNote: string;
+  customer: string;
+  lastUpdatedBy: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
-  const invoiceSchema = z.object({
-    invoiceId: z.number(),
-    lineItems: z
-      .array(z.string())
-      .nonempty("Line Items Should Have At Least 1 Item!"),
-    dateIssued: z
-      .date()
-      .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
-        message: "Invalid Date",
+  const invoiceSchema = z
+    .object({
+      _id: z.string().min(1),
+      lineItems: z
+        .array(z.string())
+        .nonempty("Line Items Should Have At Least 1 Item!"),
+      dateIssued: z
+        .date()
+        .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
+          message: "Invalid Date",
+        }),
+      dateDue: z
+        .date()
+        .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
+          message: "Invalid Date",
+        })
+        .refine((date) => date instanceof Date && date > new Date(), {
+          message: "Date Must Be In The Future!",
+        }),
+      totalAmount: z.number().min(0.01, {
+        message: "Total Amount Must Be Greater Than 0!",
       }),
-    dateDue: z
-      .date()
-      .refine((date) => date instanceof Date && !isNaN(date.getTime()), {
-        message: "Invalid Date",
-      })
-      .refine((date) => date instanceof Date && date > new Date(), {
-        message: "Date Must Be In The Future!",
+      remainingDue: z.number().min(0, {
+        message: "Remaining Due Cannot Be Negative!",
       }),
-    totalAmount: z.number().min(0.01, {
-      message: "Total Amount Must Be Greater Than 0!",
-    }),
-    remainingDue: z.number().min(0, {
-      message: "Remaining Due Cannot Be Negative!",
-    }),
-    paymentStatus: z.enum(["Unpaid", "Paid"]),
-    validityStatus: z.enum(["Draft", "Active", "Void"]),
-    publicNote: z.string().max(500),
-  });
+      paymentStatus: z.enum(["Unpaid", "Paid"]),
+      validityStatus: z.enum(["draft", "active", "void"]),
+      publicNote: z.string().max(500),
+      customer: z.string(),
+      lastUpdatedBy: z.string(),
+    })
+    .refine((data) => data.remainingDue <= data.totalAmount, {
+      path: ["remainingDue"],
+      message: "Remaining Due cannot be more than Total Amount!",
+    });
 
   const response = invoiceSchema.safeParse({
-    invoiceId: invoice.invoiceId,
+    _id: invoice._id,
     lineItems: invoice.lineItems,
     dateIssued: invoice.dateIssued,
     dateDue: invoice.dateDue,
@@ -197,6 +206,8 @@ const updateInvoice = async (invoice: {
     paymentStatus: invoice.paymentStatus,
     validityStatus: invoice.validityStatus,
     publicNote: invoice.publicNote,
+    customer: invoice.customer,
+    lastUpdatedBy: invoice.lastUpdatedBy,
   });
 
   console.log(response.data);
@@ -204,9 +215,8 @@ const updateInvoice = async (invoice: {
     return { message: "", errors: response.error.flatten().fieldErrors };
   }
 
-  const filter = { invoiceId: response.data.invoiceId };
+  const filter = { _id: new ObjectId(response.data._id) };
   const update = {
-    invoiceId: response.data.invoiceId,
     lineItems: response.data.lineItems,
     dateIssued: response.data.dateIssued,
     dateDue: response.data.dateDue,
@@ -215,6 +225,8 @@ const updateInvoice = async (invoice: {
     paymentStatus: response.data.paymentStatus,
     validityStatus: response.data.validityStatus,
     publicNote: response.data.publicNote,
+    customer: response.data.customer,
+    lastUpdatedBy: response.data.lastUpdatedBy,
   };
   const context = { runValidators: true, context: "query" };
 

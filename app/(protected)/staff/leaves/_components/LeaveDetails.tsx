@@ -14,7 +14,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { User } from "@clerk/backend";
 import { formatShortDate } from "./LeaveRow";
-// import { CustomMenuButton } from "@/components/ui/customMenuButton";
+import { OctagonAlert } from "lucide-react";
+import { CustomMenuButton } from "@/components/ui/customMenuButton";
 
 export default function LeaveDetails({
   _id,
@@ -26,6 +27,7 @@ export default function LeaveDetails({
   actorRole,
   createdAt,
   disableEdit,
+  clash,
 }: {
   _id: string;
   type: string;
@@ -36,18 +38,27 @@ export default function LeaveDetails({
   actorRole: string;
   createdAt: string;
   disableEdit: boolean;
+  clash: boolean;
 }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost">View Details</Button>
+        <CustomMenuButton className="w-[110%]" variant="ghost">View Details</CustomMenuButton>
       </SheetTrigger>
       <SheetContent className="bg-white">
         <SheetHeader>
-          <SheetTitle>Leave Request Details</SheetTitle>
+          <SheetTitle className="flex gap-2">
+            Leave Request Details {clash && <OctagonAlert color="red" />}
+          </SheetTitle>
           {actorRole === "approver" ? (
             status === "PENDING" ? (
               <SheetDescription>
+                {clash && (
+                  <p className="text-sm text-red-400 italic mb-2">
+                    Clashing leave and scheduled job! Please inform admin to
+                    reassign job to other technician!
+                  </p>
+                )}
                 View details of leave request. Click edit to be redirected to
                 edit leave request page.
               </SheetDescription>
@@ -58,7 +69,15 @@ export default function LeaveDetails({
               </SheetDescription>
             )
           ) : (
-            <SheetDescription>View details of leave request.</SheetDescription>
+            <SheetDescription>
+              {clash && (
+                <p className="text-sm text-red-400 italic mb-2">
+                  Clashing leave and scheduled job! Please reassign job to other
+                  technicians before approving!
+                </p>
+              )}
+              View details of leave request.
+            </SheetDescription>
           )}
         </SheetHeader>
         <div className="grid gap-9 py-9">
@@ -100,7 +119,7 @@ export default function LeaveDetails({
               Type
             </Label>
             <p className="text-sm text-muted-foreground col-span-3">
-              {type || "-"}
+              {type === "ANNUAL" ? "Annual" : type || "-"}
             </p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -108,7 +127,7 @@ export default function LeaveDetails({
               Status
             </Label>
             <p className="text-sm text-muted-foreground col-span-3">
-              {status || "-"}
+              {status.charAt(0) + status.slice(1).toLowerCase() || "-"}
             </p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">

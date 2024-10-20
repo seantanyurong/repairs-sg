@@ -34,6 +34,7 @@ import SearchBar from "@/app/(protected)/_components/SearchBar";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface Invoice {
+  _id: string;
   invoiceId: string | number;
   lineItems: string[];
   dateIssued: string | Date;
@@ -217,7 +218,8 @@ export default function Invoices({
 
         return (
           <InvoiceRow
-            key={invoice.invoiceId.toString()}
+            key={invoice._id.toString()}
+            _id={invoice._id.toString()}
             invoiceId={invoice.invoiceId.toString()}
             dateIssued={invoice.dateIssued.toString()}
             customer={fullName}
@@ -241,7 +243,8 @@ export default function Invoices({
 
         return (
           <InvoiceRow
-            key={invoice.invoiceId.toString()}
+            key={invoice._id.toString()}
+            _id={invoice._id.toString()}
             invoiceId={invoice.invoiceId.toString()}
             dateIssued={invoice.dateIssued.toString()}
             customer={fullName}
