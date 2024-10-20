@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@clerk/clerk-react";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,7 @@ export default function InvoiceRow({
   paymentStatus,
   paymentMethod,
   customer,
+  getCustomerAction,
 }: {
   _id: string;
   invoiceId: string;
@@ -45,8 +47,10 @@ export default function InvoiceRow({
   validityStatus: string;
   paymentMethod: string;
   customer: string;
+  getCustomerAction: (email: string) => Promise<string>;
 }) {
   const router = useRouter();
+  const { user } = useUser();
 
   // Format Date
   const formattedDateIssued = dayjs(dateIssued).format("DD/MM/YYYY");
@@ -65,7 +69,7 @@ export default function InvoiceRow({
       _id: _id,
       validityStatus: "void",
       voidReason: voidReason,
-      lastUpdatedBy: "gmail",
+      lastUpdatedBy: user?.id || "",
     });
 
     handleCloseDialog();

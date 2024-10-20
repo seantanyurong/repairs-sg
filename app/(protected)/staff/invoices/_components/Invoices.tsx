@@ -53,6 +53,7 @@ interface Invoice {
 interface InvoicesProps {
   initialInvoices: Invoice[];
   customerMap: { [key: string]: { firstName: string; lastName: string } };
+  getCustomerAction: (email: string) => Promise<string>;
 }
 
 type ValidityStatus = "active" | "draft" | "void";
@@ -62,6 +63,7 @@ type PaymentMethod = "cash" | "banktransfer" | "paynow" | "unknown";
 export default function Invoices({
   initialInvoices,
   customerMap,
+  getCustomerAction,
 }: InvoicesProps) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
   const [query, setQuery] = useState<string>("");
@@ -228,6 +230,7 @@ export default function Invoices({
             paymentStatus={invoice.paymentStatus}
             validityStatus={invoice.validityStatus}
             paymentMethod={invoice.payments[0]?.paymentMethod}
+            getCustomerAction={getCustomerAction}
           />
         );
       });
@@ -253,6 +256,7 @@ export default function Invoices({
             paymentStatus={invoice.paymentStatus}
             validityStatus={invoice.validityStatus}
             paymentMethod={invoice.payments[0]?.paymentMethod}
+            getCustomerAction={getCustomerAction}
           />
         );
       });

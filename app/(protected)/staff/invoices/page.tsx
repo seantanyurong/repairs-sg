@@ -100,7 +100,25 @@ export default async function InvoicesPage() {
   });
   // console.log("custMap", customerMap);
 
+  const getCustomerAction = async (email: string) => {
+    "use server";
+    // Fetch Customers
+    const custClerk = createClerkClient({
+      secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY,
+    });
+    const customer = await custClerk.users.getUserList({
+      emailAddress: [email],
+    });
+    return customer.totalCount === 0
+      ? "No Customer Found"
+      : customer.data[0].id.toString();
+  };
+
   return (
-    <Invoices initialInvoices={serializedInvoices} customerMap={customerMap} />
+    <Invoices
+      initialInvoices={serializedInvoices}
+      customerMap={customerMap}
+      getCustomerAction={getCustomerAction}
+    />
   );
 }
