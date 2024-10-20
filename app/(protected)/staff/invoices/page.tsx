@@ -17,6 +17,7 @@ interface CustomerMap {
 }
 
 interface Invoice {
+  _id: string;
   invoiceId: string | number;
   lineItems: string[];
   dateIssued: string | Date;
@@ -55,6 +56,7 @@ export default async function InvoicesPage() {
     };
 
     return {
+      _id: invoice._id.toString(),
       invoiceId: invoice.invoiceId.toString(),
       lineItems: invoice.lineItems,
       dateIssued: invoice.dateIssued

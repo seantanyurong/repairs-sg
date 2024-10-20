@@ -24,6 +24,13 @@ import {
 } from "@/lib/actions/leave";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import LeaveRow from "./_components/LeaveRow";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { getJobsByStaffId } from "@/lib/actions/jobs";
+import { getSchedule } from "@/lib/actions/schedules";
 
 export default async function Leaves() {
   const { sessionClaims } = auth();
@@ -45,7 +52,26 @@ export default async function Leaves() {
     return actor;
   };
 
-  // To combined
+  const checkClash = async (staffId: string, start: string, end: string) => {
+    const jobs = await getJobsByStaffId(staffId);
+    const schedules = await Promise.all(
+      jobs.map(async (job) => {
+        return await getSchedule(job.schedule);
+      })
+    );
+    const hasClash = schedules.some((schedule) => {
+      const scheduleStart = schedule.timeStart.toISOString().substring(0, 10);
+      const scheduleEnd = schedule.timeEnd.toISOString().substring(0, 10);
+      return (
+        new Date(scheduleStart) <= new Date(end) &&
+        new Date(scheduleEnd) >= new Date(start)
+      );
+    });
+    console.log("result: ", hasClash);
+    return hasClash;
+  };
+
+  // combined
   const leavesDisplay = async (status?: string, action?: string) => {
     const sortedLeaves =
       action === "leavesToApprove"
@@ -58,7 +84,6 @@ export default async function Leaves() {
             action === "leavesToApprove"
               ? await fetchUser(leave.requesterId)
               : await fetchUser(leave.approverId);
-
           return (
             <LeaveRow
               key={leave._id.toString()}
@@ -73,6 +98,11 @@ export default async function Leaves() {
               }
               userId={userId as string}
               createdAt={leave.createdAt.toString()}
+              clash={await checkClash(
+                leave.requesterId,
+                leave.dateRange?.start,
+                leave.dateRange?.end
+              )}
             />
           );
         })
@@ -87,7 +117,6 @@ export default async function Leaves() {
 
     const filteredLeavesRows = await Promise.all(
       filteredLeaves.map(async (leave) => {
-        console.log("test: ", leave.dateRange?.start);
         const actor =
           action === "leavesToApprove"
             ? await fetchUser(leave.requesterId)
@@ -105,6 +134,11 @@ export default async function Leaves() {
             actorRole={action === "leavesToApprove" ? "requester" : "approver"}
             userId={userId as string}
             createdAt={leave.createdAt.toString()}
+            clash={await checkClash(
+              leave.requesterId,
+              leave.dateRange?.start,
+              leave.dateRange?.end
+            )}
           />
         );
       })
@@ -191,18 +225,27 @@ export default async function Leaves() {
           <TabsTrigger value="rejected">Rejected</TabsTrigger>
         </TabsList>
         <div className="ml-auto flex items-center gap-2 mt-2">
-          <Link href="/staff/leaves/create-leave">
-            <Button
-              size="sm"
-              className="h-8 gap-1"
-              disabled={role === "superadmin"}
-            >
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Apply for leave
-              </span>
-            </Button>
-          </Link>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href="/staff/leaves/create-leave">
+                <Button
+                  size="sm"
+                  className="h-8 gap-1"
+                  disabled={role === "superadmin"}
+                >
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Apply for leave
+                  </span>
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            {role === "superadmin" && (
+              <TooltipContent>
+                Superadmin not required to apply for leave
+              </TooltipContent>
+            )}
+          </Tooltip>
         </div>
       </div>
     );
