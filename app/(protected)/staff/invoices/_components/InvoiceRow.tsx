@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 
 export default function InvoiceRow({
-  _id,
   invoiceId,
   dateIssued,
   totalAmount,
@@ -62,7 +61,17 @@ export default function InvoiceRow({
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => router.push(`/staff/invoices/edit-invoice/${_id}`)}
+              onClick={() =>
+                router.push(`/staff/invoices/view-invoice/${invoiceId}`)
+              }
+              className="cursor-pointer"
+            >
+              View
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => 
+                router.push(`/staff/invoices/edit-invoice/${invoiceId}`)
+              }
               className="cursor-pointer"
             >
               Edit
