@@ -29,12 +29,16 @@ export interface Job extends Document {
     createdAt?: Date;  
   }
 
-  // Infer types from Mongoose models
- 
 const findAvailableStaff = (staffArray: { id: string; name: string }[], jobs: Job[], leaves: Leave[], timeStart: Date, timeEnd: Date) => {
     // 1. Filter jobs and leaves that overlap with the time range
     const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
-    const overlappingLeaves = leaves.filter((leave) => leave.dateRange.start < timeEnd && leave.dateRange.end > timeStart && leave.status === 'APPROVED');
+    
+    timeStart = new Date(timeStart.toISOString().substring(0, 10));
+    timeEnd = new Date(timeEnd.toISOString().substring(0, 10));
+    const overlappingLeaves = leaves.filter((leave) => 
+      { const leaveStart = new Date(leave.dateRange.start.toISOString().substring(0, 10));
+        const leaveEnd = new Date(leave.dateRange.end.toISOString().substring(0, 10));        
+        return leaveStart <= timeEnd && leaveEnd >= timeStart && leave.status === 'APPROVED'});
 
     // 2. Extract staff involved in jobs and leaves
     const overlappingStaffFromJobs = overlappingJobs.map((job) => job.staff);  // Staff names from jobs
