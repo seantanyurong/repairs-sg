@@ -33,6 +33,7 @@ export default function InvoiceRow({
   dateIssued,
   totalAmount,
   lineItems,
+  validityStatus,
   paymentStatus,
   paymentMethod,
   customer,
@@ -63,15 +64,13 @@ export default function InvoiceRow({
     setIsDialogOpen(false);
   };
   const handleVoidInvoice = async () => {
-    console.log("Start voiding invoice");
     try {
-      const response = await voidInvoice({
+      await voidInvoice({
         _id: _id,
         validityStatus: "void",
         voidReason: voidReason,
         lastUpdatedBy: user?.id || "",
       });
-      console.log("Invoice voided successfully", response);
 
       handleCloseDialog();
 
@@ -82,9 +81,6 @@ export default function InvoiceRow({
           <ToastAction altText="Go to voided invoice">View Invoice</ToastAction>
         ),
       });
-
-      // router.refresh();
-      // console.log("Page refreshed");
     } catch (error) {
       console.error("Error voiding invoice:", error);
       toast({
@@ -94,9 +90,11 @@ export default function InvoiceRow({
     }
   };
 
+  const isVoid = validityStatus === "void";
+
   return (
     <>
-      <TableRow>
+      <TableRow className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
         <TableCell className="font-medium">{invoiceId.toString()}</TableCell>
         <TableCell className="font-medium">
           {formattedDateIssued.toString()}
@@ -106,13 +104,21 @@ export default function InvoiceRow({
         <TableCell className="font-medium">
           {lineItems.length.toString()} Items
         </TableCell>
+        <TableCell className="font-medium">
+          {validityStatus.charAt(0).toUpperCase() + validityStatus.slice(1)}
+        </TableCell>
         <TableCell className="font-medium">{paymentStatus}</TableCell>
         <TableCell className="font-medium">{paymentMethod}</TableCell>
         <TableCell>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button aria-haspopup="true" size="icon" variant="ghost">
+                <Button
+                  aria-haspopup="true"
+                  size="icon"
+                  variant="ghost"
+                  disabled={isVoid}
+                >
                   <MoreHorizontal className="h-4 w-4" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>

@@ -295,6 +295,7 @@ export default function Invoices({
                 <TableHead>Customer</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Line Items</TableHead>
+                <TableHead>Validity Status</TableHead>
                 <TableHead>Payment Status</TableHead>
                 <TableHead>Payment Method</TableHead>
                 <TableHead>
