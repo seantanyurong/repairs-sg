@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 
 export default function InvoiceRow({
-  _id,
   invoiceId,
   dateIssued,
   totalAmount,
