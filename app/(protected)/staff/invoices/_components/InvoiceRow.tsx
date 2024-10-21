@@ -62,6 +62,14 @@ export default function InvoiceRow({
     setIsDialogOpen(false);
   };
   const handleVoidInvoice = async () => {
+    if (!voidReason.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please input a void reason.",
+      });
+      return;
+    }
     try {
       await voidInvoice({
         invoiceId: invoiceId,
@@ -165,6 +173,7 @@ export default function InvoiceRow({
               </DialogHeader>
               <Label>Void Reason</Label>
               <Input
+                required={true}
                 value={voidReason}
                 placeholder="Enter void reason..."
                 onChange={(e) => setVoidReason(e.target.value)}
