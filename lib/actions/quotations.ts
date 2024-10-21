@@ -105,16 +105,23 @@ const deleteQuotation = async (id: string) => {
 };
 
 const sendQuoteEmail = async (id: string, attachment: string) => {
-  console.log("id", id);
   const quotation = await Quotation.findById(id).exec();
+  let customerEmail = "";
+  let customerName = "";
+  if (quotation.customer) {
+    const customer: User = JSON.parse(
+      await getCustomerById(quotation.customer)
+    );
+    customerEmail =
+      customer.primaryEmailAddress?.emailAddress ??
+      customer.emailAddresses[0].emailAddress;
 
-  const customer: User = JSON.parse(await getCustomerById(quotation.customer));
-  const customerEmail =
-    customer.primaryEmailAddress?.emailAddress ??
-    customer.emailAddresses[0].emailAddress;
-
-  const customerName =
-    customer.fullName ?? `${customer.firstName} ${customer.lastName}`;
+    customerName =
+      customer.fullName ?? `${customer.firstName} ${customer.lastName}`;
+  } else {
+    customerEmail = quotation.customerEmail;
+    customerName = quotation.templateInputs["customer_name"];
+  }
 
   await sendQuoteEmailPostmark(
     customerEmail,
