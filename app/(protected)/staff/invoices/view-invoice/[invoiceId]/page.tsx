@@ -90,11 +90,23 @@ const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
     },
   ];
 
+  const isVoid = inputs[0].validity_status === "void";
+
   return (
     <>
-      <div className="flex flex-row justify-between items-center shadow-md rounded-md w-full p-4">
-        <h2 className="scroll-m-20  pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-          Invoice #{invoice.invoiceId}
+      <div
+        className={`flex flex-row justify-between items-center shadow-md rounded-md w-full p-4 ${isVoid ? "bg-red-500" : ""}`}
+      >
+        <h2
+          className={`scroll-m-20  pb-2 text-3xl font-semibold tracking-tight first:mt-0 ${isVoid ? "text-white" : ""}`}
+        >
+          {isVoid ? (
+            <span>
+              <s>Invoice #{invoice.invoiceId}</s> - Invoice Voided
+            </span>
+          ) : (
+            <span>Invoice #{invoice.invoiceId}</span>
+          )}
         </h2>
       </div>
       <div className="flex justify-center items-center w-full min-h-screen">
