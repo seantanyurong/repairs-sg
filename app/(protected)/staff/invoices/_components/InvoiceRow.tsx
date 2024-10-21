@@ -72,16 +72,24 @@ export default function InvoiceRow({
 
       handleCloseDialog();
 
-      // TODO: link to view invoice
       toast({
         title: "Invoice Void Successfully",
         action: (
-          <ToastAction altText="Go to voided invoice">View Invoice</ToastAction>
+          <ToastAction
+            altText="Go to voided invoice"
+            onClick={() =>
+              router.push(`/staff/invoices/view-invoice/${invoiceId}`)
+            }
+            className="cursor-pointer"
+          >
+            View Invoice
+          </ToastAction>
         ),
       });
     } catch (error) {
       console.error("Error voiding invoice:", error);
       toast({
+        variant: "destructive",
         title: "Error",
         description: "An error occurred while voiding the invoice.",
       });
