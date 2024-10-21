@@ -224,7 +224,6 @@ export default function Invoices({
         return (
           <InvoiceRow
             key={invoice._id.toString()}
-            _id={invoice._id.toString()}
             invoiceId={invoice.invoiceId.toString()}
             dateIssued={invoice.dateIssued.toString()}
             customer={fullName}
@@ -249,7 +248,6 @@ export default function Invoices({
         return (
           <InvoiceRow
             key={invoice._id.toString()}
-            _id={invoice._id.toString()}
             invoiceId={invoice.invoiceId.toString()}
             dateIssued={invoice.dateIssued.toString()}
             customer={fullName}
