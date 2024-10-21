@@ -28,7 +28,6 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
 export default function InvoiceRow({
-  _id,
   invoiceId,
   dateIssued,
   totalAmount,
@@ -38,7 +37,6 @@ export default function InvoiceRow({
   paymentMethod,
   customer,
 }: {
-  _id: string;
   invoiceId: string;
   dateIssued: string;
   totalAmount: string;
@@ -66,7 +64,7 @@ export default function InvoiceRow({
   const handleVoidInvoice = async () => {
     try {
       await voidInvoice({
-        _id: _id,
+        invoiceId: invoiceId,
         validityStatus: "void",
         voidReason: voidReason,
         lastUpdatedBy: user?.id || "",
@@ -127,7 +125,7 @@ export default function InvoiceRow({
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() =>
-                    router.push(`/staff/invoices/edit-invoice/${_id}`)
+                    router.push(`/staff/invoices/edit-invoice/${invoiceId}`)
                   }
                   className="cursor-pointer"
                 >

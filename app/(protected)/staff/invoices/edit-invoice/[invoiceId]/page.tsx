@@ -6,7 +6,7 @@ import { getCustomerById } from "@/lib/actions/customers";
 export default async function EditInvoice({
   params,
 }: {
-  params: { invoiceId: string };
+  params: { invoiceId: number };
 }) {
   const invoice = await getInvoice(params.invoiceId);
 

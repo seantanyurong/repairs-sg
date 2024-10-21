@@ -1,18 +1,9 @@
 import { createClerkClient, clerkClient } from "@clerk/nextjs/server";
-// import { getSchedules } from "@/lib/actions/schedules";
-// import { getServices } from "@/lib/actions/services";
-// import { getOneQuoteTemplate } from "@/lib/actions/quoteTemplates";
+import { getJobs } from "@/lib/actions/jobs";
 import CreateInvoiceClient from "./clientPage";
 
 
 const CreateInvoice = async () => {
-  // Fetch Template
-  // const invoiceTemplate = await getOneQuoteTemplate("670befb8e46e44da50d1ceea");
-
-  // Fetch Services and Schedules
-  // const schedules = await getSchedules();
-  // const services = await getServices();
-
   const getCustomerAction = async (email: string) => {
     "use server";
     // Fetch Customers
@@ -28,17 +19,22 @@ const CreateInvoice = async () => {
     return staff.totalCount === 0 ? "No Staff Found" : staff.data[0].id.toString();
   };
 
-  // const getJobAction = async (id: number) => {
-  //   "use server";
-  //   // Fetch Job (TODO)
-  // }
+  const getJobsAction = async () => {
+    "use server";
+    const jobs = await getJobs();
+    return jobs.map(job => ({
+      id: job._id.toString(),
+      description: job.description,
+      quantity: job.quantity,
+      customer: job.customer,
+    }));
+  }
 
   return (
     <CreateInvoiceClient
-      // template={JSON.parse(invoiceTemplate)}
       getCustomerAction={getCustomerAction}
       getStaffAction={getStaffAction}
-      // getJobAction={getJobAction}
+      getJobsAction={getJobsAction}
     />
   );
 };

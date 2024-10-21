@@ -58,23 +58,23 @@ const invoiceSchema = new mongoose.Schema(
       type: String,
       maxlength: [500, "Public Note Can Have At Most 500 Characters"],
     },
-    // secret: {
-    //     type: String
-    // },
-    // customer: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Customer",
-    //     required: [true, "Customer Is Required!"]
-    // },
+    invoiceTemplate: {
+      type: String,
+    },
+    qrCode: {
+      type: String,
+    },
     customer: {
       type: String,
       required: [true, "Customer Is Required!"],
+      minimumlength: [32, "Invalid Customer ID"],
+      maxlength: [32, "Invalid Customer ID"],
     },
-    // job: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Job",
-    //     required: [true, "Job Is Required!"]
-    // },
+    job: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
+      required: [true, "Job Is Required!"],
+    },
     files: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -89,11 +89,15 @@ const invoiceSchema = new mongoose.Schema(
     ],
     createdBy: {
       type: String,
-      required: [true, "Customer Is Required!"],
+      required: [true, "Staff Is Required!"],
+      minimumlength: [32, "Invalid Staff ID"],
+      maxlength: [32, "Invalid Staff ID"],
     },
     lastUpdatedBy: {
       type: String,
-      required: [true, "Customer Is Required!"],
+      required: [true, "Staff Is Required!"],
+      minimumlength: [32, "Invalid Staff ID"],
+      maxlength: [32, "Invalid Staff ID"],
     },
   },
   { versionKey: false, timestamps: true },
