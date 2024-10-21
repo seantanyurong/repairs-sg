@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 
 const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
   const invoice = await getInvoice(Number(params.invoiceId));
-  console.log(invoice);
+  // console.log(invoice);
 
   const invoiceTemplate = JSON.parse(
     await getOneQuoteTemplate(invoice.invoiceTemplate),
@@ -16,7 +16,7 @@ const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
   const customer = invoice.customer
     ? JSON.parse(await getCustomerById(invoice.customer))
     : undefined;
-  console.log(customer);
+  // console.log(customer);
 
   const customerDetails = customer
     ? {
@@ -37,7 +37,7 @@ const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
   const staff = invoice.createdBy
     ? JSON.parse(await getStaffById(invoice.createdBy))
     : undefined;
-  console.log(staff);
+  // console.log(staff);
 
   const staffDetails = staff
     ? {
@@ -74,6 +74,7 @@ const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
 
   const inputs = [
     {
+      invoiceId: invoice.invoiceId,
       invoice_no: `Invoice #${invoice.invoiceId}`,
       invoice_date: dayjs(invoice.dateIssued).format("DD/MM/YYYY"),
       validity_status: invoice.validityStatus,
