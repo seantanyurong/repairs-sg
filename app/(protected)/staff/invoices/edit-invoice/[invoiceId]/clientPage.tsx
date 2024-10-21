@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -205,6 +205,21 @@ export default function EditInvoiceClient({
     }
   };
 
+  const calculateTotalAmount = () => {
+    const total = form.getValues("lineItems").reduce((sum, item) => {
+      return sum + (item.amount || 0) * (item.quantity || 0);
+    }, 0);
+    const currentTotalAmount = form.getValues("totalAmount");
+    const margin = total - currentTotalAmount;
+
+    form.setValue("totalAmount", total);
+    form.setValue("remainingDue", form.getValues("remainingDue") + margin);
+  };
+
+  useEffect(() => {
+    calculateTotalAmount();
+  }, [form.watch("lineItems")]);
+
   const onSubmit = async () => {
     setMessage("");
     setErrors({});
@@ -242,7 +257,7 @@ export default function EditInvoiceClient({
           e.preventDefault();
           form.handleSubmit(onSubmit)();
         }}
-        className="max-w-2xl w-full flex flex-col gap-4'"
+        className="max-w-2xl w-full flex flex-col gap-4"
       >
         <FormField
           control={form.control}
@@ -292,9 +307,10 @@ export default function EditInvoiceClient({
                         type="number"
                         placeholder="Quantity"
                         {...field}
-                        onChange={(event) =>
-                          field.onChange(+event.target.value)
-                        }
+                        onChange={(event) => {
+                          field.onChange(+event.target.value);
+                          calculateTotalAmount();
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -313,9 +329,10 @@ export default function EditInvoiceClient({
                         type="number"
                         placeholder="Amount"
                         {...field}
-                        onChange={(event) =>
-                          field.onChange(+event.target.value)
-                        }
+                        onChange={(event) => {
+                          field.onChange(+event.target.value);
+                          calculateTotalAmount();
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -326,7 +343,10 @@ export default function EditInvoiceClient({
               <Button
                 type="button"
                 className="bg-red-500 text-white"
-                onClick={() => remove(index)}
+                onClick={() => {
+                  remove(index);
+                  calculateTotalAmount();
+                }}
               >
                 Remove
               </Button>
@@ -364,6 +384,7 @@ export default function EditInvoiceClient({
           control={form.control}
           name="remainingDue"
           render={({ field }) => {
+            const totalAmount = form.watch("totalAmount");
             return (
               <FormItem>
                 <FormLabel>Remaining Due</FormLabel>

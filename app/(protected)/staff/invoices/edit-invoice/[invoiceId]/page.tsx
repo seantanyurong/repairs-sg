@@ -36,11 +36,22 @@ export default async function EditInvoice({
   };
 
   const transformLineItems = invoice.lineItems.map((lineItem: string) => {
-    const [quantity, description] = lineItem.split("x ");
-    return {
-      description: description,
-      quantity: parseInt(quantity),
-    };
+    const regex =
+      /Description:\s*([\w\s]+)\s*Quantity:\s*(\d+)\s*Amount:\s*(\d+)/;
+    const match = lineItem.match(regex);
+    if (match) {
+      const description = match[1].trim();
+      const quantity = parseInt(match[2], 10);
+      const amount = parseInt(match[3], 10);
+
+      return {
+        description: description,
+        quantity: quantity,
+        amount: amount,
+      };
+    } else {
+      console.log("Invalid line item format");
+    }
   });
 
   const getCustomerEmail = async (customer: string) => {
