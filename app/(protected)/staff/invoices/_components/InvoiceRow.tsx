@@ -62,6 +62,14 @@ export default function InvoiceRow({
     setIsDialogOpen(false);
   };
   const handleVoidInvoice = async () => {
+    if (!voidReason.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please input a void reason.",
+      });
+      return;
+    }
     try {
       await voidInvoice({
         invoiceId: invoiceId,
@@ -72,16 +80,24 @@ export default function InvoiceRow({
 
       handleCloseDialog();
 
-      // TODO: link to view invoice
       toast({
         title: "Invoice Void Successfully",
         action: (
-          <ToastAction altText="Go to voided invoice">View Invoice</ToastAction>
+          <ToastAction
+            altText="Go to voided invoice"
+            onClick={() =>
+              router.push(`/staff/invoices/view-invoice/${invoiceId}`)
+            }
+            className="cursor-pointer"
+          >
+            View Invoice
+          </ToastAction>
         ),
       });
     } catch (error) {
       console.error("Error voiding invoice:", error);
       toast({
+        variant: "destructive",
         title: "Error",
         description: "An error occurred while voiding the invoice.",
       });
@@ -92,31 +108,36 @@ export default function InvoiceRow({
 
   return (
     <>
-      <TableRow className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
-        <TableCell className="font-medium">{invoiceId.toString()}</TableCell>
-        <TableCell className="font-medium">
+      <TableRow>
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
+          {invoiceId.toString()}
+        </TableCell>
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
           {formattedDateIssued.toString()}
         </TableCell>
-        <TableCell className="font-medium">{customer}</TableCell>
-        <TableCell className="font-medium">${totalAmount.toString()}</TableCell>
-        <TableCell className="font-medium">
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
+          {customer}
+        </TableCell>
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
+          ${totalAmount.toString()}
+        </TableCell>
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
           {lineItems.length.toString()} Items
         </TableCell>
-        <TableCell className="font-medium">
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
           {validityStatus.charAt(0).toUpperCase() + validityStatus.slice(1)}
         </TableCell>
-        <TableCell className="font-medium">{paymentStatus}</TableCell>
-        <TableCell className="font-medium">{paymentMethod}</TableCell>
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
+          {paymentStatus}
+        </TableCell>
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
+          {paymentMethod}
+        </TableCell>
         <TableCell>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button
-                  aria-haspopup="true"
-                  size="icon"
-                  variant="ghost"
-                  disabled={isVoid}
-                >
+                <Button aria-haspopup="true" size="icon" variant="ghost">
                   <MoreHorizontal className="h-4 w-4" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
@@ -132,6 +153,7 @@ export default function InvoiceRow({
                   View
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  disabled={isVoid}
                   onClick={() =>
                     router.push(`/staff/invoices/edit-invoice/${invoiceId}`)
                   }
@@ -140,6 +162,7 @@ export default function InvoiceRow({
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  disabled={isVoid}
                   onClick={handleVoidAction}
                   className="cursor-pointer"
                 >
@@ -157,6 +180,7 @@ export default function InvoiceRow({
               </DialogHeader>
               <Label>Void Reason</Label>
               <Input
+                required={true}
                 value={voidReason}
                 placeholder="Enter void reason..."
                 onChange={(e) => setVoidReason(e.target.value)}
