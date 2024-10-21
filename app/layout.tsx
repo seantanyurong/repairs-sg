@@ -3,7 +3,7 @@ import { connectToMongoDB } from "@/lib/db";
 import localFont from "next/font/local";
 import "./css/globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/toaster";
 import {
   ClerkProvider,
   SignedIn,
@@ -62,7 +62,8 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Header /> <Toaster />
+          <Header />
+          <Toaster />
           <TooltipProvider>{children}</TooltipProvider>
         </body>
       </ClerkProvider>

@@ -2,10 +2,10 @@
 
 import Invoice from "@/models/Invoice";
 import mongoose from "mongoose";
-import { ObjectId } from 'mongodb';
+import { ObjectId } from "mongodb";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import PaynowQR from 'paynowqr';
+import PaynowQR from "paynowqr";
 
 const fieldFriendlyNames: Record<string, string> = {
   invoiceId: "Invoice ID",
@@ -54,10 +54,10 @@ const addInvoice = async (invoice: {
 
   //Outputs the qrcode to a UTF-8 string format, which can be passed to a QR code generation script to generate the paynow QR
   const paynowQRCode = new PaynowQR({
-    uen:'202100025M',                     //Required: UEN of company
-    amount : invoice.totalAmount,         //Specify amount of money to pay.
-    refNumber: nextInvoiceId.toString(),  //Reference number for Paynow Transaction. Useful if you need to track payments for recouncilation.
-    company:  'Repair.sg'                 //Company name to embed in the QR code. Optional.               
+    uen: "202100025M", //Required: UEN of company
+    amount: invoice.totalAmount, //Specify amount of money to pay.
+    refNumber: nextInvoiceId.toString(), //Reference number for Paynow Transaction. Useful if you need to track payments for recouncilation.
+    company: "Repair.sg", //Company name to embed in the QR code. Optional.
   });
   const qrString = paynowQRCode.output();
 
@@ -90,10 +90,19 @@ const addInvoice = async (invoice: {
     publicNote: z.string().max(500),
     invoiceTemplate: z.string(),
     qrCode: z.string(),
-    customer: z.string().min(32, "Invalid Customer ID").max(32, "Invalid Customer ID"),
+    customer: z
+      .string()
+      .min(32, "Invalid Customer ID")
+      .max(32, "Invalid Customer ID"),
     job: z.custom<ObjectId>(),
-    createdBy: z.string().min(32, "Invalid Staff ID").max(32, "Invalid Staff ID"),
-    lastUpdatedBy: z.string().min(32, "Invalid Staff ID").max(32, "Invalid Staff ID"),
+    createdBy: z
+      .string()
+      .min(32, "Invalid Staff ID")
+      .max(32, "Invalid Staff ID"),
+    lastUpdatedBy: z
+      .string()
+      .min(32, "Invalid Staff ID")
+      .max(32, "Invalid Staff ID"),
   });
 
   const response = invoiceSchema.safeParse({
@@ -258,7 +267,7 @@ const updateInvoice = async (invoice: {
 };
 
 const getInvoice = async (invoiceId: number) => {
-  return Invoice.findOne({'invoiceId': invoiceId});
+  return Invoice.findOne({ invoiceId: invoiceId });
 };
 
 const getInvoices = async () => {
@@ -270,4 +279,65 @@ const getInvoices = async () => {
   return invoices;
 };
 
-export { addInvoice, updateInvoice, getInvoice, getInvoices };
+const voidInvoice = async (invoice: {
+  invoiceId: string;
+  validityStatus: "void";
+  voidReason: string;
+  lastUpdatedBy: string;
+}): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
+  const invoiceSchema = z.object({
+    invoiceId: z.string().min(1),
+    validityStatus: z.enum(["void"]),
+    voidReason: z.string(),
+    lastUpdatedBy: z.string(),
+  });
+
+  const response = invoiceSchema.safeParse({
+    invoiceId: invoice.invoiceId,
+    validityStatus: invoice.validityStatus,
+    voidReason: invoice.voidReason,
+    lastUpdatedBy: invoice.lastUpdatedBy,
+  });
+
+  console.log(response.data);
+  if (!response.success) {
+    return { message: "", errors: response.error.flatten().fieldErrors };
+  }
+
+  const filter = { invoiceId: response.data.invoiceId };
+  const update = {
+    validityStatus: response.data.validityStatus,
+    voidReason: response.data.voidReason,
+    lastUpdatedBy: response.data.lastUpdatedBy,
+  };
+
+  const context = { runValidators: true, context: "query" };
+
+  try {
+    await Invoice.findOneAndUpdate(filter, update, context);
+    revalidatePath("/staff/invoices");
+    return { message: "Invoices Voided Successfully" };
+  } catch (error: unknown) {
+    if (error instanceof mongoose.Error.ValidationError && error.errors) {
+      // Mongoose validation errors (including unique-validator errors)
+      const mongooseErrors = Object.keys(error.errors).reduce(
+        (acc, key) => {
+          const friendlyKey = fieldFriendlyNames[key] || key;
+          const errorMessage = error.errors[key].message.replace(
+            key,
+            friendlyKey,
+          );
+          acc[friendlyKey] = [errorMessage];
+          return acc;
+        },
+        {} as Record<string, string[]>,
+      );
+
+      return { message: "Validation Error", errors: mongooseErrors };
+    }
+
+    return { message: "An Unexpected Error Occurred" };
+  }
+};
+
+export { addInvoice, updateInvoice, getInvoice, getInvoices, voidInvoice };

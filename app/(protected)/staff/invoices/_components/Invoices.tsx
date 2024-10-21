@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -118,95 +118,100 @@ export default function Invoices({
     }));
   };
 
+  const handleSearchFilterSort = useCallback(
+    (query: string) => {
+      let resultInvoices = initialInvoices;
+
+      // Search
+      setQuery(query);
+      if (query.trim() === "") {
+        // If query is empty, reset the search
+        setInvoices(initialInvoices);
+      } else {
+        // Filter the invoices based on the customer name or invoice ID
+        resultInvoices = resultInvoices.filter((invoice) => {
+          const customer = customerMap[invoice.customer];
+          const fullName = customer
+            ? `${customer.firstName} ${customer.lastName}`.toLowerCase()
+            : "unknown";
+
+          // console.log("search", resultInvoices);
+          return (
+            fullName.includes(query.toLowerCase()) ||
+            invoice.invoiceId.toString().includes(query.toLowerCase())
+          );
+        });
+      }
+
+      // Filter by validity status
+      let filteredInvoices = resultInvoices.filter((invoice) => {
+        const validityKey = invoice.validityStatus as ValidityStatus;
+        return validityStatus[validityKey];
+      });
+
+      // Filter by payment status
+      filteredInvoices = filteredInvoices.filter((invoice) => {
+        const paymentStatusKey =
+          invoice.paymentStatus.toLowerCase() as PaymentStatus;
+        return paymentStatus[paymentStatusKey];
+      });
+
+      // Filter by payment method
+      filteredInvoices = filteredInvoices.filter((invoice) => {
+        if (invoice.payments[0]) {
+          const paymentMethodKey =
+            invoice.payments[0].paymentMethod.toLowerCase() as PaymentMethod;
+          return paymentMethod[paymentMethodKey];
+        } else {
+          return paymentMethod["unknown"];
+        }
+      });
+      // console.log("filter", filteredInvoices);
+
+      // Sort
+      const sortedInvoices = [...filteredInvoices].sort((a, b) => {
+        let valueA: number | string;
+        let valueB: number | string;
+        let sortDirection: string;
+
+        if (sortCriteria === "dateIssued") {
+          valueA = new Date(a.dateIssued).getTime();
+          valueB = new Date(b.dateIssued).getTime();
+          sortDirection = sortDateDirection;
+        } else if (sortCriteria === "totalAmount") {
+          valueA = a.totalAmount;
+          valueB = b.totalAmount;
+          sortDirection = sortPriceDirection;
+        } else {
+          return 0;
+        }
+
+        if (sortDirection === "asc") {
+          return valueA > valueB ? 1 : -1;
+        } else {
+          return valueA < valueB ? 1 : -1;
+        }
+      });
+
+      setInvoices(sortedInvoices);
+
+      // console.log("sorted", sortedInvoices);
+    },
+    [
+      initialInvoices,
+      customerMap,
+      validityStatus,
+      paymentStatus,
+      paymentMethod,
+      sortCriteria,
+      sortDateDirection,
+      sortPriceDirection,
+    ],
+  );
+
   useEffect(() => {
     handleSearchFilterSort(query);
-  }, [
-    validityStatus,
-    paymentStatus,
-    paymentMethod,
-    sortCriteria,
-    sortDateDirection,
-    sortPriceDirection,
-  ]);
-
-  const handleSearchFilterSort = (query: string) => {
-    let resultInvoices = initialInvoices;
-
-    // Search
-    setQuery(query);
-    if (query.trim() === "") {
-      // If query is empty, reset the search
-      setInvoices(initialInvoices);
-    } else {
-      // Filter the invoices based on the customer name or invoice ID
-      resultInvoices = resultInvoices.filter((invoice) => {
-        const customer = customerMap[invoice.customer];
-        const fullName = customer
-          ? `${customer.firstName} ${customer.lastName}`.toLowerCase()
-          : "unknown";
-
-        // console.log("search", resultInvoices);
-        return (
-          fullName.includes(query.toLowerCase()) ||
-          invoice.invoiceId.toString().includes(query.toLowerCase())
-        );
-      });
-    }
-
-    // Filter by validity status
-    let filteredInvoices = resultInvoices.filter((invoice) => {
-      const validityKey = invoice.validityStatus as ValidityStatus;
-      return validityStatus[validityKey];
-    });
-
-    // Filter by payment status
-    filteredInvoices = filteredInvoices.filter((invoice) => {
-      const paymentStatusKey =
-        invoice.paymentStatus.toLowerCase() as PaymentStatus;
-      return paymentStatus[paymentStatusKey];
-    });
-
-    // Filter by payment method
-    filteredInvoices = filteredInvoices.filter((invoice) => {
-      if (invoice.payments[0]) {
-        const paymentMethodKey =
-          invoice.payments[0].paymentMethod.toLowerCase() as PaymentMethod;
-        return paymentMethod[paymentMethodKey];
-      } else {
-        return paymentMethod["unknown"];
-      }
-    });
-    // console.log("filter", filteredInvoices);
-
-    // Sort
-    const sortedInvoices = [...filteredInvoices].sort((a, b) => {
-      let valueA: number | string;
-      let valueB: number | string;
-      let sortDirection: string;
-
-      if (sortCriteria === "dateIssued") {
-        valueA = new Date(a.dateIssued).getTime();
-        valueB = new Date(b.dateIssued).getTime();
-        sortDirection = sortDateDirection;
-      } else if (sortCriteria === "totalAmount") {
-        valueA = a.totalAmount;
-        valueB = b.totalAmount;
-        sortDirection = sortPriceDirection;
-      } else {
-        return 0;
-      }
-
-      if (sortDirection === "asc") {
-        return valueA > valueB ? 1 : -1;
-      } else {
-        return valueA < valueB ? 1 : -1;
-      }
-    });
-
-    setInvoices(sortedInvoices);
-
-    // console.log("sorted", sortedInvoices);
-  };
+  }, [query, handleSearchFilterSort]);
 
   const invoiceDisplay = (validityStatus?: string) => {
     if (validityStatus === "all") {
@@ -219,7 +224,6 @@ export default function Invoices({
         return (
           <InvoiceRow
             key={invoice._id.toString()}
-            _id={invoice._id.toString()}
             invoiceId={invoice.invoiceId.toString()}
             dateIssued={invoice.dateIssued.toString()}
             customer={fullName}
@@ -244,7 +248,6 @@ export default function Invoices({
         return (
           <InvoiceRow
             key={invoice._id.toString()}
-            _id={invoice._id.toString()}
             invoiceId={invoice.invoiceId.toString()}
             dateIssued={invoice.dateIssued.toString()}
             customer={fullName}
@@ -290,6 +293,7 @@ export default function Invoices({
                 <TableHead>Customer</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Line Items</TableHead>
+                <TableHead>Validity Status</TableHead>
                 <TableHead>Payment Status</TableHead>
                 <TableHead>Payment Method</TableHead>
                 <TableHead>

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -46,12 +46,15 @@ const formSchema = z
       z.object({
         description: z.string().min(1, "Description Is Required"),
         quantity: z.number().min(1, "Quantity Must Be Greater Than 0"),
+        amount: z.number().min(0, "Line Item Amount Must Be 0 or Greater"),
       }),
     ),
     dateIssued: z.date(),
     dateDue: z.date(),
-    totalAmount: z.number().min(0.01),
-    remainingDue: z.number().min(0),
+    totalAmount: z.number().min(0, "Total Amount Must Be 0 or Greater"),
+    remainingDue: z
+      .number()
+      .min(0, "Remaining Due Amount Must Be 0 or Greater"),
     // invoiceTemplate: z.string().min(1),
     paymentStatus: z.enum(["Unpaid"]),
     validityStatus: z.enum(["draft", "active"]),
@@ -61,7 +64,7 @@ const formSchema = z
   })
   .refine((data) => data.remainingDue <= data.totalAmount, {
     path: ["remainingDue"],
-    message: "Remaining due cannot be more than total amount",
+    message: "Remaining Due Cannot Be More Than Total Amount",
   });
 
 export default function EditInvoiceClient({
@@ -78,6 +81,7 @@ export default function EditInvoiceClient({
     lineItems: {
       description: string;
       quantity: number;
+      amount: number;
     }[];
     dateIssued: Date;
     dateDue: Date;
@@ -111,6 +115,7 @@ export default function EditInvoiceClient({
       lineItems: invoice.lineItems.map((lineItem) => ({
         description: lineItem.description,
         quantity: lineItem.quantity,
+        amount: lineItem.amount,
       })),
       dateIssued: invoice.dateIssued,
       dateDue: invoice.dateDue,
@@ -142,7 +147,7 @@ export default function EditInvoiceClient({
     setIsCustLoading(true);
     try {
       const result = await getCustomerAction(form.getValues("customer"));
-      if (result === "No Customer Found!") {
+      if (result === "No Customer Found") {
         toast.error(result);
         return;
       } else {
@@ -178,7 +183,7 @@ export default function EditInvoiceClient({
     setIsStaffLoading(true);
     try {
       const result = await getStaffAction(form.getValues("lastUpdatedBy"));
-      if (result === "No Staff Found!") {
+      if (result === "No Staff Found") {
         toast.error(result);
         return;
       } else {
@@ -200,6 +205,21 @@ export default function EditInvoiceClient({
     }
   };
 
+  const calculateTotalAmount = () => {
+    const total = form.getValues("lineItems").reduce((sum, item) => {
+      return sum + (item.amount || 0) * (item.quantity || 0);
+    }, 0);
+    const currentTotalAmount = form.getValues("totalAmount");
+    const margin = total - currentTotalAmount;
+
+    form.setValue("totalAmount", total);
+    form.setValue("remainingDue", form.getValues("remainingDue") + margin);
+  };
+
+  useEffect(() => {
+    calculateTotalAmount();
+  }, [form.watch("lineItems")]);
+
   const onSubmit = async () => {
     setMessage("");
     setErrors({});
@@ -207,7 +227,10 @@ export default function EditInvoiceClient({
     // Format Line Items
     const formatLineItems = form
       .getValues()
-      .lineItems.map((item) => `${item.quantity}x ${item.description}`);
+      .lineItems.map(
+        (item) =>
+          `Description: ${item.description} Quantity: ${item.quantity} Amount: ${item.amount}`,
+      );
 
     const formData = {
       ...form.getValues(),
@@ -234,7 +257,7 @@ export default function EditInvoiceClient({
           e.preventDefault();
           form.handleSubmit(onSubmit)();
         }}
-        className="max-w-md w-full flex flex-col gap-4"
+        className="max-w-2xl w-full flex flex-col gap-4"
       >
         <FormField
           control={form.control}
@@ -252,7 +275,7 @@ export default function EditInvoiceClient({
           }}
         />
         <div className="mb-4">
-          <FormLabel>Line Items</FormLabel>
+          <FormLabel>Line Items (Description | Quantity | Amount)</FormLabel>
           {fields.map((item, index) => (
             <div key={item.id} className="flex gap-2 mb-2">
               {/* Line Item Description */}
@@ -284,19 +307,46 @@ export default function EditInvoiceClient({
                         type="number"
                         placeholder="Quantity"
                         {...field}
-                        onChange={(event) =>
-                          field.onChange(+event.target.value)
-                        }
+                        onChange={(event) => {
+                          field.onChange(+event.target.value);
+                          calculateTotalAmount();
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {/* Line Item Amount */}
+              <FormField
+                control={form.control}
+                name={`lineItems.${index}.amount`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Amount"
+                        {...field}
+                        onChange={(event) => {
+                          field.onChange(+event.target.value);
+                          calculateTotalAmount();
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button
                 type="button"
                 className="bg-red-500 text-white"
-                onClick={() => remove(index)}
+                onClick={() => {
+                  remove(index);
+                  calculateTotalAmount();
+                }}
               >
                 Remove
               </Button>
@@ -305,7 +355,7 @@ export default function EditInvoiceClient({
           <Button
             type="button"
             className="mt-2 bg-primary text-white"
-            onClick={() => append({ description: "", quantity: 1 })}
+            onClick={() => append({ description: "", quantity: 1, amount: 0 })}
           >
             + Add Line Item
           </Button>
