@@ -3,7 +3,7 @@ import { connectToMongoDB } from "@/lib/db";
 import localFont from "next/font/local";
 import "./css/globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import {
   ClerkProvider,
   SignedIn,
