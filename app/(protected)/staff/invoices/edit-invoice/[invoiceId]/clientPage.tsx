@@ -384,7 +384,6 @@ export default function EditInvoiceClient({
           control={form.control}
           name="remainingDue"
           render={({ field }) => {
-            const totalAmount = form.watch("totalAmount");
             return (
               <FormItem>
                 <FormLabel>Remaining Due</FormLabel>
