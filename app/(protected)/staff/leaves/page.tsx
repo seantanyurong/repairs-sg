@@ -67,7 +67,6 @@ export default async function Leaves() {
         new Date(scheduleEnd) >= new Date(start)
       );
     });
-    console.log("result: ", hasClash);
     return hasClash;
   };
 
