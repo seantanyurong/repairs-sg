@@ -49,7 +49,7 @@ const InvoiceViewerClient = ({
       window.open(URL.createObjectURL(blob));
     } catch {
       toast.error(
-        "Error generating PDF, please refresh the page and try again"
+        "Error generating PDF, please refresh the page and try again",
       );
     }
   };
@@ -59,6 +59,7 @@ const InvoiceViewerClient = ({
       <Button
         type="button"
         onClick={() => generatePDF()}
+        disabled={inputs[0].validity_status === "void"}
       >
         <FileDown className="mr-2 h-4 w-4" />
         Download PDF
