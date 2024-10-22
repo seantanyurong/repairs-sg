@@ -219,28 +219,29 @@ export default function BookingClient({ services, customers }: { services: Servi
 
                       {/* Schedules Field */}
                       <FormField
-                        control={form.control}
-                        name='schedule'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Preferred Schedule</FormLabel>
-                            <Select onValueChange={field.onChange}>
-                              <FormControl>
-                                <SelectTrigger>
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {scheduleOptions.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      control={form.control}
+                      name='schedule'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Booking Timing</FormLabel>
+                          <Select onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder='Select a schedule' />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {scheduleOptions.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                       {/* Description Field */}
                       <FormField
