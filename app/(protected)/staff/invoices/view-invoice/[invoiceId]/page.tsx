@@ -22,17 +22,22 @@ const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
     ? {
         name: customer.fullName ?? `${customer.firstName} ${customer.lastName}`,
         email: customer.emailAddresses[0].emailAddress,
-        phone: customer.unsafeMetadata?.phone ?? "NA",
-        addressLine1: customer.unsafeMetadata?.address,
+        phone: customer.unsafeMetadata?.phone,
+        company: customer.unsafeMetadata?.company,
+        addressLine1: customer.unsafeMetadata?.addressLine1,
+        addressLine2: customer.unsafeMetadata?.addressLine2,
         postal: customer.unsafeMetadata?.postal,
       }
     : {
         name: "NA",
         email: "NA",
         phone: "NA",
+        company: "",
         addressLine1: "",
+        addressLine2: "",
         postal: "",
       };
+  // console.log(customerDetails);
 
   const staff = invoice.createdBy
     ? JSON.parse(await getStaffById(invoice.createdBy))
@@ -59,14 +64,13 @@ const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
         const quantityMatch = item.match(/Quantity: (\d+)/);
         const amountMatch = item.match(/Amount: ([\d.]+)/);
 
-        // Extract values
         const description = descriptionMatch ? descriptionMatch[1].trim() : "";
         const quantity = quantityMatch ? quantityMatch[1] : "0";
         const amount = amountMatch
           ? `$${parseFloat(amountMatch[1]).toFixed(2)}`
           : "$0.00";
 
-        return [description, quantity, amount]; // Return an array for each item
+        return [description, quantity, amount];
       }),
     );
   };
@@ -83,9 +87,11 @@ const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
       subtotal: `$ ${invoice.totalAmount.toFixed(2)}`,
       qrcode: invoice.qrCode,
       taxes: `$ 0.00`,
-      customer_name: customerDetails.name,
-      address_line_1: customerDetails.addressLine1,
-      postal_code: `Singapore ${customerDetails.postal}`,
+      customer_name: customerDetails.name ? customerDetails.name : "Customer Name",
+      company_name: customerDetails.company ? customerDetails.company : "",
+      address_line_1: customerDetails.addressLine1 ? customerDetails.addressLine1 : "",
+      address_line_2: customerDetails.addressLine2 ? customerDetails.addressLine2 : "",
+      postal_code: customerDetails.postal ? `Singapore ${customerDetails.postal}` : "",
       sales_mobile: staffDetails.phone,
       sales_email: staffDetails.email,
     },
@@ -112,7 +118,6 @@ const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
       </div>
       <div className="flex justify-center items-center w-full min-h-screen">
         <div className="flex lg:flex-row flex-col gap-2 w-3/4 h-auto lg:w-2/3">
-          {/*h-dvh*/}
           <InvoiceViewerClient
             template={invoiceTemplate.pdfTemplate}
             inputs={inputs}
