@@ -24,8 +24,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { voidInvoice } from "@/lib/actions/invoices";
-import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
+import { toast } from "sonner";
 
 export default function InvoiceRow({
   invoiceId,
@@ -54,7 +53,6 @@ export default function InvoiceRow({
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [voidReason, setVoidReason] = useState<string>("");
-  const { toast } = useToast();
   const handleVoidAction = () => {
     setIsDialogOpen(true);
   };
@@ -63,11 +61,7 @@ export default function InvoiceRow({
   };
   const handleVoidInvoice = async () => {
     if (!voidReason.trim()) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please input a void reason.",
-      });
+      toast.error("Please input a void reason.");
       return;
     }
     try {
@@ -80,27 +74,17 @@ export default function InvoiceRow({
 
       handleCloseDialog();
 
-      toast({
-        title: "Invoice Void Successfully",
-        action: (
-          <ToastAction
-            altText="Go to voided invoice"
-            onClick={() =>
-              router.push(`/staff/invoices/view-invoice/${invoiceId}`)
-            }
-            className="cursor-pointer"
-          >
-            View Invoice
-          </ToastAction>
-        ),
+      toast("Invoice Void Successfully", {
+        className: "cursor-pointer",
+        action: {
+          label: "View Invoice",
+          onClick: () =>
+            router.push(`/staff/invoices/view-invoice/${invoiceId}`),
+        },
       });
     } catch (error) {
       console.error("Error voiding invoice:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "An error occurred while voiding the invoice.",
-      });
+      toast.error("An error occurred while voiding the invoice.");
     }
   };
 

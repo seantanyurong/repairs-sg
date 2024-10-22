@@ -10,8 +10,7 @@ import { generate } from "@pdfme/generator";
 import { FileDown, FilePenLineIcon, FileX2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { voidInvoice } from "@/lib/actions/invoices";
-import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +32,6 @@ const InvoiceViewerClient = ({
   const ui = useRef<Viewer | null>(null);
   const router = useRouter();
   const { user } = useUser();
-  const { toast } = useToast();
   const isVoid = inputs[0].validity_status === "void";
   const invoiceId = inputs[0].invoiceId?.toString() as string;
 
@@ -48,11 +46,7 @@ const InvoiceViewerClient = ({
   };
   const handleVoidInvoice = async () => {
     if (!voidReason.trim()) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please input a void reason.",
-      });
+      toast.error("Please input a void reason.");
       return;
     }
 
@@ -69,29 +63,18 @@ const InvoiceViewerClient = ({
 
       handleCloseDialog();
 
-      toast({
-        title: "Invoice Void Successfully",
-        action: (
-          <ToastAction
-            altText="Go to voided invoice"
-            onClick={() =>
-              router.push(`/staff/invoices/view-invoice/${invoiceId}`)
-            }
-            className="cursor-pointer"
-          >
-            View Invoice
-          </ToastAction>
-        ),
+      toast("Invoice Void Successfully", {
+        action: {
+          label: "View Invoice",
+          onClick: () =>
+            router.push(`/staff/invoices/view-invoice/${invoiceId}`),
+        },
       });
 
       router.refresh();
     } catch (error) {
       console.error("Error voiding invoice:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "An error occurred while voiding the invoice.",
-      });
+      toast.error("An error occurred while voiding the invoice.");
     }
   };
 
@@ -124,12 +107,9 @@ const InvoiceViewerClient = ({
       const blob = new Blob([pdf.buffer], { type: "application/pdf" });
       window.open(URL.createObjectURL(blob));
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description:
-          "Error generating PDF, please refresh the page and try again",
-      });
+      toast.error(
+        "Error generating PDF, please refresh the page and try again",
+      );
     }
   };
 
