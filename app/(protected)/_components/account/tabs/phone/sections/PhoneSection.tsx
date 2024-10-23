@@ -25,7 +25,7 @@ export default function PhoneSection() {
           </Button>
         </div>
       ) : isEditing ? (
-        <PhoneForm setIsEditing={setIsEditing} />
+        <PhoneForm setIsEditing={setIsEditing} phone={phone as string}/>
       ) : null}
     </div>
   );

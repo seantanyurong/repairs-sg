@@ -15,7 +15,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardFooter,
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,15 +32,17 @@ const formSchema = z.object({
 
 export default function PhoneForm({
   setIsEditing,
+  phone,
 }: {
   setIsEditing: (isEditing: boolean) => void;
+  phone: string;
 }) {
   const { isLoaded, isSignedIn, user } = useUser();
   const [errors, setErrors] = useState({});
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      phone: "+65",
+      phone: "",
     },
   });
 
@@ -58,27 +59,27 @@ export default function PhoneForm({
         phone: form.getValues().phone,
       },
     });
-
     console.log(result);
+    toast("Phone number successfully updated");
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          form.handleSubmit(onSubmit)();
-        }}
-        className="max-w-md w-full flex flex-col gap-4"
-      >
-        <Card className="flex flex-col w-full">
-          <CardHeader>
-            <CardTitle className="text-sm">Update Phone Number</CardTitle>
-            <CardDescription>
-              Please enter your updated phone number with the country code.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col justify-between space-y-2">
+    <Card className="flex flex-col w-[75%]">
+      <CardHeader>
+        <CardTitle className="text-sm">Update Phone Number</CardTitle>
+        <CardDescription>
+          Please enter your updated phone number with the country code.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col justify-between space-y-2">
+        <Form {...form}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit(onSubmit)();
+            }}
+            className="max-w-md w-full flex flex-col gap-4"
+          >
             <FormField
               control={form.control}
               name="phone"
@@ -87,37 +88,32 @@ export default function PhoneForm({
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
                     <FormControl>
-                      <PhoneInput {...field} />
+                      <PhoneInput placeholder={phone} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 );
               }}
             />
-          </CardContent>
-          <CardFooter className="flex justify-end gap-2">
-            <Button variant="ghost" onClick={() => setIsEditing(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="default"
-              type="submit"
-              onClick={() => toast("Phone number successfully updated")}
-            >
-              Save
-            </Button>
-            {errors ? (
-              <div className="mb-10 text-red-500">
-                {Object.keys(errors).map((key) => (
-                  <p key={key}>{`${key}: ${
-                    errors[key as keyof typeof errors]
-                  }`}</p>
-                ))}
-              </div>
-            ) : null}
-          </CardFooter>
-        </Card>
-      </form>
-    </Form>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setIsEditing(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Save</Button>
+              {errors ? (
+                <div className="mb-10 text-red-500">
+                  {Object.keys(errors).map((key) => (
+                    <p key={key}>{`${key}: ${
+                      errors[key as keyof typeof errors]
+                    }`}</p>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
