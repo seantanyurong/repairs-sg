@@ -28,8 +28,9 @@ import { toast } from "sonner";
 const quotationDeclineReasons = [
   "Too Expensive",
   "Found a Better Offer",
-  "Not Interested Anymore",
-  "Project Postponed",
+  "Budget Constraints",
+  "Scheduling Conflicts",
+  "Slow Responsiveness",
   "Others",
 ];
 
