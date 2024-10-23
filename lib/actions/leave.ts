@@ -9,8 +9,8 @@ const addLeave = async (leave: {
   type: string;
   status: string;
   dateRange: {
-    start: string;
-    end: string;
+    start: Date;
+    end: Date;
   };
   requesterId: string;
   approverId: string;
@@ -19,8 +19,8 @@ const addLeave = async (leave: {
     type: z.enum(["ANNUAL", "MC"]),
     status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
     dateRange: z.object({
-      start: z.string().min(1),
-      end: z.string().min(1),
+      start: z.date(),
+      end: z.date(),
     }),
     requesterId: z.string().min(1),
     approverId: z.string().min(1),
@@ -52,8 +52,8 @@ const updateLeave = async (leave: {
   type?: string;
   status?: string;
   dateRange?: {
-    start?: string;
-    end?: string;
+    start?: Date;
+    end?: Date;
   };
   requesterId?: string;
   approverId?: string;
@@ -64,8 +64,8 @@ const updateLeave = async (leave: {
     status: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
     dateRange: z
       .object({
-        start: z.string().min(1).optional(),
-        end: z.string().min(1).optional(),
+        start: z.date().optional(),
+        end: z.date().optional(),
       })
       .optional(),
     requesterId: z.string().min(1).optional(),

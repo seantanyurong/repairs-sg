@@ -32,8 +32,8 @@ export default function LeaveDetails({
   _id: string;
   type: string;
   status: string;
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
   actor: User;
   actorRole: string;
   createdAt: string;
@@ -103,7 +103,7 @@ export default function LeaveDetails({
               Start Date
             </Label>
             <p className="text-sm text-muted-foreground col-span-3">
-              {formatShortDate(start) || "-"}
+              {formatShortDate(start.toISOString()) || "-"}
             </p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -111,7 +111,7 @@ export default function LeaveDetails({
               End Date
             </Label>
             <p className="text-sm text-muted-foreground col-span-3">
-              {formatShortDate(end) || "-"}
+              {formatShortDate(end.toISOString()) || "-"}
             </p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">

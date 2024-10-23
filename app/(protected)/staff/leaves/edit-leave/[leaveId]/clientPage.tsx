@@ -32,8 +32,8 @@ const leaveSchema = z.object({
   status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
   dateRange: z
     .object({
-      start: z.string().min(1).optional(),
-      end: z.string().min(1).optional(),
+      start: z.date().optional(),
+      end: z.date().optional(),
     })
     .optional(),
   requesterId: z.string().min(1),
@@ -50,8 +50,8 @@ export default function EditLeaveClient({
     type: string;
     status: string;
     dateRange: {
-      start: string;
-      end: string;
+      start: Date;
+      end: Date;
     };
     requesterId: string;
     approverId: string;
@@ -173,20 +173,13 @@ export default function EditLeaveClient({
             const { value, onChange } = field;
             const startDate = value?.start;
             const endDate = value?.end;
-            // const newStart = startDate?.toString();
-            // const newEnd = endDate?.toString();
-            // if (form.getValues().dateRange === undefined) {
-            //     onChange({ newStart, newEnd });
-            // }
             return (
               <FormItem>
                 <FormLabel>Date of Leave</FormLabel>
                 <FormControl>
                   <DatePickerWithRange
                     startDate={startDate}
-                    defaultStart={leave.dateRange.start}
                     endDate={endDate}
-                    defaultEnd={leave.dateRange.end}
                     onDateChange={({ start, end }) => {
                       onChange({ start, end });
                     }}
