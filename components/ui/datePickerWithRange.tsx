@@ -16,41 +16,30 @@ import {
 
 interface DatePickerWithRangeProps {
   className?: string;
-  startDate?: string;
-  defaultStart?: string;
-  endDate?: string;
-  defaultEnd?: string;
-  onDateChange: (range: { start: string; end: string }) => void;
+  startDate?: Date;
+  endDate?: Date;
+  onDateChange: (range: { start: Date; end: Date }) => void;
 }
 
 export function DatePickerWithRange({
   className,
   startDate,
-  defaultStart,
   endDate,
-  defaultEnd,
   onDateChange,
 }: DatePickerWithRangeProps) {
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: startDate
-      ? new Date(startDate)
-      : defaultStart
-        ? new Date(defaultStart)
-        : undefined,
-    to: endDate
-      ? new Date(endDate)
-      : defaultEnd
-        ? new Date(defaultEnd)
-        : undefined,
+    from: startDate || undefined,
+    to: endDate || undefined,
   });
 
   const handleDateChange = (range: DateRange | undefined) => {
     setDate(range);
 
     if (range?.from && range?.to) {
-      const start = format(range.from, "yyyy-MM-dd");
-      const end = format(range.to, "yyyy-MM-dd");
-      onDateChange({ start, end });
+      onDateChange({ start: range?.from, end: range?.to });
+      // const start = format(range.from, "yyyy-MM-dd");
+      // const end = format(range.to, "yyyy-MM-dd");
+      // onDateChange({ new Date(start), new Date(end) });
     }
   };
 

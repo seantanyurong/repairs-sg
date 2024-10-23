@@ -30,8 +30,8 @@ const leaveSchema = z.object({
   type: z.enum(["ANNUAL", "MC"]),
   status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
   dateRange: z.object({
-    start: z.string().min(1),
-    end: z.string().min(1),
+    start: z.date(),
+    end: z.date(),
   }),
   requesterId: z.string().min(1),
   approverId: z.string().min(1),
@@ -54,8 +54,8 @@ export default function CreateLeaveClient({
       type: "ANNUAL",
       status: "PENDING",
       dateRange: {
-        start: "",
-        end: "",
+        start: undefined,
+        end: undefined,
       },
       requesterId: userId,
       approverId: "",

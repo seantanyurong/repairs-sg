@@ -69,8 +69,8 @@ export default function LeaveRow({
   _id: string;
   type: string;
   status: string;
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
   actor: User;
   actorRole: string;
   userId: string;
@@ -90,8 +90,8 @@ export default function LeaveRow({
         type: type,
         status: newStatus,
         dateRange: {
-          start: start.toString(),
-          end: end.toString(),
+          start: start,
+          end: end,
         },
         requesterId: actor.id,
         approverId: userId,
@@ -129,10 +129,10 @@ export default function LeaveRow({
         <Badge variant="outline">{type}</Badge>
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {formatShortDate(start)}
+        {formatShortDate(start.toISOString())}
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {formatShortDate(end)}
+        {formatShortDate(end.toISOString())}
       </TableCell>
       <TableCell>
         <Badge variant="outline">{status}</Badge>
