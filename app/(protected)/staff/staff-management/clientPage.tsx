@@ -113,7 +113,7 @@ export default function StaffManagementClient({
         <CardHeader className="flex flex-col sm:flex-row justify-between gap-2">
           <div>
             <CardTitle>Staff</CardTitle>
-            <CardDescription>
+            <CardDescription className="mt-2">
               Manage staff and edit their details.
             </CardDescription>
           </div>

@@ -22,7 +22,6 @@ export default function StaffDetails({
   email,
   role,
   phone,
-  // status,
   disableEdit,
 }: {
   id: string;
@@ -32,7 +31,6 @@ export default function StaffDetails({
   email: string;
   role: string;
   phone: string;
-  // status: string,
   disableEdit: boolean;
 }) {
   return (
@@ -76,7 +74,7 @@ export default function StaffDetails({
             <Label htmlFor="username" className="text-right">
               Email
             </Label>
-            <p className="text-sm text-muted-foreground">{email || "-"}</p>
+            <p className="text-sm text-muted-foreground col-span-3 break-words">{email || "-"}</p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="username" className="text-right">
@@ -90,12 +88,6 @@ export default function StaffDetails({
             </Label>
             <p className="text-sm text-muted-foreground">{phone || "-"}</p>
           </div>
-          {/* <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="phone" className="text-right">
-              Status
-            </Label>
-            <p className="text-sm text-muted-foreground">{status || "active"}</p>
-          </div> */}
           {!disableEdit && (
             <SheetFooter>
               <Button>
