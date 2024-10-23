@@ -19,7 +19,8 @@ const isAdminRoute = createRouteMatcher([
   "/staff/quote(.*)",
   "/staff/vehicles(.*)",
   "/staff/schedule(.*)",
-  "/staff/leaves(.*)"
+  "/staff/leaves(.*)",
+  "/staff/staff-management(.*)",
 ]);
 const isSuperAdminRoute = createRouteMatcher([
   // To Be Updated When More Features Arrives In SR3 and Beyond
