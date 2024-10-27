@@ -76,7 +76,7 @@ const getJobs = async () => {
 };
 
 const getJobsForSchedule = async () => {
-  const jobs = await Job.find().populate("schedule").populate("service").exec();
+  const jobs = await Job.find().populate("service").exec();
 
   return jobs;
 };
