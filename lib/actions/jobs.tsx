@@ -4,7 +4,6 @@ import Job from '@/models/Job';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { ObjectId } from 'mongodb';
-import Schedule from '@/models/Schedule';
 
 const addJob = async (job: {
   quantity: number;
@@ -20,45 +19,51 @@ const addJob = async (job: {
   job.description += `\n\nPrice: $${job.price}`;
 
   // Create Schedule
-  const scheduleSchema = z.object({
-    timeStart: z.date(),
-    timeEnd: z.date(),
-  });
+  // const scheduleSchema = z.object({
+  //   timeStart: z.date(),
+  //   timeEnd: z.date(),
+  // });
 
   const formattedSchedule = JSON.parse(job.schedule);
 
-  const scheduleResponse = scheduleSchema.safeParse({
-    timeStart: new Date(formattedSchedule.timeStart),
-    timeEnd: new Date(formattedSchedule.timeEnd),
-  });
+  // const scheduleResponse = scheduleSchema.safeParse({
+  //   timeStart: new Date(formattedSchedule.timeStart),
+  //   timeEnd: new Date(formattedSchedule.timeEnd),
+  // });
 
-  if (!scheduleResponse.success) {
-    return {
-      message: 'Error',
-      errors: scheduleResponse.error.flatten().fieldErrors,
-    };
-  }
+  // if (!scheduleResponse.success) {
+  //   return {
+  //     message: 'Error',
+  //     errors: scheduleResponse.error.flatten().fieldErrors,
+  //   };
+  // }
 
-  const newSchedule = new Schedule(scheduleResponse.data);
-  newSchedule.save();
+  // const newSchedule = new Schedule(scheduleResponse.data);
+  // newSchedule.save();
 
   // Create Job
   const jobSchema = z.object({
     quantity: z.number(),
     jobAddress: z.string(),
-    schedule: z.instanceof(ObjectId),
     description: z.string(),
     service: z.instanceof(ObjectId),
     customer: z.string(),
+    schedule: z.object({
+      timeStart: z.date(),
+      timeEnd: z.date(),
+    }),
   });
 
   const response = jobSchema.safeParse({
     quantity: job.quantity,
     jobAddress: job.jobAddress,
-    schedule: newSchedule._id,
     description: job.description,
     service: new ObjectId(job.serviceId),
     customer: job.customer,
+    schedule: {
+      timeStart: new Date(formattedSchedule.timeStart),
+      timeEnd: new Date(formattedSchedule.timeEnd),
+    },
   });
 
   if (!response.success) {
@@ -75,8 +80,8 @@ const getJobs = async () => {
   return Job.find();
 };
 
-const getJobsForSchedule = async () => {
-  const jobs = await Job.find().populate("schedule").populate("service").exec();
+const getJobsWithService = async () => {
+  const jobs = await Job.find().populate("service").exec();
 
   return jobs;
 };
@@ -111,4 +116,4 @@ const getJobsByStaffId = async (staffId: string) => {
   return Job.find({ staff: staffId });
 };
 
-export { addJob, getJobs, getJobsForSchedule, updateJobStaff, getJobsByStaffId };
+export { addJob, getJobs, getJobsWithService, updateJobStaff, getJobsByStaffId };

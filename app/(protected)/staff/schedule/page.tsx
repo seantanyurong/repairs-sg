@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import JobRow from './_components/JobRow';
-import { getJobsForSchedule } from '@/lib/actions/jobs';
+import { getJobsWithService } from '@/lib/actions/jobs';
 import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
 import CalendarClient from './clientComponent';
 import { findAvailableStaff } from './_utils';
@@ -10,7 +10,6 @@ import { getLeaves } from '@/lib/actions/leave';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import { getSchedules } from '@/lib/actions/schedules';
 import { getServices } from '@/lib/actions/services';
 import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
 
@@ -20,8 +19,7 @@ type SearchParams = {
 };
 
 export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
-  const jobs = await getJobsForSchedule();
-  await getSchedules();
+  const jobs = await getJobsWithService();
   await getServices();
 
   const leaves = await getLeaves();
