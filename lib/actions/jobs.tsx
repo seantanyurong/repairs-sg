@@ -4,7 +4,6 @@ import Job from '@/models/Job';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { ObjectId } from 'mongodb';
-import Schedule from '@/models/Schedule';
 
 const addJob = async (job: {
   quantity: number;
@@ -81,7 +80,7 @@ const getJobs = async () => {
   return Job.find();
 };
 
-const getJobsForSchedule = async () => {
+const getJobsWithService = async () => {
   const jobs = await Job.find().populate("service").exec();
 
   return jobs;
@@ -117,4 +116,4 @@ const getJobsByStaffId = async (staffId: string) => {
   return Job.find({ staff: staffId });
 };
 
-export { addJob, getJobs, getJobsForSchedule, updateJobStaff, getJobsByStaffId };
+export { addJob, getJobs, getJobsWithService, updateJobStaff, getJobsByStaffId };
