@@ -27,9 +27,9 @@ import { toast } from "sonner";
 
 const customerSchema = z.object({
   id: z.string().min(1),
-  imageUrl: z.string().min(1).optional(),
-  firstName: z.string().min(1).optional(),
-  lastName: z.string().min(1).optional(),
+  imageUrl: z.string().min(1),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
   status: z.enum(["whitelisted", "blacklisted"]),
 });
 
