@@ -1,4 +1,5 @@
 "use client";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -23,14 +24,14 @@ export default function CustomerRow({
   firstName,
   lastName,
   email,
-  phone,
+  status,
 }: {
   id: string;
   imageUrl: string;
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
+  status: string;
 }) {
   const router = useRouter();
   const { isLoaded, isSignedIn, user } = useUser();
@@ -76,7 +77,9 @@ export default function CustomerRow({
       <TableCell className="hidden md:table-cell font-medium">
         {email}
       </TableCell>
-      <TableCell className="hidden md:table-cell">{phone}</TableCell>
+      <TableCell>
+        <Badge variant="outline">{status.toUpperCase()}</Badge>
+      </TableCell>
       <TableCell>
         {!disableAction && (
           <DropdownMenu>
@@ -95,8 +98,7 @@ export default function CustomerRow({
                   firstName={firstName}
                   lastName={lastName}
                   email={email}
-                  phone={phone as string}
-                  // status={status as string}
+                  status={status as string}
                   disableEdit={disableEdit}
                 />
                 {!disableEdit && <ChangePasswordForm id={id} />}

@@ -20,16 +20,16 @@ export default function CustomerDetails({
   firstName,
   lastName,
   email,
-  phone,
   disableEdit,
+  status,
 }: {
   id: string;
   imageUrl: string;
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
   disableEdit: boolean;
+  status: string;
 }) {
   return (
     <Sheet>
@@ -75,10 +75,10 @@ export default function CustomerDetails({
             <p className="text-sm text-muted-foreground col-span-3 break-words">{email || "-"}</p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="phone" className="text-right">
-              Phone
+            <Label htmlFor="status" className="text-right">
+              Status
             </Label>
-            <p className="text-sm text-muted-foreground">{phone || "-"}</p>
+            <p className="text-sm text-muted-foreground col-span-3 break-words">{status || "-"}</p>
           </div>
           {!disableEdit && (
             <SheetFooter>

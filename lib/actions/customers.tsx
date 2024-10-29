@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import Customers from "@/models/Customer";
 import { createClerkClient } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
 const customerClerk = createClerkClient({
   secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY as string,
@@ -37,63 +38,65 @@ const getCustomerById = async (id: string) => {
   return JSON.stringify(user);
 };
 
+const getAllCustomerEmail = async () => {
+  return (await customerClerk.users.getUserList()).data.map(
+    (customer) => customer.emailAddresses[0].emailAddress
+  );
+};
+
 const addCustomer = async (customer: {
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  phone: string;
+  firstName: string,
+  lastName: string,
+  email: string,
+  status: string,
+  password: string,
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const customerSchema = z.object({
     firstName: z.string().min(1),
     lastName: z.string().min(1),
     email: z.string().min(1),
-    role: z.enum(["superadmin", "admin", "technician"]),
-    phone: z.string()
-    // .refine((value) => !value || isValidPhoneNumber(value), {
-    //   message: "Invalid phone number",
-    // }),
+    status: z.enum(["whitelisted", "blacklisted"]),
+    password: z.string().min(8),
   });
 
-  // const emails = await getAllCustomerEmail();
-  // if (emails.includes(customer.email)) {
-  //   return {
-  //     message: "Error",
-  //     errors: {
-  //       "Email error": "That email address is taken. Please try another.",
-  //     },
-  //   };
-  // }
-
-  const response = customerSchema.safeParse({
-    firstName: customer.firstName,
-    lastName: customer.lastName,
-    email: customer.email,
-    role: customer.role,
-    phone: customer.phone,
-  });
-
-  if (!response.success) {
-    return { message: "Error", errors: response.error.flatten().fieldErrors };
+  const emails = await getAllCustomerEmail();
+  if (emails.includes(customer.email)) {
+    return {
+      message: "Error",
+      errors: {
+        "Email error": "That email address is taken. Please try another.",
+      },
+    };
   }
+
+  const response = customerSchema.safeParse(
+    {
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: customer.email,
+      status: customer.status,
+      password: customer.password,
+    }
+  );
+
+  if (!response.success) return { message: "Error", errors: response.error.flatten().fieldErrors };
 
   const params = {
     first_name: response.data.firstName,
     last_name: response.data.lastName,
     email_address: [response.data.email],
-    // password: response.data.password,
+    password: response.data.password,
     publicMetadata: {
-      role: response.data.role,
+      status: response.data.status,
     },
-    unsafeMetadata: {
-      phone: response.data.phone,
-    },
-  };
+  }
 
   await customerClerk.users.createUser(params);
+  revalidatePath("/customer/customer-management");
 
   return { message: "Customer created successfully" };
-};
+
+}
 
 // TO BE COMPLETED
 const deleteCustomer = async (customerId: string) => {

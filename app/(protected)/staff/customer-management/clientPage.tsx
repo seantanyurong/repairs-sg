@@ -50,8 +50,8 @@ export default function CustomerManagementClient({
     setFilteredCustomerUsers(customerUsersList);
   }, [searchQuery, customerUsers]);
 
-  const customerDisplay = (role?: string) => {
-    if (role === "all") {
+  const customerDisplay = (status?: string) => {
+    if (status === "all") {
       return filteredCustomerUsers.map((customer) => {
         return (
           <CustomerRow
@@ -61,18 +61,17 @@ export default function CustomerManagementClient({
             firstName={customer.firstName || ""}
             lastName={customer.lastName || ""}
             email={customer.emailAddresses[0].emailAddress || ""}
-            phone={(customer.unsafeMetadata.phone as string) || ""}
-            // status={(customer.publicMetadata.status as string) || ""}
+            status={(customer.publicMetadata.status as string) || ""}
           />
         );
       });
     }
 
-    // Filter by role
+    // Filter by status
     return filteredCustomerUsers
       .filter((customer) => {
-        const customerRole = customer.publicMetadata.role as string;
-        return role?.toLowerCase() === customerRole;
+        const customerStatus = customer.publicMetadata.status as string;
+        return status?.toLowerCase() === customerStatus?.toLowerCase();
       })
       .map((customer) => {
         return (
@@ -83,8 +82,7 @@ export default function CustomerManagementClient({
             firstName={customer.firstName || ""}
             lastName={customer.lastName || ""}
             email={customer.emailAddresses[0].emailAddress || ""}
-            phone={(customer.unsafeMetadata.phone as string) || ""}
-            // status={(customer.publicMetadata.status as string) || ""}
+            status={(customer.publicMetadata.status as string) || ""}
           />
         );
       });
@@ -133,11 +131,8 @@ export default function CustomerManagementClient({
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead className="hidden md:table-cell">
-                  Phone Number
-                </TableHead>
-                {/* <TableHead className="hidden md:table-cell">
                   Status
-                </TableHead> */}
+                </TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
                 </TableHead>
@@ -164,14 +159,11 @@ export default function CustomerManagementClient({
       <div className="flex items-center">
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="superadmin">Superadmin</TabsTrigger>
-          <TabsTrigger value="admin">Admin</TabsTrigger>
-          <TabsTrigger value="technician" className="hidden sm:flex">
-            Technician
-          </TabsTrigger>
+          <TabsTrigger value="whitelisted">Whitelisted</TabsTrigger>
+          <TabsTrigger value="blacklisted">Blacklisted</TabsTrigger>
         </TabsList>
         <div className="ml-auto flex items-center gap-2">
-          <Link href="/customer/customer-management/create-customer">
+          <Link href="/staff/customer-management/create-customer">
             <Button size="sm" className="h-8 gap-1">
               <PlusCircle className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -182,9 +174,8 @@ export default function CustomerManagementClient({
         </div>
       </div>
       <TabsContent value="all">{cardDisplay("all")}</TabsContent>
-      <TabsContent value="superadmin">{cardDisplay("superadmin")}</TabsContent>
-      <TabsContent value="admin">{cardDisplay("admin")}</TabsContent>
-      <TabsContent value="technician">{cardDisplay("technician")}</TabsContent>
+      <TabsContent value="whitelisted">{cardDisplay("whitelisted")}</TabsContent>
+      <TabsContent value="blacklisted">{cardDisplay("blacklisted")}</TabsContent>
     </Tabs>
   );
 }

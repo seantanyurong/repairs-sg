@@ -24,8 +24,6 @@ import {
 } from "@/components/ui/select";
 import { addCustomer } from "@/lib/actions/customers";
 import { useUser } from "@clerk/nextjs";
-import { PhoneInput } from "@/components/ui/phoneInput";
-import { isValidPhoneNumber } from "react-phone-number-input";
 import { toast } from "sonner";
 
 const customerSchema = z
@@ -33,11 +31,7 @@ const customerSchema = z
     firstName: z.string().min(1),
     lastName: z.string().min(1),
     email: z.string().min(1),
-    role: z.enum(["superadmin", "admin", "technician"]),
-    phone: z.string().refine((value) => !value || isValidPhoneNumber(value), {
-      message: "Invalid phone number",
-    }),
-    // status: z.enum(["active", "leave"]),
+    status: z.enum(["whitelisted", "blacklisted"]),
     password: z.string().min(8),
     confirmPassword: z.string().min(8),
   })
@@ -57,9 +51,7 @@ export default function CreateCustomer() {
       firstName: "",
       lastName: "",
       email: "",
-      role: "technician",
-      phone: "",
-      //   status: "active"
+      status: "whitelisted",
       password: "",
       confirmPassword: "",
     },
@@ -85,7 +77,7 @@ export default function CreateCustomer() {
       setMessage(result.message);
       form.reset(form.getValues());
       toast("Customer created successfully");
-      router.push("/customer/customer-management");
+      router.push("/staff/customer-management");
       router.refresh();
     }
   };
@@ -146,61 +138,11 @@ export default function CreateCustomer() {
         />
         <FormField
           control={form.control}
-          name="role"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>Role</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a customer role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {user.publicMetadata.role === "superadmin" && (
-                        <SelectItem value="superadmin">Superadmin</SelectItem>
-                      )}
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="technician">Technician</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <PhoneInput
-                    placeholder="+65"
-                    {...field}
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        {/* <FormField
-          control={form.control}
           name="status"
           render={({ field }) => {
             return (
-              <FormItem hidden>
-                <FormLabel>Role</FormLabel>
+              <FormItem>
+                <FormLabel>Status</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange}>
                     <FormControl>
@@ -209,8 +151,8 @@ export default function CreateCustomer() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="leave">Leave</SelectItem>
+                      <SelectItem value="whitelisted">Whitelisted</SelectItem>
+                      <SelectItem value="blacklisted">Blacklisted</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -218,7 +160,7 @@ export default function CreateCustomer() {
               </FormItem>
             );
           }}
-        /> */}
+        />
         <FormField
           control={form.control}
           name="password"
