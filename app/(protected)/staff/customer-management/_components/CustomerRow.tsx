@@ -107,7 +107,7 @@ export default function CustomerRow({
               {!disableEdit && (
                 <DropdownMenuItem
                   onClick={() =>
-                    router.push(`/customer/customer-management/edit-customer/${id}`)
+                    router.push(`/staff/customer-management/edit-customer/${id}`)
                   }
                   className="cursor-pointer"
                 >

@@ -1,23 +1,26 @@
 import EditCustomerClient from "./clientPage";
-import { clerkClient } from "@clerk/nextjs/server";
+import { createClerkClient } from "@clerk/nextjs/server";
 
 export default async function EditCustomer({
   params,
 }: {
   params: { customerId: string };
 }) {
-  const customer = await clerkClient().users.getUser(params.customerId);
+
+  const customerClerk = createClerkClient({
+    secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY as string,
+  });
+
+  const customer = await customerClerk.users.getUser(params.customerId);
 
   return (
     <EditCustomerClient
       customer={{
         id: params.customerId,
-        imageUrl: customer.imageUrl,
         firstName: customer.firstName || "",
         lastName: customer.lastName || "",
         email: customer.emailAddresses[0].emailAddress || "",
-        role: (customer.publicMetadata.role as string) || "",
-        phone: (customer.unsafeMetadata.phone as string) || "",
+        status: (customer.publicMetadata.status as string) || "",
       }}
     />
   );

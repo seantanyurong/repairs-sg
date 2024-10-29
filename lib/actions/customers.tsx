@@ -106,60 +106,45 @@ const deleteCustomer = async (customerId: string) => {
 // TO BE COMPLETED
 const updateCustomer = async (customer: {
   id: string;
-  imageUrl?: string;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  role?: string;
-  phone?: string;
+  firstName: string;
+  lastName: string;
+  status: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const customerSchema = z.object({
     id: z.string().min(1),
-    imageUrl: z.string().min(1).optional(),
-    firstName: z.string().min(1).optional(),
-    lastName: z.string().min(1).optional(),
-    email: z.string().min(1).optional(),
-    role: z.enum(["superadmin", "admin", "technician"]).optional(),
-    phone: z
-      .string()
-      .optional()
-      // .refine((value) => !value || isValidPhoneNumber(value), {
-      //   message: "Invalid phone number",
-      // }),
+    firstName: z.string().min(1),
+    lastName: z.string().min(1),
+    status: z.enum(["whitelisted", "blacklisted"]),
   });
 
-  const response = customerSchema.safeParse({
-    id: customer.id,
-    imageUrl: customer.imageUrl,
-    firstName: customer.firstName,
-    lastName: customer.lastName,
-    email: customer.email,
-    role: customer.role,
-    phone: customer.phone,
-  });
+  const response = customerSchema.safeParse(
+    {
+      id: customer.id,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      status: customer.status,
+    }
+  );
 
   if (!response.success) {
     return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
 
   const userParams = {
-    imageUrl: response.data.imageUrl as string,
     firstName: response.data.firstName,
     lastName: response.data.lastName,
-    // password: response.data.password,
   };
 
   const metadataParams = {
     publicMetadata: {
-      role: response.data.role,
-    },
-    unsafeMetadata: {
-      phone: response.data.phone,
+      status: response.data.status,
     },
   };
 
   await customerClerk.users.updateUser(customer.id, userParams);
   await customerClerk.users.updateUserMetadata(customer.id, metadataParams);
+
+  revalidatePath("/staff/customer-management");
 
   return { message: "Customer updated successfully" };
 };

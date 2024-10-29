@@ -23,9 +23,6 @@ import {
   Select,
 } from "@/components/ui/select";
 import { updateCustomer } from "@/lib/actions/customers";
-import { useUser } from "@clerk/nextjs";
-import { PhoneInput } from "@/components/ui/phoneInput";
-import { isValidPhoneNumber } from "react-phone-number-input";
 import { toast } from "sonner";
 
 const customerSchema = z.object({
@@ -33,13 +30,7 @@ const customerSchema = z.object({
   imageUrl: z.string().min(1).optional(),
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),
-  role: z.enum(["superadmin", "admin", "technician"]).optional(),
-  phone: z
-    .string()
-    .optional()
-    .refine((value) => !value || isValidPhoneNumber(value), {
-      message: "Invalid phone number",
-    }),
+  status: z.enum(["whitelisted", "blacklisted"]),
 });
 
 export default function EditCustomerClient({
@@ -47,12 +38,10 @@ export default function EditCustomerClient({
 }: {
   customer: {
     id: string;
-    imageUrl: string;
     firstName: string;
     lastName: string;
     email: string;
-    role: string;
-    phone: string;
+    status: string;
   };
 }) {
   const [message, setMessage] = useState("");
@@ -65,26 +54,9 @@ export default function EditCustomerClient({
       id: customer.id,
       firstName: customer.firstName,
       lastName: customer.lastName,
-      role: customer.role as "superadmin" | "admin" | "technician",
-      phone: "",
+      status: customer.status as "whitelisted" | "blacklisted",
     },
   });
-  const { isLoaded, isSignedIn, user } = useUser();
-  if (!isLoaded || !isSignedIn || !user) {
-    return null;
-  }
-  if (user.id === customer.id) {
-    router.push("/customer/customer-management");
-  }
-  console.log("role:", customer.role);
-
-  const handlePopulatePhone = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (customer.phone === "") {
-      toast("Customer does not currently have a phone number");
-    }
-    form.setValue("phone", customer.phone);
-  };
 
   const onSubmit = async () => {
     setMessage("");
@@ -99,7 +71,7 @@ export default function EditCustomerClient({
       setMessage(result.message);
       form.reset(form.getValues());
       toast("Customer updated successfully");
-      router.push("/customer/customer-management");
+      router.push("/staff/customer-management");
       router.refresh();
     }
   };
@@ -161,54 +133,26 @@ export default function EditCustomerClient({
         />
         <FormField
           control={form.control}
-          name="role"
+          name="status"
           render={({ field }) => {
             return (
               <FormItem>
-                <FormLabel>Role</FormLabel>
+                <FormLabel>Status</FormLabel>
                 <FormControl>
                   <Select
-                    defaultValue={customer.role}
+                    defaultValue={customer.status}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a customer role" />
+                        <SelectValue placeholder="Select a customer status" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {user.publicMetadata.role === "superadmin" && (
-                        <SelectItem value="superadmin">Superadmin</SelectItem>
-                      )}
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="technician">Technician</SelectItem>
+                      <SelectItem value="whitelisted">Whitelisted</SelectItem>
+                      <SelectItem value="blacklisted">Blacklisted</SelectItem>
                     </SelectContent>
                   </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <Button variant="link" onClick={(e) => handlePopulatePhone(e)}>
-                  (use current)
-                </Button>
-                <FormControl>
-                  <PhoneInput
-                    placeholder={customer.phone}
-                    {...field}
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value);
-                    }}
-                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
