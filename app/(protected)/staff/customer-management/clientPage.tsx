@@ -61,7 +61,6 @@ export default function CustomerManagementClient({
             firstName={customer.firstName || ""}
             lastName={customer.lastName || ""}
             email={customer.emailAddresses[0].emailAddress || ""}
-            role={(customer.publicMetadata.role as string) || ""}
             phone={(customer.unsafeMetadata.phone as string) || ""}
             // status={(customer.publicMetadata.status as string) || ""}
           />
@@ -84,7 +83,6 @@ export default function CustomerManagementClient({
             firstName={customer.firstName || ""}
             lastName={customer.lastName || ""}
             email={customer.emailAddresses[0].emailAddress || ""}
-            role={(customer.publicMetadata.role as string) || ""}
             phone={(customer.unsafeMetadata.phone as string) || ""}
             // status={(customer.publicMetadata.status as string) || ""}
           />
@@ -134,7 +132,6 @@ export default function CustomerManagementClient({
                 </TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead className="hidden md:table-cell">Role</TableHead>
                 <TableHead className="hidden md:table-cell">
                   Phone Number
                 </TableHead>

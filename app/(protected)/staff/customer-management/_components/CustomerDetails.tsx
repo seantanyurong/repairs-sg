@@ -20,7 +20,6 @@ export default function CustomerDetails({
   firstName,
   lastName,
   email,
-  role,
   phone,
   disableEdit,
 }: {
@@ -29,7 +28,6 @@ export default function CustomerDetails({
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
   phone: string;
   disableEdit: boolean;
 }) {
@@ -75,12 +73,6 @@ export default function CustomerDetails({
               Email
             </Label>
             <p className="text-sm text-muted-foreground col-span-3 break-words">{email || "-"}</p>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Role
-            </Label>
-            <p className="text-sm text-muted-foreground">{role || "-"}</p>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="phone" className="text-right">

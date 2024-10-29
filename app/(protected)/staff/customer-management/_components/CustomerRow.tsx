@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +23,6 @@ export default function CustomerRow({
   firstName,
   lastName,
   email,
-  role,
   phone,
 }: {
   id: string;
@@ -32,7 +30,6 @@ export default function CustomerRow({
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
   phone: string;
 }) {
   const router = useRouter();
@@ -58,7 +55,7 @@ export default function CustomerRow({
   };
 
   const disableEdit =
-    roleOrder[user.publicMetadata.role as string] < roleOrder[role as string];
+    roleOrder[user.publicMetadata.role as string] < 2
   const disableAction = user.id === id;
 
   return (
@@ -79,9 +76,6 @@ export default function CustomerRow({
       <TableCell className="hidden md:table-cell font-medium">
         {email}
       </TableCell>
-      <TableCell>
-        <Badge variant="outline">{role.toUpperCase()}</Badge>
-      </TableCell>
       <TableCell className="hidden md:table-cell">{phone}</TableCell>
       <TableCell>
         {!disableAction && (
@@ -101,7 +95,6 @@ export default function CustomerRow({
                   firstName={firstName}
                   lastName={lastName}
                   email={email}
-                  role={role as string}
                   phone={phone as string}
                   // status={status as string}
                   disableEdit={disableEdit}
