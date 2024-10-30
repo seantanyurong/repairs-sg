@@ -61,10 +61,10 @@ const GraphDisplay: React.FC<GraphDisplayProps> = ({
         label = 'Customer Satisfaction Rating Distribution';
         dataUrl = `/analytics/customer/${selectedGraph}.json`;
       } else if (selectedGraph === 'customer-acquisition-forecast') {
-        label = 'Customer Acquisition Distribution';
+        label = 'Customer Acquisition Forecasting';
         dataUrl = `/analytics/customer/${selectedGraph}-${forecastPeriod}.json`;
       } else if (selectedGraph === 'customer-churn-forecast') {
-        label = 'Customer Churn Distribution';
+        label = 'Customer Churn Forecasting';
         dataUrl = `/analytics/customer/${selectedGraph}-${forecastPeriod}.json`;
       }
 
