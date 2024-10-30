@@ -1,0 +1,12 @@
+{
+    "monthly": {
+        "total_active_month": 2464,
+        "current_churn_month": 217,
+        "churn_rate_month": 8.81
+    },
+    "quarterly": {
+        "total_active_quarter": 2358,
+        "current_churn_quarter": 588,
+        "churn_rate_quarter": 24.94
+    }
+}

@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import GraphDisplay from './_components/graph';
 import ReviewModal from './_components/modal';
+import SmartInsights from './_components/insight';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 
 export default function CustomerAnalytics() {
-  const [selectedGraph, setSelectedGraph] = useState('customer-rating-dist');   // Default to Graph1
-  const [forecastPeriod, setForecastPeriod] = useState('month');                // Default Forecast Period
+  const [selectedGraph, setSelectedGraph] = useState('customer-rating-dist');         // Default to Graph1
+  const [forecastPeriod, setForecastPeriod] = useState<"month" | "quarter">("month"); // Default Forecast Period
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false); 
+  const [isSmartInsightsOpen, setIsSmartInsightsOpen] = useState(false);
 
   const graphs = [
     { id: 'customer-rating-dist', title: 'Customer Satisfaction Rating Distribution' },
@@ -64,7 +66,7 @@ export default function CustomerAnalytics() {
               <select
                 id="forecast-period"
                 value={forecastPeriod}
-                onChange={(e) => setForecastPeriod(e.target.value)}
+                onChange={(e) => setForecastPeriod(e.target.value as "month" | "quarter")}
                 className="p-2 border rounded-md"
               >
                 {forecastPeriods.map((period) => (
@@ -88,6 +90,18 @@ export default function CustomerAnalytics() {
 				)}
 
 				<ReviewModal isOpen={isReviewModalOpen} onClose={() => setIsReviewModalOpen(false)} />
+
+        {/* Button to Open Smart Insights */}
+				{['customer-acquisition-forecast', 'customer-churn-forecast'].includes(selectedGraph) && (
+					<button
+						className="bg-primary p-3 rounded-full hover:bg-grey-400 transition-colors mt-6"
+						onClick={() => setIsSmartInsightsOpen(true)}
+					>
+						<InfoCircledIcon className="w-6 h-6 text-white" />
+					</button>
+				)}
+
+				<SmartInsights isOpen={isSmartInsightsOpen} onClose={() => setIsSmartInsightsOpen(false)} forecastPeriod={forecastPeriod} />
       </div>
     </div>
   );
