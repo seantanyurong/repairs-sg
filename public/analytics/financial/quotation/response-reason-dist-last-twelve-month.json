@@ -1,14 +1,16 @@
 {
     "labels": [
-        "Better Quotation Elsewhere (Other Company Better)",
-        "Budget Limitations (Reasonable Pricing But Budget Constraints)",
-        "Pricing Concerns (Too Expensive)",
-        "Scheduling Conflicts (Unavailable Timeslots)"
+        "Better Quotation Elsewhere",
+        "Budget Limitations",
+        "Others",
+        "Pricing Concerns",
+        "Scheduling Conflicts"
     ],
     "data": [
-        56.1,
-        7.0,
-        33.3,
-        3.5
+        54.4,
+        10.5,
+        8.8,
+        19.3,
+        7.0
     ]
 }
