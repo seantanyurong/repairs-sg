@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_c219c97484b568c37ea70163fee616de {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_c219c97484b568c37ea70163fee616de" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_c219c97484b568c37ea70163fee616de = L.map(
+                "map_c219c97484b568c37ea70163fee616de",
+                {
+                    center: [1.3521, 103.8198],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 12,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_3c11fb96ce12e2d0059e185afd3e43d2 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_3c11fb96ce12e2d0059e185afd3e43d2.addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var marker_edd5c02d443f97306645b00d0728ffd4 = L.marker(
+                [1.3032, 103.8841],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_aaa4ef36b31ea072b73f4694d746ae30 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "house", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_edd5c02d443f97306645b00d0728ffd4.setIcon(icon_aaa4ef36b31ea072b73f4694d746ae30);
+        
+    
+        var popup_97c7ef9cc4d5d68af759d3e1f4952f9a = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_ce77aa478d4f54247f5abdf7ee484d22 = $(`<div id="html_ce77aa478d4f54247f5abdf7ee484d22" style="width: 100.0%; height: 100.0%;">Repair.sg<br>229 Mountbatten Rd<br>#01-01 Mountbatten Square<br>Singapore 398007</div>`)[0];
+                popup_97c7ef9cc4d5d68af759d3e1f4952f9a.setContent(html_ce77aa478d4f54247f5abdf7ee484d22);
+            
+        
+
+        marker_edd5c02d443f97306645b00d0728ffd4.bindPopup(popup_97c7ef9cc4d5d68af759d3e1f4952f9a)
+        ;
+
+        
+    
+    
+            marker_edd5c02d443f97306645b00d0728ffd4.bindTooltip(
+                `<div>
+                     Repair.sg
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_0cc6caf8d043fb8c2b386fb2baf24489 = L.marker(
+                [1.2803, 103.8419],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_d6f78b20cd3d382be238de038e714a6d = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "star", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_0cc6caf8d043fb8c2b386fb2baf24489.setIcon(icon_d6f78b20cd3d382be238de038e714a6d);
+        
+    
+        var popup_664541644b6fd68f7c382d68b2c87618 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_4b386c7ec51ff090e189b5c0fcef669e = $(`<div id="html_4b386c7ec51ff090e189b5c0fcef669e" style="width: 100.0%; height: 100.0%;">Number of Bookings: 31<br>Address: 12 Teck Lim Road<br>Postal: 88387</div>`)[0];
+                popup_664541644b6fd68f7c382d68b2c87618.setContent(html_4b386c7ec51ff090e189b5c0fcef669e);
+            
+        
+
+        marker_0cc6caf8d043fb8c2b386fb2baf24489.bindPopup(popup_664541644b6fd68f7c382d68b2c87618)
+        ;
+
+        
+    
+    
+            marker_0cc6caf8d043fb8c2b386fb2baf24489.bindTooltip(
+                `<div>
+                     Loyal Customer (> 5 Bookings)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_35da851c6e33ea3614c5dc5909315fc1 = L.marker(
+                [1.2946, 103.8597],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_11b847e0bb5fb9af49107ede017e8b94 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "star", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_35da851c6e33ea3614c5dc5909315fc1.setIcon(icon_11b847e0bb5fb9af49107ede017e8b94);
+        
+    
+        var popup_2d205c0b89159d8015778c4b64b61ea7 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_26d9478006f9f264ea418aceda5a67da = $(`<div id="html_26d9478006f9f264ea418aceda5a67da" style="width: 100.0%; height: 100.0%;">Number of Bookings: 24<br>Address: 6 Temasek Boulevard<br>Postal: 38986</div>`)[0];
+                popup_2d205c0b89159d8015778c4b64b61ea7.setContent(html_26d9478006f9f264ea418aceda5a67da);
+            
+        
+
+        marker_35da851c6e33ea3614c5dc5909315fc1.bindPopup(popup_2d205c0b89159d8015778c4b64b61ea7)
+        ;
+
+        
+    
+    
+            marker_35da851c6e33ea3614c5dc5909315fc1.bindTooltip(
+                `<div>
+                     Loyal Customer (> 5 Bookings)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_7468abbd72c6f33215df10140157973f = L.marker(
+                [1.2939, 103.8424],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_af653940842761095f70a7100d7ce227 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "star", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_7468abbd72c6f33215df10140157973f.setIcon(icon_af653940842761095f70a7100d7ce227);
+        
+    
+        var popup_1ef3753f4a1eec35809532124a33c205 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_8fb1230bbcbca963b9cffac3c11d9ae4 = $(`<div id="html_8fb1230bbcbca963b9cffac3c11d9ae4" style="width: 100.0%; height: 100.0%;">Number of Bookings: 18<br>Address: 228 River Valley Road<br>Postal: 238286</div>`)[0];
+                popup_1ef3753f4a1eec35809532124a33c205.setContent(html_8fb1230bbcbca963b9cffac3c11d9ae4);
+            
+        
+
+        marker_7468abbd72c6f33215df10140157973f.bindPopup(popup_1ef3753f4a1eec35809532124a33c205)
+        ;
+
+        
+    
+    
+            marker_7468abbd72c6f33215df10140157973f.bindTooltip(
+                `<div>
+                     Loyal Customer (> 5 Bookings)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_53c33897872d63a6a6a21464ee2e2272 = L.marker(
+                [1.3726, 103.8939],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_44bce0572b8584fa858bdfe5469829ea = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "star", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_53c33897872d63a6a6a21464ee2e2272.setIcon(icon_44bce0572b8584fa858bdfe5469829ea);
+        
+    
+        var popup_85daf41f9d242136c0ee5398088f33f0 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_9e9977788be420a463032a4d22d44bed = $(`<div id="html_9e9977788be420a463032a4d22d44bed" style="width: 100.0%; height: 100.0%;">Number of Bookings: 14<br>Address: 90 Hougang Avenue 10<br>Postal: 538766</div>`)[0];
+                popup_85daf41f9d242136c0ee5398088f33f0.setContent(html_9e9977788be420a463032a4d22d44bed);
+            
+        
+
+        marker_53c33897872d63a6a6a21464ee2e2272.bindPopup(popup_85daf41f9d242136c0ee5398088f33f0)
+        ;
+
+        
+    
+    
+            marker_53c33897872d63a6a6a21464ee2e2272.bindTooltip(
+                `<div>
+                     Loyal Customer (> 5 Bookings)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_62422df8e1359255e7b67ca521936fd2 = L.marker(
+                [1.2984, 103.883],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_421ab2fef44ef50f777500ed7373bb83 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "star", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_62422df8e1359255e7b67ca521936fd2.setIcon(icon_421ab2fef44ef50f777500ed7373bb83);
+        
+    
+        var popup_4b52b5471e83f836f3be33c0776ce2f6 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_07972e3aa8e51ebd5bdcfa824eafb113 = $(`<div id="html_07972e3aa8e51ebd5bdcfa824eafb113" style="width: 100.0%; height: 100.0%;">Number of Bookings: 9<br>Address: 10 Tanjong Rhu Road<br>Postal: 436895</div>`)[0];
+                popup_4b52b5471e83f836f3be33c0776ce2f6.setContent(html_07972e3aa8e51ebd5bdcfa824eafb113);
+            
+        
+
+        marker_62422df8e1359255e7b67ca521936fd2.bindPopup(popup_4b52b5471e83f836f3be33c0776ce2f6)
+        ;
+
+        
+    
+    
+            marker_62422df8e1359255e7b67ca521936fd2.bindTooltip(
+                `<div>
+                     Loyal Customer (> 5 Bookings)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_94136474d2c2ff098dd673d5949d4e5a = L.marker(
+                [1.4504, 103.8187],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_c249448126e627d31a8976e925f664b0 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "heart", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_94136474d2c2ff098dd673d5949d4e5a.setIcon(icon_c249448126e627d31a8976e925f664b0);
+        
+    
+        var popup_1bae83a4d670cd1451aca0a78aea0310 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_1a0c3dcad6fc086546ed59df1f776e17 = $(`<div id="html_1a0c3dcad6fc086546ed59df1f776e17" style="width: 100.0%; height: 100.0%;">Number of Bookings: 5<br>Address: 354B Admiralty Drive<br>Postal: 752354</div>`)[0];
+                popup_1bae83a4d670cd1451aca0a78aea0310.setContent(html_1a0c3dcad6fc086546ed59df1f776e17);
+            
+        
+
+        marker_94136474d2c2ff098dd673d5949d4e5a.bindPopup(popup_1bae83a4d670cd1451aca0a78aea0310)
+        ;
+
+        
+    
+    
+            marker_94136474d2c2ff098dd673d5949d4e5a.bindTooltip(
+                `<div>
+                     Recurring Customer (2 <= Bookings <= 5)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_1bd38b9685f7e31c7551f431ffc7b061 = L.marker(
+                [1.3192, 103.8853],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_24737859ff7e442c9cc3e1d35ab85491 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "heart", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_1bd38b9685f7e31c7551f431ffc7b061.setIcon(icon_24737859ff7e442c9cc3e1d35ab85491);
+        
+    
+        var popup_74286675704ebd7fb389d0d975ed3e74 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_0cd622a6f942da5a5501f0b15a5a8e94 = $(`<div id="html_0cd622a6f942da5a5501f0b15a5a8e94" style="width: 100.0%; height: 100.0%;">Number of Bookings: 5<br>Address: 108 Aljunied Crescent<br>Postal: 380108</div>`)[0];
+                popup_74286675704ebd7fb389d0d975ed3e74.setContent(html_0cd622a6f942da5a5501f0b15a5a8e94);
+            
+        
+
+        marker_1bd38b9685f7e31c7551f431ffc7b061.bindPopup(popup_74286675704ebd7fb389d0d975ed3e74)
+        ;
+
+        
+    
+    
+            marker_1bd38b9685f7e31c7551f431ffc7b061.bindTooltip(
+                `<div>
+                     Recurring Customer (2 <= Bookings <= 5)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_a8347b930807fc8e3ea8d59d83f8740d = L.marker(
+                [1.4367, 103.7962],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_deef9bd7afd9b62ffb8752411448197e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "heart", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_a8347b930807fc8e3ea8d59d83f8740d.setIcon(icon_deef9bd7afd9b62ffb8752411448197e);
+        
+    
+        var popup_20a5300ee44f0fac1aadba6c8c122362 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_268aa58bb3237992fd83eb456fceef8d = $(`<div id="html_268aa58bb3237992fd83eb456fceef8d" style="width: 100.0%; height: 100.0%;">Number of Bookings: 4<br>Address: 607 Woodlands Ring Road<br>Postal: 730607</div>`)[0];
+                popup_20a5300ee44f0fac1aadba6c8c122362.setContent(html_268aa58bb3237992fd83eb456fceef8d);
+            
+        
+
+        marker_a8347b930807fc8e3ea8d59d83f8740d.bindPopup(popup_20a5300ee44f0fac1aadba6c8c122362)
+        ;
+
+        
+    
+    
+            marker_a8347b930807fc8e3ea8d59d83f8740d.bindTooltip(
+                `<div>
+                     Recurring Customer (2 <= Bookings <= 5)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_34a72090deb6f17e1c1b090915b23ed2 = L.marker(
+                [1.3193, 103.9452],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_f3e212736182cc59fa77373853b9ead1 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "heart", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_34a72090deb6f17e1c1b090915b23ed2.setIcon(icon_f3e212736182cc59fa77373853b9ead1);
+        
+    
+        var popup_668aeb17528af26b12220b725346ae5b = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_5f23a26ec7ca1734f77db11c742b4d79 = $(`<div id="html_5f23a26ec7ca1734f77db11c742b4d79" style="width: 100.0%; height: 100.0%;">Number of Bookings: 4<br>Address: 160 Bedok South Avenue 3<br>Postal: 460160</div>`)[0];
+                popup_668aeb17528af26b12220b725346ae5b.setContent(html_5f23a26ec7ca1734f77db11c742b4d79);
+            
+        
+
+        marker_34a72090deb6f17e1c1b090915b23ed2.bindPopup(popup_668aeb17528af26b12220b725346ae5b)
+        ;
+
+        
+    
+    
+            marker_34a72090deb6f17e1c1b090915b23ed2.bindTooltip(
+                `<div>
+                     Recurring Customer (2 <= Bookings <= 5)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_61b1cecac54222a6b77c6d4cd69a2faa = L.marker(
+                [1.38, 103.8794],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_21e1410438db7a82d91c15e6395a21d7 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "heart", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_61b1cecac54222a6b77c6d4cd69a2faa.setIcon(icon_21e1410438db7a82d91c15e6395a21d7);
+        
+    
+        var popup_84025cef704c6606aee4e9794565c5bc = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_5637afe59f8ce3dca88f739a2c27f319 = $(`<div id="html_5637afe59f8ce3dca88f739a2c27f319" style="width: 100.0%; height: 100.0%;">Number of Bookings: 3<br>Address: 978D Buangkok Crescent<br>Postal: 536978</div>`)[0];
+                popup_84025cef704c6606aee4e9794565c5bc.setContent(html_5637afe59f8ce3dca88f739a2c27f319);
+            
+        
+
+        marker_61b1cecac54222a6b77c6d4cd69a2faa.bindPopup(popup_84025cef704c6606aee4e9794565c5bc)
+        ;
+
+        
+    
+    
+            marker_61b1cecac54222a6b77c6d4cd69a2faa.bindTooltip(
+                `<div>
+                     Recurring Customer (2 <= Bookings <= 5)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_0a89b8806cad8399902aeb32445dfe05 = L.marker(
+                [1.3065, 103.7948],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_38cdc9d02094d880eb61506c10ff4a09 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "heart", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_0a89b8806cad8399902aeb32445dfe05.setIcon(icon_38cdc9d02094d880eb61506c10ff4a09);
+        
+    
+        var popup_962882f36ff37fd8243474913e44196f = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_b7772e042b3bfe912c5bc8acd3fcc6ed = $(`<div id="html_b7772e042b3bfe912c5bc8acd3fcc6ed" style="width: 100.0%; height: 100.0%;">Number of Bookings: 3<br>Address: 7 Commonwealth Avenue<br>Postal: 140007</div>`)[0];
+                popup_962882f36ff37fd8243474913e44196f.setContent(html_b7772e042b3bfe912c5bc8acd3fcc6ed);
+            
+        
+
+        marker_0a89b8806cad8399902aeb32445dfe05.bindPopup(popup_962882f36ff37fd8243474913e44196f)
+        ;
+
+        
+    
+    
+            marker_0a89b8806cad8399902aeb32445dfe05.bindTooltip(
+                `<div>
+                     Recurring Customer (2 <= Bookings <= 5)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_18fdf6c776e3290940d264e0598f3b79 = L.marker(
+                [1.3163, 103.8485],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_a0431e0cf13b7bab2a07f667bd60ed35 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "heart", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_18fdf6c776e3290940d264e0598f3b79.setIcon(icon_a0431e0cf13b7bab2a07f667bd60ed35);
+        
+    
+        var popup_eff0321166de65b0aee5d87b6569c7a2 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_02ef22c2439d04ab4770e790ea3e45d1 = $(`<div id="html_02ef22c2439d04ab4770e790ea3e45d1" style="width: 100.0%; height: 100.0%;">Number of Bookings: 2<br>Address: 39 Cambridge Road<br>Postal: 210039</div>`)[0];
+                popup_eff0321166de65b0aee5d87b6569c7a2.setContent(html_02ef22c2439d04ab4770e790ea3e45d1);
+            
+        
+
+        marker_18fdf6c776e3290940d264e0598f3b79.bindPopup(popup_eff0321166de65b0aee5d87b6569c7a2)
+        ;
+
+        
+    
+    
+            marker_18fdf6c776e3290940d264e0598f3b79.bindTooltip(
+                `<div>
+                     Recurring Customer (2 <= Bookings <= 5)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_d69e5cbbce1084c9a66fa9f3a772385c = L.marker(
+                [1.2739, 103.8403],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_7285c92a38484baec6ecf5ac29bd79de = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "heart", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_d69e5cbbce1084c9a66fa9f3a772385c.setIcon(icon_7285c92a38484baec6ecf5ac29bd79de);
+        
+    
+        var popup_a633485cbbc987186adedbf98766dfb1 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_cd33cbefae414c9baf9a2d06d8dd2f64 = $(`<div id="html_cd33cbefae414c9baf9a2d06d8dd2f64" style="width: 100.0%; height: 100.0%;">Number of Bookings: 2<br>Address: 16 Cantonment Close<br>Postal: 80016</div>`)[0];
+                popup_a633485cbbc987186adedbf98766dfb1.setContent(html_cd33cbefae414c9baf9a2d06d8dd2f64);
+            
+        
+
+        marker_d69e5cbbce1084c9a66fa9f3a772385c.bindPopup(popup_a633485cbbc987186adedbf98766dfb1)
+        ;
+
+        
+    
+    
+            marker_d69e5cbbce1084c9a66fa9f3a772385c.bindTooltip(
+                `<div>
+                     Recurring Customer (2 <= Bookings <= 5)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_25bdd7c16a5a69cee2ba5184b0d5e8ab = L.marker(
+                [1.2766, 103.8412],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_3bde137d56b6bc66e16b63b30c4fc1c1 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_25bdd7c16a5a69cee2ba5184b0d5e8ab.setIcon(icon_3bde137d56b6bc66e16b63b30c4fc1c1);
+        
+    
+        var popup_27538f4f003c9013ecdc2cd9a4b7ac96 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_b0d78cfc2075e8d6316d23d646acb172 = $(`<div id="html_b0d78cfc2075e8d6316d23d646acb172" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 1E Cantonment Road<br>Postal: 85501</div>`)[0];
+                popup_27538f4f003c9013ecdc2cd9a4b7ac96.setContent(html_b0d78cfc2075e8d6316d23d646acb172);
+            
+        
+
+        marker_25bdd7c16a5a69cee2ba5184b0d5e8ab.bindPopup(popup_27538f4f003c9013ecdc2cd9a4b7ac96)
+        ;
+
+        
+    
+    
+            marker_25bdd7c16a5a69cee2ba5184b0d5e8ab.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_6a55e7a42f215512f2d9315d66a14fc4 = L.marker(
+                [1.3102, 103.8848],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_a9e958fbd904f538bc1976a1368dda5e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_6a55e7a42f215512f2d9315d66a14fc4.setIcon(icon_a9e958fbd904f538bc1976a1368dda5e);
+        
+    
+        var popup_2e2f8a194226c77d7146aaf13b26159d = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_7148c36afd83397102ba7a689cfb97de = $(`<div id="html_7148c36afd83397102ba7a689cfb97de" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 54 Cassia Crescent<br>Postal: 390054</div>`)[0];
+                popup_2e2f8a194226c77d7146aaf13b26159d.setContent(html_7148c36afd83397102ba7a689cfb97de);
+            
+        
+
+        marker_6a55e7a42f215512f2d9315d66a14fc4.bindPopup(popup_2e2f8a194226c77d7146aaf13b26159d)
+        ;
+
+        
+    
+    
+            marker_6a55e7a42f215512f2d9315d66a14fc4.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_0246bc82478b3cdb0c515daacece9fcd = L.marker(
+                [1.3743, 103.7699],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_f59bfc0cd0bd9c3164414b588e74bab9 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_0246bc82478b3cdb0c515daacece9fcd.setIcon(icon_f59bfc0cd0bd9c3164414b588e74bab9);
+        
+    
+        var popup_8f78d8f192e2f2af75959df545892774 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_c8726e48c563f1cd8f10690c4c3e5ea4 = $(`<div id="html_c8726e48c563f1cd8f10690c4c3e5ea4" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 133 Cashew Road<br>Postal: 670133</div>`)[0];
+                popup_8f78d8f192e2f2af75959df545892774.setContent(html_c8726e48c563f1cd8f10690c4c3e5ea4);
+            
+        
+
+        marker_0246bc82478b3cdb0c515daacece9fcd.bindPopup(popup_8f78d8f192e2f2af75959df545892774)
+        ;
+
+        
+    
+    
+            marker_0246bc82478b3cdb0c515daacece9fcd.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_2de2c55a25999b5d97e2230bbeab3c00 = L.marker(
+                [1.3094, 103.8833],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_ef62f4548f54d2997ce373f44e55c2c5 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_2de2c55a25999b5d97e2230bbeab3c00.setIcon(icon_ef62f4548f54d2997ce373f44e55c2c5);
+        
+    
+        var popup_6ea9382fd17d55aa7a5b43f5646ed09c = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_56e3502699f53f68220bf6ec83e1364d = $(`<div id="html_56e3502699f53f68220bf6ec83e1364d" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 30 Cassia Crescent<br>Postal: 391030</div>`)[0];
+                popup_6ea9382fd17d55aa7a5b43f5646ed09c.setContent(html_56e3502699f53f68220bf6ec83e1364d);
+            
+        
+
+        marker_2de2c55a25999b5d97e2230bbeab3c00.bindPopup(popup_6ea9382fd17d55aa7a5b43f5646ed09c)
+        ;
+
+        
+    
+    
+            marker_2de2c55a25999b5d97e2230bbeab3c00.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_07dcbacdfe2f26ac2eb8d81250583768 = L.marker(
+                [1.3253, 103.9254],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_97ccfd3c50fc181ac4c9968ce69420ed = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_07dcbacdfe2f26ac2eb8d81250583768.setIcon(icon_97ccfd3c50fc181ac4c9968ce69420ed);
+        
+    
+        var popup_c7a7fa69f94959e7b0a2ad91e7f353f7 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_47e6ac7691379ccce042eeaad54d4e4e = $(`<div id="html_47e6ac7691379ccce042eeaad54d4e4e" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 36 Chai Chee Avenue<br>Postal: 461036</div>`)[0];
+                popup_c7a7fa69f94959e7b0a2ad91e7f353f7.setContent(html_47e6ac7691379ccce042eeaad54d4e4e);
+            
+        
+
+        marker_07dcbacdfe2f26ac2eb8d81250583768.bindPopup(popup_c7a7fa69f94959e7b0a2ad91e7f353f7)
+        ;
+
+        
+    
+    
+            marker_07dcbacdfe2f26ac2eb8d81250583768.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_5f9649e059959211b87a5c868ba8d3e6 = L.marker(
+                [1.3268, 103.8559],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_f8abdaf12db9ba49a628a69f396e891e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_5f9649e059959211b87a5c868ba8d3e6.setIcon(icon_f8abdaf12db9ba49a628a69f396e891e);
+        
+    
+        var popup_e2e6eb91c04926ff81e30d1bc6f3c809 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_5da3565a78d503da2b3e31ba9fc3b454 = $(`<div id="html_5da3565a78d503da2b3e31ba9fc3b454" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 110 Whampoa Road<br>Postal: 321110</div>`)[0];
+                popup_e2e6eb91c04926ff81e30d1bc6f3c809.setContent(html_5da3565a78d503da2b3e31ba9fc3b454);
+            
+        
+
+        marker_5f9649e059959211b87a5c868ba8d3e6.bindPopup(popup_e2e6eb91c04926ff81e30d1bc6f3c809)
+        ;
+
+        
+    
+    
+            marker_5f9649e059959211b87a5c868ba8d3e6.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_b802226beb6cd7af03068739bdbd1cdd = L.marker(
+                [1.3788, 103.9042],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_29c1103ca30990a7154e633250841b02 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_b802226beb6cd7af03068739bdbd1cdd.setIcon(icon_29c1103ca30990a7154e633250841b02);
+        
+    
+        var popup_9dc940fc326c3fd2d700e841ef51de87 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_372f9782ef8fd8b82eaa25e2c43a7537 = $(`<div id="html_372f9782ef8fd8b82eaa25e2c43a7537" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 477B Upper Serangoon Avenue<br>Postal: 532477</div>`)[0];
+                popup_9dc940fc326c3fd2d700e841ef51de87.setContent(html_372f9782ef8fd8b82eaa25e2c43a7537);
+            
+        
+
+        marker_b802226beb6cd7af03068739bdbd1cdd.bindPopup(popup_9dc940fc326c3fd2d700e841ef51de87)
+        ;
+
+        
+    
+    
+            marker_b802226beb6cd7af03068739bdbd1cdd.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_dc2520023d573160c48fff1b7b7d92f8 = L.marker(
+                [1.3155, 103.8504],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_a4747b7386f9c60e9bc6bb3f3d41c49c = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_dc2520023d573160c48fff1b7b7d92f8.setIcon(icon_a4747b7386f9c60e9bc6bb3f3d41c49c);
+        
+    
+        var popup_042ec7d27060d830c4978b24d24bc814 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_92d7d675bda9ba611aa1a37658b8e304 = $(`<div id="html_92d7d675bda9ba611aa1a37658b8e304" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 46 Owen Road<br>Postal: 210044</div>`)[0];
+                popup_042ec7d27060d830c4978b24d24bc814.setContent(html_92d7d675bda9ba611aa1a37658b8e304);
+            
+        
+
+        marker_dc2520023d573160c48fff1b7b7d92f8.bindPopup(popup_042ec7d27060d830c4978b24d24bc814)
+        ;
+
+        
+    
+    
+            marker_dc2520023d573160c48fff1b7b7d92f8.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_702480d4439c3944a26c025d709756a2 = L.marker(
+                [1.3086, 103.8882],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_e8abde95cdac74f68cd58b5bca2d3de9 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_702480d4439c3944a26c025d709756a2.setIcon(icon_e8abde95cdac74f68cd58b5bca2d3de9);
+        
+    
+        var popup_a7e650ddcd39a5fdd4215bb42e9a6fa3 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_84cd6a5637be371b4834cbf17464c5ae = $(`<div id="html_84cd6a5637be371b4834cbf17464c5ae" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 99 Old Airport Road<br>Postal: 390099</div>`)[0];
+                popup_a7e650ddcd39a5fdd4215bb42e9a6fa3.setContent(html_84cd6a5637be371b4834cbf17464c5ae);
+            
+        
+
+        marker_702480d4439c3944a26c025d709756a2.bindPopup(popup_a7e650ddcd39a5fdd4215bb42e9a6fa3)
+        ;
+
+        
+    
+    
+            marker_702480d4439c3944a26c025d709756a2.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_938b76ce2341abdc63eafa7c7b89ac7a = L.marker(
+                [1.3054, 103.8632],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_c64a0ebf93adbde5054d220d5a24ee2a = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_938b76ce2341abdc63eafa7c7b89ac7a.setIcon(icon_c64a0ebf93adbde5054d220d5a24ee2a);
+        
+    
+        var popup_6e928c3c4dddeae47935a157f742602d = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_0f440a7cfdbca7938e9d4e83d4ccab6d = $(`<div id="html_0f440a7cfdbca7938e9d4e83d4ccab6d" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 468 North Bridge Road<br>Postal: 190468</div>`)[0];
+                popup_6e928c3c4dddeae47935a157f742602d.setContent(html_0f440a7cfdbca7938e9d4e83d4ccab6d);
+            
+        
+
+        marker_938b76ce2341abdc63eafa7c7b89ac7a.bindPopup(popup_6e928c3c4dddeae47935a157f742602d)
+        ;
+
+        
+    
+    
+            marker_938b76ce2341abdc63eafa7c7b89ac7a.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_f72188a5cdd008bba957fffd1331133d = L.marker(
+                [1.3221, 103.8679],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_58f2ac87cbfbd8f62c9582d0ec0ec996 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_f72188a5cdd008bba957fffd1331133d.setIcon(icon_58f2ac87cbfbd8f62c9582d0ec0ec996);
+        
+    
+        var popup_7395031b15861b8ae3bd0a5745f0f522 = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_b071fbe09d65f9a7997d779b6db25c90 = $(`<div id="html_b071fbe09d65f9a7997d779b6db25c90" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 59B Geylang Bahru<br>Postal: 331059</div>`)[0];
+                popup_7395031b15861b8ae3bd0a5745f0f522.setContent(html_b071fbe09d65f9a7997d779b6db25c90);
+            
+        
+
+        marker_f72188a5cdd008bba957fffd1331133d.bindPopup(popup_7395031b15861b8ae3bd0a5745f0f522)
+        ;
+
+        
+    
+    
+            marker_f72188a5cdd008bba957fffd1331133d.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_a7183ee8a032f87f760aab39f2a1c867 = L.marker(
+                [1.3035, 103.8837],
+                {}
+            ).addTo(map_c219c97484b568c37ea70163fee616de);
+        
+    
+            var icon_f8ab69b75d85a484c87e8689d33e47f0 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "plus", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_a7183ee8a032f87f760aab39f2a1c867.setIcon(icon_f8ab69b75d85a484c87e8689d33e47f0);
+        
+    
+        var popup_f4ca3ae67cb177a59ba3f5787ff540ca = L.popup({"maxWidth": 500});
+
+        
+            
+                var html_1fb3020e7c2be8818299333721a4d667 = $(`<div id="html_1fb3020e7c2be8818299333721a4d667" style="width: 100.0%; height: 100.0%;">Number of Bookings: 1<br>Address: 1 Kampong Kayu Road<br>Postal: 431001</div>`)[0];
+                popup_f4ca3ae67cb177a59ba3f5787ff540ca.setContent(html_1fb3020e7c2be8818299333721a4d667);
+            
+        
+
+        marker_a7183ee8a032f87f760aab39f2a1c867.bindPopup(popup_f4ca3ae67cb177a59ba3f5787ff540ca)
+        ;
+
+        
+    
+    
+            marker_a7183ee8a032f87f760aab39f2a1c867.bindTooltip(
+                `<div>
+                     New Customer (= 1 Booking)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            tile_layer_3c11fb96ce12e2d0059e185afd3e43d2.addTo(map_c219c97484b568c37ea70163fee616de);
+        
+</script>
+</html>
