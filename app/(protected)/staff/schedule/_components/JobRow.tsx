@@ -12,6 +12,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { updateJobStaff } from '@/lib/actions/jobs';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
+import { MoreHorizontal } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 
 export default function JobRow({
   id,
@@ -37,6 +40,7 @@ export default function JobRow({
   staffArray: { id: string; name: string }[]; // List of staff to assign
 }) {
 
+  const router = useRouter();
 
   const handleAssignStaff = async (jobId: string, staffId: string) => {
     await updateJobStaff(jobId, staffId); // Call the parent function to update the job with selected staff
@@ -55,25 +59,45 @@ export default function JobRow({
         <Badge variant='outline'>{status}</Badge>
       </TableCell>
       <TableCell>
-        <DropdownMenu>
+      <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='outline'>
-              Assign Staff
+            <Button aria-haspopup='true' size='icon' variant='ghost'>
+              <MoreHorizontal className='h-4 w-4' />
+              <span className='sr-only'>Toggle menu</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
-          <DropdownMenuLabel>Available Staff</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {staffArray.map((staff) => (
-              <DropdownMenuItem
-                key={staff.id}
-                onClick={() => handleAssignStaff(id, staff.id)}
-                className='cursor-pointer'>
-                {staff.name}
-              </DropdownMenuItem>
-            ))}
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              className='cursor-pointer'>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='ghost'>
+                    Assign Staff
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end'>
+                <DropdownMenuLabel>Available Staff</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {staffArray.map((staff) => (
+                    <DropdownMenuItem
+                      key={staff.id}
+                      onClick={() => handleAssignStaff(id, staff.id)}
+                      className='cursor-pointer'>
+                      {staff.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => router.push(`/staff/invoices/create-invoice?jobId=${id}`)}
+              className='cursor-pointer'>
+              Create Invoice
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        
       </TableCell>
     </TableRow>
   );

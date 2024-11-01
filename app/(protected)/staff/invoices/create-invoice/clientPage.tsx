@@ -1,7 +1,7 @@
 'use client';
 
 import * as z from 'zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Loader2 } from "lucide-react";
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -64,6 +64,7 @@ export default function CreateInvoiceClient({
   const [jobs, setJobs] = useState<{ id: string, description: string, quantity: string, customer: string }[]>([]);
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
   const [selectedJob, setSelectedJob] = useState<{ id: string, description: string, quantity: string, customer: string } | null>(null);
+  const searchParams = useSearchParams(); // To read the current query parameters
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,6 +79,7 @@ export default function CreateInvoiceClient({
       staff: '',
     },
   });
+
 
   const fetchJobs = async () => {
     setIsLoadingJobs(true);
@@ -95,6 +97,12 @@ export default function CreateInvoiceClient({
   useEffect(() => {
     fetchJobs();
   }, []);
+
+  const jobInitialisedFrom = jobs.find(job => job.id === searchParams.get('jobId'));
+  if (jobInitialisedFrom && !form.getValues('job')) {
+    form.setValue('job', jobInitialisedFrom.id);
+    setSelectedJob(jobInitialisedFrom);
+  }
 
   const getCustomerByEmail = async () => {
     const fieldState = form.getFieldState("customer");
