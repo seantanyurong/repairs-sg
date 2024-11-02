@@ -101,6 +101,7 @@ export default function InvoiceRow({
   };
 
   const isVoid = validityStatus === "void";
+  const isPaid = paymentStatus === "Paid";
 
   // Payment
   const handlePaymentAction = () => {
@@ -191,7 +192,7 @@ export default function InvoiceRow({
                   View
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  disabled={isVoid}
+                  disabled={isVoid || isPaid}
                   onClick={() =>
                     router.push(`/staff/invoices/edit-invoice/${invoiceId}`)
                   }
@@ -200,14 +201,14 @@ export default function InvoiceRow({
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  disabled={isVoid}
+                  disabled={isVoid || isPaid}
                   onClick={handleVoidAction}
                   className="cursor-pointer"
                 >
                   Void
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  disabled={isVoid}
+                  disabled={isVoid || isPaid}
                   onClick={handlePaymentAction}
                   className="cursor-pointer"
                 >
