@@ -274,7 +274,6 @@ const makePayment = async (invoice: {
   paymentStatus: string;
   lastUpdatedBy: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
-  console.log(invoice);
   const invoiceSchema = z.object({
     invoiceId: z.string().min(1),
     remainingDue: z.number().min(0, {
@@ -294,7 +293,7 @@ const makePayment = async (invoice: {
     lastUpdatedBy: invoice.lastUpdatedBy,
   });
 
-  console.log(response.data);
+  // console.log(response.data);
   if (!response.success) {
     return { message: "", errors: response.error.flatten().fieldErrors };
   }
