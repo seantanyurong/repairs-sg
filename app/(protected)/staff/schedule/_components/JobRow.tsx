@@ -95,6 +95,11 @@ export default function JobRow({
               className='cursor-pointer'>
               Create Invoice
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => router.push(`/staff/invoices?jobId=${id}`)}
+              className='cursor-pointer'>
+              View Invoices
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         
