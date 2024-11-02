@@ -266,6 +266,73 @@ const updateInvoice = async (invoice: {
   }
 };
 
+const makePayment = async (invoice: {
+  invoiceId: string;
+  totalAmount: number;
+  paymentAmount: number;
+  remainingDue: number;
+  paymentStatus: string;
+  lastUpdatedBy: string;
+}): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
+  const invoiceSchema = z.object({
+    invoiceId: z.string().min(1),
+    remainingDue: z.number().min(0, {
+      message: "Remaining Due Cannot Be Negative!",
+    }),
+    paymentStatus: z.enum(["Unpaid", "Paid"]),
+    lastUpdatedBy: z.string(),
+  });
+
+  if (invoice.remainingDue === invoice.paymentAmount)
+    invoice.paymentStatus = "Paid";
+
+  const response = invoiceSchema.safeParse({
+    invoiceId: invoice.invoiceId,
+    remainingDue: invoice.remainingDue - invoice.paymentAmount,
+    paymentStatus: invoice.paymentStatus,
+    lastUpdatedBy: invoice.lastUpdatedBy,
+  });
+
+  // console.log(response.data);
+  if (!response.success) {
+    return { message: "", errors: response.error.flatten().fieldErrors };
+  }
+
+  const filter = { invoiceId: response.data.invoiceId };
+  const update = {
+    remainingDue: response.data.remainingDue,
+    paymentStatus: response.data.paymentStatus,
+    lastUpdatedBy: response.data.lastUpdatedBy,
+  };
+  const context = { runValidators: true, context: "query" };
+
+  try {
+    await Invoice.findOneAndUpdate(filter, update, context);
+    revalidatePath("/staff/invoices");
+    return { message: "Invoices Updated Successfully" };
+  } catch (error: unknown) {
+    if (error instanceof mongoose.Error.ValidationError && error.errors) {
+      // Mongoose validation errors (including unique-validator errors)
+      const mongooseErrors = Object.keys(error.errors).reduce(
+        (acc, key) => {
+          const friendlyKey = fieldFriendlyNames[key] || key;
+          const errorMessage = error.errors[key].message.replace(
+            key,
+            friendlyKey,
+          );
+          acc[friendlyKey] = [errorMessage];
+          return acc;
+        },
+        {} as Record<string, string[]>,
+      );
+
+      return { message: "Validation Error", errors: mongooseErrors };
+    }
+
+    return { message: "An Unexpected Error Occurred" };
+  }
+};
+
 const getInvoice = async (invoiceId: number) => {
   return Invoice.findOne({ invoiceId: invoiceId });
 };
@@ -340,4 +407,11 @@ const voidInvoice = async (invoice: {
   }
 };
 
-export { addInvoice, updateInvoice, getInvoice, getInvoices, voidInvoice };
+export {
+  addInvoice,
+  updateInvoice,
+  makePayment,
+  getInvoice,
+  getInvoices,
+  voidInvoice,
+};

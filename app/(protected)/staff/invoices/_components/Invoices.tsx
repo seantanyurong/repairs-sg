@@ -231,6 +231,7 @@ export default function Invoices({
             customer={fullName}
             job={invoice.job}
             totalAmount={invoice.totalAmount.toString()}
+            remainingDue={invoice.remainingDue.toString()}
             lineItems={invoice.lineItems}
             paymentStatus={invoice.paymentStatus}
             validityStatus={invoice.validityStatus}
@@ -256,6 +257,7 @@ export default function Invoices({
             customer={fullName}
             job={invoice.job}
             totalAmount={invoice.totalAmount.toString()}
+            remainingDue={invoice.remainingDue.toString()}
             lineItems={invoice.lineItems}
             paymentStatus={invoice.paymentStatus}
             validityStatus={invoice.validityStatus}
@@ -296,7 +298,8 @@ export default function Invoices({
                 <TableHead>Date</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Job</TableHead>
-                <TableHead>Amount</TableHead>
+                <TableHead>Total Amount</TableHead>
+                <TableHead>Remaining Due</TableHead>
                 <TableHead>Line Items</TableHead>
                 <TableHead>Validity</TableHead>
                 <TableHead>Status</TableHead>

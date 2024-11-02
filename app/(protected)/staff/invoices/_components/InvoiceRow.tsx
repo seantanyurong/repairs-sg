@@ -23,13 +23,14 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { voidInvoice } from "@/lib/actions/invoices";
+import { makePayment, voidInvoice } from "@/lib/actions/invoices";
 import { toast } from "sonner";
 
 export default function InvoiceRow({
   invoiceId,
   dateIssued,
   totalAmount,
+  remainingDue,
   lineItems,
   validityStatus,
   paymentStatus,
@@ -40,6 +41,7 @@ export default function InvoiceRow({
   invoiceId: string;
   dateIssued: string;
   totalAmount: string;
+  remainingDue: string;
   lineItems: Array<string>;
   paymentStatus: string;
   validityStatus: string;
@@ -54,13 +56,21 @@ export default function InvoiceRow({
   const formattedDateIssued = dayjs(dateIssued).format("DD/MM/YYYY");
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [actionType, setActionType] = useState<"void" | "payment">("void");
   const [voidReason, setVoidReason] = useState<string>("");
-  const handleVoidAction = () => {
-    setIsDialogOpen(true);
-  };
+  const [paymentAmount, setPaymentAmount] = useState<number>(0);
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
+    setVoidReason("");
+    setPaymentAmount(0);
   };
+
+  // Void Invoive
+  const handleVoidAction = () => {
+    setActionType("void");
+    setIsDialogOpen(true);
+  };
+
   const handleVoidInvoice = async () => {
     if (!voidReason.trim()) {
       toast.error("Please input a void reason.");
@@ -91,6 +101,43 @@ export default function InvoiceRow({
   };
 
   const isVoid = validityStatus === "void";
+  const isPaid = paymentStatus === "Paid";
+
+  // Payment
+  const handlePaymentAction = () => {
+    setActionType("payment");
+    setIsDialogOpen(true);
+  };
+
+  const handlePayment = async () => {
+    if (paymentAmount <= 0) {
+      toast.error("Payment must be greater than 0.");
+      return;
+    }
+
+    if (paymentAmount > parseFloat(remainingDue)) {
+      toast.error("Payment cannot exceed the Remaining Due.");
+      return;
+    }
+
+    try {
+      await makePayment({
+        invoiceId: invoiceId,
+        totalAmount: Number(totalAmount),
+        paymentAmount: paymentAmount,
+        remainingDue: Number(remainingDue),
+        paymentStatus: paymentStatus,
+        lastUpdatedBy: user?.id || "",
+      });
+
+      handleCloseDialog();
+
+      toast("Payment acknowledged successfully");
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      toast.error("An error occurred while processing the payment.");
+    }
+  };
 
   return (
     <>
@@ -109,6 +156,9 @@ export default function InvoiceRow({
         </TableCell>
         <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
           ${totalAmount.toString()}
+        </TableCell>
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
+          ${remainingDue.toString()}
         </TableCell>
         <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
           {lineItems.length.toString()} Items
@@ -142,7 +192,7 @@ export default function InvoiceRow({
                   View
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  disabled={isVoid}
+                  disabled={isVoid || isPaid}
                   onClick={() =>
                     router.push(`/staff/invoices/edit-invoice/${invoiceId}`)
                   }
@@ -151,34 +201,70 @@ export default function InvoiceRow({
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  disabled={isVoid}
+                  disabled={isVoid || isPaid}
                   onClick={handleVoidAction}
                   className="cursor-pointer"
                 >
                   Void
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={isVoid || isPaid}
+                  onClick={handlePaymentAction}
+                  className="cursor-pointer"
+                >
+                  Payment
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogTitle>
+                  {actionType === "void"
+                    ? "Are you absolutely sure?"
+                    : "Process Payment"}
+                </DialogTitle>
                 <DialogDescription>
-                  This action cannot be undone. This will permanently void the
-                  customer&apos;s invoice.
+                  {actionType === "void" ? (
+                    "This action cannot be undone. This will permanently void the customer's invoice."
+                  ) : (
+                    <>
+                      Please confirm the payment for this invoice. <br />
+                      Total amount: ${totalAmount} <br />
+                      Remaining Due: ${remainingDue}
+                    </>
+                  )}
                 </DialogDescription>
               </DialogHeader>
-              <Label>Void Reason</Label>
-              <Input
-                required={true}
-                value={voidReason}
-                placeholder="Enter void reason..."
-                onChange={(e) => setVoidReason(e.target.value)}
-              />
-              <div className="flex justify-end">
-                <Button variant="destructive" onClick={handleVoidInvoice}>
-                  Void Invoice
-                </Button>
-              </div>
+              {actionType === "void" ? (
+                <>
+                  <Label>Void Reason</Label>
+                  <Input
+                    required={true}
+                    value={voidReason}
+                    placeholder="Enter void reason..."
+                    onChange={(e) => setVoidReason(e.target.value)}
+                  />
+                  <div className="flex justify-end">
+                    <Button variant="destructive" onClick={handleVoidInvoice}>
+                      Void Invoice
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Label>Payment Amount</Label>
+                  <Input
+                    required
+                    type="number"
+                    value={paymentAmount}
+                    placeholder="Enter payment amount..."
+                    onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                  />
+                  <div className="flex justify-end">
+                    <Button onClick={handlePayment}>Acknowledge Payment</Button>
+                  </div>
+                </>
+              )}
             </DialogContent>
           </Dialog>
         </TableCell>

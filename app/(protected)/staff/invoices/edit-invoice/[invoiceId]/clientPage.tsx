@@ -372,7 +372,7 @@ export default function EditInvoiceClient({
                     type="number"
                     placeholder="Total Amount"
                     {...field}
-                    onChange={(event) => field.onChange(+event.target.value)}
+                    disabled={true}
                   />
                 </FormControl>
                 <FormMessage />
@@ -392,7 +392,7 @@ export default function EditInvoiceClient({
                     type="number"
                     placeholder="Remaining Due"
                     {...field}
-                    onChange={(event) => field.onChange(+event.target.value)}
+                    disabled={true}
                   />
                 </FormControl>
                 <FormMessage />
