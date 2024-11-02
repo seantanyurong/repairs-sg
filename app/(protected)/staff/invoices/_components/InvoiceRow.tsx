@@ -157,6 +157,9 @@ export default function InvoiceRow({
           ${totalAmount.toString()}
         </TableCell>
         <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
+          ${remainingDue.toString()}
+        </TableCell>
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
           {lineItems.length.toString()} Items
         </TableCell>
         <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>

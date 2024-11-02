@@ -298,7 +298,8 @@ export default function Invoices({
                 <TableHead>Date</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Job</TableHead>
-                <TableHead>Amount</TableHead>
+                <TableHead>Total Amount</TableHead>
+                <TableHead>Remaining Amount</TableHead>
                 <TableHead>Line Items</TableHead>
                 <TableHead>Validity</TableHead>
                 <TableHead>Status</TableHead>
