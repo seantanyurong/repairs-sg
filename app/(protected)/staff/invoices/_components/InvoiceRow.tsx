@@ -35,6 +35,7 @@ export default function InvoiceRow({
   paymentStatus,
   paymentMethod,
   customer,
+  job,
 }: {
   invoiceId: string;
   dateIssued: string;
@@ -44,6 +45,7 @@ export default function InvoiceRow({
   validityStatus: string;
   paymentMethod: string;
   customer: string;
+  job: string;
 }) {
   const router = useRouter();
   const { user } = useUser();
@@ -101,6 +103,9 @@ export default function InvoiceRow({
         </TableCell>
         <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
           {customer}
+        </TableCell>
+        <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
+          {job}
         </TableCell>
         <TableCell className={isVoid ? "opacity-50 cursor-not-allowed" : ""}>
           ${totalAmount.toString()}
