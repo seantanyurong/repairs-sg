@@ -25,6 +25,10 @@ export interface Job extends Document {
       timeStart: Date;  
       timeEnd: Date;   
     };
+    vehicle: {
+      id: string;  
+      licencePlate: string;  
+    };
     status: 'PENDING' | 'ONGOING' | 'COMPLETED'; 
     createdAt?: Date;  
   }
@@ -51,6 +55,21 @@ const findAvailableStaff = (staffArray: { id: string; name: string }[], jobs: Jo
     const availableStaff = staffArray.filter((staff) => !overlappingStaff.includes(staff.name));
     return availableStaff;
   };
+
+  const findAvailableVehicles = (vehicleArray: { id: string; licencePlate: string }[], jobs: Job[], timeStart: Date, timeEnd: Date) => {
+    // 1. Filter jobs that overlap with the time range
+    const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
+    
+    timeStart = new Date(timeStart.toISOString().substring(0, 10));
+    timeEnd = new Date(timeEnd.toISOString().substring(0, 10));
+
+    // 2. Extract staff involved in jobs and leaves
+    const overlappingVehicleFromJobs = overlappingJobs.map((job) => job.vehicle?.licencePlate);  // vehicle licenceplates from jobs
+  
+    // 4. Filter available vehicles
+    const availableVehicle = vehicleArray.filter((vehicle) => !overlappingVehicleFromJobs.includes(vehicle.licencePlate));
+    return availableVehicle;
+  };
   
 
-export { findAvailableStaff };
+export { findAvailableStaff, findAvailableVehicles };

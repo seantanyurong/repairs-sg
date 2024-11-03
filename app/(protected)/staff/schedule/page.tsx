@@ -2,16 +2,17 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import JobRow from './_components/JobRow';
-import { getJobsWithService } from '@/lib/actions/jobs';
+import { getJobsWithServiceAndVehicle } from '@/lib/actions/jobs';
 import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
 import CalendarClient from './clientComponent';
-import { findAvailableStaff } from './_utils';
+import { findAvailableStaff, findAvailableVehicles } from './_utils';
 import { getLeaves } from '@/lib/actions/leave';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { getServices } from '@/lib/actions/services';
 import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
+import { getVehicles } from '@/lib/actions/vehicles';
 
 
 type SearchParams = {
@@ -19,17 +20,23 @@ type SearchParams = {
 };
 
 export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
-  const jobs = await getJobsWithService();
-  await getServices();
-
+  const jobs = await getJobsWithServiceAndVehicle();
   const leaves = await getLeaves();
+  getServices();
+
+  console.log(jobs[0]);
 
   const staff = await clerkClient().users.getUserList();
-
   const custClerk = createClerkClient({
     secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY,
   });
   const customers = await custClerk.users.getUserList();
+
+  const vehicles = await getVehicles();
+
+  const vehicleArray = vehicles.map((vehicle) => {
+    return { id: vehicle._id.toString(), licencePlate: vehicle.licencePlate };
+  });
 
   // convert this PaginatedResourceResponse<User[]>into an array
   const staffArray = staff.data.map((staff) => {
@@ -46,16 +53,32 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
   const filters = searchParams.filters;
   const filtersArray = filters ? filters.split(',') : [];
 
+  // converting jobs mongoose documents to json objects
+  jobs.map((job) => {
+    job = job.toJSON();
+  });
+
+  console.log("converting to json!");
+  console.log(jobs[0]);
+
   // convert the staff attribute in jobs to hold the name of the staff instead of the id
   jobs.map((job) => {
     job.staff = staffArray.find((staff) => staff.id === job.staff)?.name || '';
     job.customer = customerArray.find((customer) => customer.id === job.customer)?.name || '';
+    // job.vehicle = job.vehicle ? 
+    // vehicleArray.find((vehicle) => vehicle.id === job.vehicle._id)?.licencePlate
+    // : 'asasdasd';
+    job.vehicle = 'testing';
   });
+
+  console.log(jobs[0]);
 
   const jobTableDisplay = () => {
     if (jobs.length === 0) {
       return <div>No jobs found</div>;
     }
+
+    console.log("filtersArray: ", filtersArray);
 
     // return all if there is no filter param
     if (filtersArray[0] === 'all') {
@@ -70,14 +93,18 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             address={job.jobAddress}
             customerName={job.customer}
             staffName={job.staff}
+            vehicleLicencePlate={job.vehicle}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
             staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
+            vehicleArray={findAvailableVehicles(vehicleArray, jobs, job.schedule.timeStart, job.schedule.timeEnd)}
           />
         );
       });
     }
+
+    console.log("filters all");
 
     // Filter by staff in filtersArray
     return jobs
@@ -93,10 +120,12 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             address={job.jobAddress}
             customerName={job.customer}
             staffName={job.staff}
+            vehicleLicencePlate={job.vehicle}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
             staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
+            vehicleArray={findAvailableVehicles(vehicleArray, jobs, job.schedule.timeStart, job.schedule.timeEnd)}
           />
         );
       });
@@ -128,6 +157,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
                 <TableHead>Address</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Staff</TableHead>
+                <TableHead>Vehicle</TableHead>
                 <TableHead>Start</TableHead>
                 <TableHead>End</TableHead>
                 <TableHead>Status</TableHead>

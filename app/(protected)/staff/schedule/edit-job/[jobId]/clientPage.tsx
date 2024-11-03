@@ -40,23 +40,43 @@ type Service = {
   status: string;
 };
 
+type Job = {
+  id: string;
+  service: string;
+  quantity: number;
+  jobAddress: string;
+  // schedule: string;
+  description: string;
+  status: string;
+  customer: string;
+  staff: string;
+};
+
+type Staff = {
+  id: string;
+  name: string;
+}
+
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function BookingClient({ services, customers }: { services: Service[], customers: Customer[] }) {
-  const [service, setService] = useState(services[0]);
+export default function BookingClient({ job, services, customers, staff}: { job: Job, services: Service[], customers: Customer[], staff: Staff[] }) {
+  const originalService = services.find((service) => service.name === job.service);
+  const originalCustomer = customers.find((customer) => customer.id === job.customer) || customers[0];  // fallback value will not be used
+  const [service, setService] = useState(originalService || services[1]); // fallback value will not be used
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
-  const [priceQty, setPriceQty] = useState(1);
+  const [priceQty, setPriceQty] = useState(job.quantity);
   const router = useRouter();
   const { isLoaded } = useUser();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      service: services[0].name,
-      quantity: 1,
-      jobAddress: '',
-      description: '',
+      service: originalService?.name || '',
+      quantity: job.quantity,
+      jobAddress: job.jobAddress,
+      description: job.description,
+      customer: job.customer,
     },
   });
 
@@ -99,14 +119,9 @@ export default function BookingClient({ services, customers }: { services: Servi
   const totalPriceRounded = Math.round(totalPrice * 100) / 100;
 
   const onSubmit = async () => {
-
-    
-
     setMessage('');
     setErrors({});
     const formValues = form.getValues();
-    
-    console.log(formValues);
     const result = await addJob({
       ...formValues,
       serviceId: service._id.toString(),
@@ -135,7 +150,7 @@ export default function BookingClient({ services, customers }: { services: Servi
             </div>
               <Card x-chunk='dashboard-05-chunk-3'>
                 <CardHeader className='px-7'>
-                  <CardTitle>Create a Job</CardTitle>
+                  <CardTitle>Edit a Job</CardTitle>
                   <CardDescription>Assign a Staff in the Table view</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -272,7 +287,7 @@ export default function BookingClient({ services, customers }: { services: Servi
                             <Select onValueChange={field.onChange}>
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder='Select a customer' />
+                                  <SelectValue placeholder={originalCustomer.name} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -288,7 +303,7 @@ export default function BookingClient({ services, customers }: { services: Servi
                         )}
                       />
                       <Button type='submit' className='w-full'>
-                        Create Job
+                        Save Job
                       </Button>
                       {message ? <h2>{message}</h2> : null}
                       {errors ? (

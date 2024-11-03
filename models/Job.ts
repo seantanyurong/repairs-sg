@@ -67,9 +67,10 @@ const jobSchema = new mongoose.Schema(
     staff: {
       type: String,
     },
-    test: {
-      type: String,
-    }
+    vehicle: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Vehicle',
+    },
     
   },
   { versionKey: false, timestamps: true },
