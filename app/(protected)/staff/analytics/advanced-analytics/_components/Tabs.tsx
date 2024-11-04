@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import JobDurationPrediction from './JobDuration';
-import JobSchedulingOptimisation from './JobScheduling';
+import ServicePricePrediction from './ServicePrice';
 
 export default function Tabs() {
-  const [activeTab, setActiveTab] = useState<'duration' | 'schedule'>('duration');
+  const [activeTab, setActiveTab] = useState<'duration' | 'price'>('duration');
 
   return (
     <div>
@@ -22,19 +22,19 @@ export default function Tabs() {
           Job Duration Prediction
         </button>
         <button
-          onClick={() => setActiveTab('schedule')}
+          onClick={() => setActiveTab('price')}
           className={`flex-1 mx-2 px-4 py-2 rounded-md transition ${
-            activeTab === 'schedule'
+            activeTab === 'price'
               ? 'bg-primary text-white'
               : 'bg-secondary text-black hover:bg-primary hover:text-white'
           }`}
         >
-          Job Scheduling Optimisation
+          Service Price Prediction
         </button>
       </div>
 
       {activeTab === 'duration' && <JobDurationPrediction />}
-      {activeTab === 'schedule' && <JobSchedulingOptimisation />}
+      {activeTab === 'price' && <ServicePricePrediction />}
     </div>
   );
 }
