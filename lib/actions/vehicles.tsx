@@ -155,6 +155,12 @@ const updateVehicle = async (vehicle: {
 };
 
 const deleteVehicle = async (vehicleId: string) => {
+  const futureJobs = await getFutureJobsByVehicleId(vehicleId);
+  if (futureJobs.length > 0) {
+    throw new Error(
+      "Vehicle is being used in a future job. Job must be reassigned before vehicle can be deleted."
+    );
+  }
   await Vehicle.findByIdAndDelete(vehicleId);
   revalidatePath("/staff/vehicles");
 };
