@@ -23,22 +23,17 @@ export default function CustomerDetailsClient({
   };
   jobs: {
     _id: string;
-    service: {
-      name: string;
-    };
+    serviceName: string;
+    serviceDescription: string;
     description: string;
-    jobAddress: string;
-    schedule: {
-      timeStart: Date;
-      timeEnd: Date;
-    };
+    address: string;
+    timeStart: string;
+    timeEnd: string;
   }[];
   invoices: {
     _id: string;
     invoiceId: string | number;
     lineItems: string[];
-    dateIssued: string | Date;
-    dateDue: string | Date;
     totalAmount: string | number;
     remainingDue: string | number;
     paymentStatus: string;
@@ -46,12 +41,10 @@ export default function CustomerDetailsClient({
     publicNote: string;
     customer: string;
     job: string;
-    payments: { paymentMethod: string }[] | never[];
-    createdAt: string | Date;
-    updatedAt: string | Date;
   }[];
   quotations: {
     _id: string;
+    quotationId: number;
     name: string;
     description: string;
     status: string;
@@ -59,8 +52,8 @@ export default function CustomerDetailsClient({
     job: string;
     totalAmount: string | number;
     remainingDue: string | number;
-    createdAt: string | Date;
-    updatedAt: string | Date;
+    createdAt: string;
+    updatedAt: string;
   }[];
 }) {
   const jobTableDisplay = () => {
@@ -73,11 +66,11 @@ export default function CustomerDetailsClient({
         <JobRow
           key={job._id.toString()}
           id={job._id.toString()}
-          serviceName={job.service.name}
+          serviceName={job.serviceName}
           description={job.description}
-          address={job.jobAddress}
-          timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
-          timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
+          address={job.address}
+          timeStart={job.timeStart}
+          timeEnd={job.timeEnd}
         />
       );
     });
@@ -95,7 +88,6 @@ export default function CustomerDetailsClient({
         <InvoiceRow
           key={invoice._id.toString()}
           invoiceId={invoice.invoiceId.toString()}
-          dateIssued={invoice.dateIssued.toString()}
           customer={fullName}
           job={invoice.job}
           totalAmount={invoice.totalAmount.toString()}
@@ -103,7 +95,6 @@ export default function CustomerDetailsClient({
           lineItems={invoice.lineItems}
           paymentStatus={invoice.paymentStatus}
           validityStatus={invoice.validityStatus}
-          paymentMethod={invoice.payments[0]?.paymentMethod}
         />
       );
     });
@@ -178,7 +169,6 @@ export default function CustomerDetailsClient({
             <TableHeader>
               <TableRow>
                 <TableHead>Invoice</TableHead>
-                <TableHead>Date</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Job</TableHead>
                 <TableHead>Total Amount</TableHead>
@@ -186,7 +176,6 @@ export default function CustomerDetailsClient({
                 <TableHead>Line Items</TableHead>
                 <TableHead>Validity</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Payment Method</TableHead>
                 <TableHead>
                   <span className='sr-only'>Actions</span>
                 </TableHead>

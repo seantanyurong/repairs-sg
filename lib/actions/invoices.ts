@@ -407,6 +407,10 @@ const voidInvoice = async (invoice: {
   }
 };
 
+const getInvoicesByCustomerId = async (customerId: string) => {
+  return Invoice.find({ customer: customerId });
+};
+
 export {
   addInvoice,
   updateInvoice,
@@ -414,4 +418,5 @@ export {
   getInvoice,
   getInvoices,
   voidInvoice,
+  getInvoicesByCustomerId,
 };
