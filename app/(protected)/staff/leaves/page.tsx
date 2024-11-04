@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  deleteLeave,
   getLeavesByApproverId,
   getLeavesByRequesterId,
 } from "@/lib/actions/leave";
@@ -30,7 +31,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getJobsByStaffId } from "@/lib/actions/jobs";
-import { getSchedule } from "@/lib/actions/schedules";
 
 export default async function Leaves() {
   const { sessionClaims } = auth();
@@ -48,20 +48,29 @@ export default async function Leaves() {
   });
 
   const fetchUser = async (staffId: string) => {
-    const actor = await clerkClient().users.getUser(staffId as string);
-    return actor;
+    try {
+      const actor = await clerkClient().users.getUser(staffId as string);
+      return actor;
+    } catch (error) {
+      const requestedLeaves = await getLeavesByRequesterId(staffId);
+      const appliedLeaves = await getLeavesByRequesterId(staffId);
+      requestedLeaves.map(async (leave) => {
+        return deleteLeave(leave.id);
+      })
+      appliedLeaves.map(async (leave) => {
+        return deleteLeave(leave.id);
+      })
+      console.error("Staff not found:", error);
+    }
   };
 
   const checkClash = async (staffId: string, start: string, end: string) => {
     const jobs = await getJobsByStaffId(staffId);
-    const schedules = await Promise.all(
-      jobs.map(async (job) => {
-        return await getSchedule(job.schedule);
-      })
-    );
-    const hasClash = schedules.some((schedule) => {
-      const scheduleStart = schedule.timeStart.toISOString().substring(0, 10);
-      const scheduleEnd = schedule.timeEnd.toISOString().substring(0, 10);
+    const hasClash = jobs.some((job) => {
+      const scheduleStart = job.schedule.timeStart
+        .toISOString()
+        .substring(0, 10);
+      const scheduleEnd = job.schedule.timeEnd.toISOString().substring(0, 10);
       return (
         new Date(scheduleStart) <= new Date(end) &&
         new Date(scheduleEnd) >= new Date(start)
@@ -83,27 +92,31 @@ export default async function Leaves() {
             action === "leavesToApprove"
               ? await fetchUser(leave.requesterId)
               : await fetchUser(leave.approverId);
-          return (
-            <LeaveRow
-              key={leave._id.toString()}
-              _id={leave._id.toString()}
-              type={leave.type}
-              status={leave.status}
-              start={leave.dateRange?.start}
-              end={leave.dateRange?.end}
-              actor={JSON.parse(JSON.stringify(actor))}
-              actorRole={
-                action === "leavesToApprove" ? "requester" : "approver"
-              }
-              userId={userId as string}
-              createdAt={leave.createdAt.toString()}
-              clash={await checkClash(
-                leave.requesterId,
-                leave.dateRange?.start,
-                leave.dateRange?.end
-              )}
-            />
-          );
+          if (actor == undefined) {
+            return;
+          } else {
+            return (
+              <LeaveRow
+                key={leave._id.toString()}
+                _id={leave._id.toString()}
+                type={leave.type}
+                status={leave.status}
+                start={leave.dateRange?.start}
+                end={leave.dateRange?.end}
+                actor={JSON.parse(JSON.stringify(actor))}
+                actorRole={
+                  action === "leavesToApprove" ? "requester" : "approver"
+                }
+                userId={userId as string}
+                createdAt={leave.createdAt.toString()}
+                clash={await checkClash(
+                  leave.requesterId,
+                  leave.dateRange?.start,
+                  leave.dateRange?.end
+                )}
+              />
+            );
+          }
         })
       );
       return leaves;
