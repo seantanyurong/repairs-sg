@@ -131,6 +131,10 @@ const sendQuoteEmail = async (id: string, attachment: string) => {
   );
 };
 
+const getQuotationsByCustomerId = async (customerId: string) => {
+  return Quotation.find({ customer: customerId });
+};
+
 const QUOTE_EMAIL_COPY =
   "Hi { customerName },\n\nThank you considering Repair.sg. We help make repair, installation, and maintenance easy for more than 15,000 businesses and homeowners. Let us help you next!\nPlease find attached your quote.\nShould you require any further information, please do not hesitate to contact us.\n\nBest Regards,\nRepair.sg Team";
 
@@ -141,4 +145,5 @@ export {
   updateQuotation,
   deleteQuotation,
   sendQuoteEmail,
+  getQuotationsByCustomerId,
 };
