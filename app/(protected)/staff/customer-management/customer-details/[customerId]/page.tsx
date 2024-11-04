@@ -17,6 +17,9 @@ export default async function CustomerDetails({ params }: { params: { customerId
         email: customer.emailAddresses[0].emailAddress || '',
         status: (customer.publicMetadata.status as string) || '',
       }}
+      jobs={[]}
+      invoices={[]}
+      quotations={[]}
     />
   );
 }
