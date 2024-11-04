@@ -1,9 +1,9 @@
 "use server";
 
-import Job from '@/models/Job';
-import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
-import { ObjectId } from 'mongodb';
+import Job from "@/models/Job";
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
+import { ObjectId } from "mongodb";
 
 const addJob = async (job: {
   quantity: number;
@@ -14,7 +14,6 @@ const addJob = async (job: {
   price: number;
   customer: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
-
   // Add price to description
   job.description += `\n\nPrice: $${job.price}`;
 
@@ -67,13 +66,13 @@ const addJob = async (job: {
   });
 
   if (!response.success) {
-    return { message: 'Error', errors: response.error.flatten().fieldErrors };
+    return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
 
   const newJob = new Job(response.data);
   newJob.save();
 
-  return { message: 'Job booked successfully' };
+  return { message: "Job booked successfully" };
 };
 
 const getJobs = async () => {
@@ -116,4 +115,18 @@ const getJobsByStaffId = async (staffId: string) => {
   return Job.find({ staff: staffId });
 };
 
-export { addJob, getJobs, getJobsWithService, updateJobStaff, getJobsByStaffId };
+const getFutureJobsByVehicleId = async (vehicleId: string) => {
+  return Job.find({
+    vehicle: new ObjectId(vehicleId),
+    "schedule.timeStart": { $gte: new Date() },
+  });
+};
+
+export {
+  addJob,
+  getJobs,
+  getJobsWithService,
+  updateJobStaff,
+  getJobsByStaffId,
+  getFutureJobsByVehicleId,
+};
