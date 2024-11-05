@@ -251,60 +251,6 @@ const updateJobStatus = async (
   return { message: "Job updated successfully" };
 };
 
-const updateJobVehicle = async (
-  _id: string,
-  vehicle: string
-): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
-  const jobVehicleSchema = z.object({
-    _id: z.string().min(1),
-    vehicle: z.instanceof(ObjectId),
-  });
-  
-
-  const response = jobVehicleSchema.safeParse({
-    _id: _id,
-    vehicle: new ObjectId(vehicle),
-  });
-
-  if (!response.success) {
-    return { message: "Error", errors: response.error.flatten().fieldErrors };
-  }
-
-  const filter = { _id: new ObjectId(response.data._id) };
-  const update = { vehicle: response.data.vehicle };
-  await Job.findOneAndUpdate(filter, update);
-  revalidatePath("/staff/schedule");
-
-  return { message: "Job updated successfully" };
-};
-
-const updateJobStatus = async (
-  _id: string,
-  status: string
-): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
-  const jobStatusSchema = z.object({
-    _id: z.string().min(1),
-    status: z.string().min(1),
-  });
-  
-
-  const response = jobStatusSchema.safeParse({
-    _id: _id,
-    status: status,
-  });
-
-  if (!response.success) {
-    return { message: "Error", errors: response.error.flatten().fieldErrors };
-  }
-
-  const filter = { _id: new ObjectId(response.data._id) };
-  const update = { status: response.data.status };
-  await Job.findOneAndUpdate(filter, update);
-  revalidatePath("/staff/schedule");
-
-  return { message: "Job updated successfully" };
-};
-
 const getJobsByStaffId = async (staffId: string) => {
   return Job.find({ staff: staffId });
 };
@@ -323,9 +269,12 @@ const getFutureJobsByVehicleId = async (vehicleId: string) => {
 export {
   addJob,
   getJobs,
-  getJobsWithService,
+  getJobsWithServiceAndVehicle,
   updateJobStaff,
   getJobsByStaffId,
   getJobsByCustomerId,
   getFutureJobsByVehicleId,
+  updateJobVehicle,
+  updateJobStatus,
+  updateJob,
 };
