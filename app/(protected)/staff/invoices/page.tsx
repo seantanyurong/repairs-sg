@@ -28,6 +28,7 @@ interface Invoice {
   validityStatus: string;
   publicNote: string;
   customer: string;
+  job: string;
   payments: { paymentMethod: string }[] | never[];
   createdAt: string | Date;
   updatedAt: string | Date;
@@ -54,6 +55,9 @@ export default async function InvoicesPage() {
         },
       ];
     };
+    const serializeJob = (job: string) => {
+      return job.toString();
+    };
 
     return {
       _id: invoice._id.toString(),
@@ -71,6 +75,7 @@ export default async function InvoicesPage() {
       validityStatus: invoice.validityStatus,
       publicNote: invoice.publicNote,
       customer: invoice.customer,
+      job: invoice.job ? serializeJob(invoice.job) : "",
       createdAt: invoice.createdAt
         ? invoice.createdAt.toString()
         : defaultDate.toISOString(),

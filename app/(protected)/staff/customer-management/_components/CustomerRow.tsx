@@ -12,8 +12,6 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
-import ChangePasswordForm from "./ChangePasswordForm";
-import CustomerDetails from "./CustomerDetails";
 import { deleteCustomer } from "@/lib/actions/customers";
 import { useUser } from "@clerk/nextjs";
 import { Separator } from "@/components/ui/separator";
@@ -92,16 +90,14 @@ export default function CustomerRow({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <div className=" flex flex-col">
-                <CustomerDetails
-                  id={id}
-                  imageUrl={imageUrl}
-                  firstName={firstName}
-                  lastName={lastName}
-                  email={email}
-                  status={status as string}
-                  disableEdit={disableEdit}
-                />
-                {!disableEdit && <ChangePasswordForm id={id} />}
+              <DropdownMenuItem
+                  onClick={() =>
+                    router.push(`/staff/customer-management/customer-details/${id}`)
+                  }
+                  className="cursor-pointer"
+                >
+                  View Details
+                </DropdownMenuItem>
               </div>
               <Separator className="m-1 ml-[-1px]" />
               {!disableEdit && (

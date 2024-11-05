@@ -1,15 +1,28 @@
-'use client';
+"use client";
 
-import * as z from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { updateVehicle } from '@/lib/actions/vehicles';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@/components/ui/select';
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { updateVehicle } from "@/lib/actions/vehicles";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  Select,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   _id: z.string().min(1),
@@ -17,16 +30,22 @@ const formSchema = z.object({
   gpsApi: z.string().min(1),
   make: z.string().min(1),
   model: z.string().min(1),
-  status: z.enum(['Draft', 'Active', 'Disabled']),
+  status: z.enum(["Draft", "Active", "Disabled"]),
 });
 
 export default function EditVehicleClient({
   vehicle,
 }: {
-  vehicle: { _id: string; licencePlate: string; gpsApi: string; make: string; model: string; status: 'Draft' | 'Active' | 'Disabled' | undefined };
-
+  vehicle: {
+    _id: string;
+    licencePlate: string;
+    gpsApi: string;
+    make: string;
+    model: string;
+    status: "Draft" | "Active" | "Disabled" | undefined;
+  };
 }) {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
   const router = useRouter();
 
@@ -45,7 +64,7 @@ export default function EditVehicleClient({
   });
 
   const onSubmit = async () => {
-    setMessage('');
+    setMessage("");
     setErrors({});
     const result = await updateVehicle(form.getValues());
     if (result?.errors) {
@@ -56,9 +75,19 @@ export default function EditVehicleClient({
       setMessage(result.message);
       router.refresh();
       form.reset(form.getValues());
-      router.push('/staff/vehicles');
+      router.push("/staff/vehicles");
     }
   };
+
+  const currentStatus = form.watch("status");
+
+  useEffect(() => {
+    if (currentStatus === "Disabled") {
+      window.alert(
+        "Please note that vehicle cannot be used for future jobs until made active."
+      );
+    }
+  }, [currentStatus]);
 
   return (
     <Form {...form}>
@@ -67,16 +96,20 @@ export default function EditVehicleClient({
           e.preventDefault();
           form.handleSubmit(onSubmit)();
         }}
-        className='max-w-md w-full flex flex-col gap-4'>
+        className="max-w-md w-full flex flex-col gap-4"
+      >
         <FormField
           control={form.control}
-          name='_id'
+          name="_id"
           render={({ field }) => {
             return (
               <FormItem hidden>
                 <FormLabel>ID</FormLabel>
                 <FormControl>
-                  <Input placeholder='ID' {...field} />
+                  <Input
+                    placeholder="ID"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -85,13 +118,16 @@ export default function EditVehicleClient({
         />
         <FormField
           control={form.control}
-          name='licencePlate'
+          name="licencePlate"
           render={({ field }) => {
             return (
               <FormItem>
                 <FormLabel>Licence Plate</FormLabel>
                 <FormControl>
-                  <Input placeholder='Plate Number' {...field} />
+                  <Input
+                    placeholder="Plate Number"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -100,13 +136,16 @@ export default function EditVehicleClient({
         />
         <FormField
           control={form.control}
-          name='gpsApi'
+          name="gpsApi"
           render={({ field }) => {
             return (
               <FormItem>
                 <FormLabel>GPS API</FormLabel>
                 <FormControl>
-                  <Input placeholder='GPS API' {...field} />
+                  <Input
+                    placeholder="GPS API"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -115,13 +154,16 @@ export default function EditVehicleClient({
         />
         <FormField
           control={form.control}
-          name='make'
+          name="make"
           render={({ field }) => {
             return (
               <FormItem>
                 <FormLabel>Make</FormLabel>
                 <FormControl>
-                  <Input placeholder='Make' {...field} />
+                  <Input
+                    placeholder="Make"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -130,13 +172,16 @@ export default function EditVehicleClient({
         />
         <FormField
           control={form.control}
-          name='model'
+          name="model"
           render={({ field }) => {
             return (
               <FormItem>
                 <FormLabel>Model</FormLabel>
                 <FormControl>
-                  <Input placeholder='Model' {...field} />
+                  <Input
+                    placeholder="Model"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -145,21 +190,24 @@ export default function EditVehicleClient({
         />
         <FormField
           control={form.control}
-          name='status'
+          name="status"
           render={({ field }) => {
             return (
               <FormItem>
                 <FormLabel>Vehicle Status</FormLabel>
-                <Select defaultValue={vehicle.status} onValueChange={field.onChange}>
+                <Select
+                  defaultValue={vehicle.status}
+                  onValueChange={field.onChange}
+                >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='Select a vehicle status' />
+                      <SelectValue placeholder="Select a vehicle status" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='Draft'>Draft</SelectItem>
-                    <SelectItem value='Active'>Active</SelectItem>
-                    <SelectItem value='Disabled'>Disabled</SelectItem>
+                    <SelectItem value="Draft">Draft</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Disabled">Disabled</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -167,12 +215,15 @@ export default function EditVehicleClient({
             );
           }}
         />
-        <Button type='submit' className='w-full'>
+        <Button
+          type="submit"
+          className="w-full"
+        >
           Update Vehicle
         </Button>
         {message ? <h2>{message}</h2> : null}
         {errors ? (
-          <div className='mb-10 text-red-500'>
+          <div className="mb-10 text-red-500">
             {Object.keys(errors).map((key) => (
               <p key={key}>{`${key}: ${errors[key as keyof typeof errors]}`}</p>
             ))}

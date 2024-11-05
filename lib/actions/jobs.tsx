@@ -1,9 +1,10 @@
-"use server";
+'use server';
 
 import Job from '@/models/Job';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { ObjectId } from 'mongodb';
+import Service from '@/models/Service';
 import mongoose from 'mongoose';
 
 const addJob = async (job: {
@@ -172,7 +173,7 @@ const getSingleJob = async (
 
 const updateJobStaff = async (
   _id: string,
-  staff: string
+  staff: string,
 ): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const jobSchema = z.object({
     _id: z.string().min(1),
@@ -185,11 +186,65 @@ const updateJobStaff = async (
   });
 
   if (!response.success) {
-    return { message: "Error", errors: response.error.flatten().fieldErrors };
+    return { message: 'Error', errors: response.error.flatten().fieldErrors };
   }
 
   const filter = { _id: new ObjectId(response.data._id) };
   const update = { staff: response.data.staff };
+  await Job.findOneAndUpdate(filter, update);
+  revalidatePath('/staff/schedule');
+
+  return { message: 'Job updated successfully' };
+};
+
+const updateJobVehicle = async (
+  _id: string,
+  vehicle: string
+): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
+  const jobVehicleSchema = z.object({
+    _id: z.string().min(1),
+    vehicle: z.instanceof(ObjectId),
+  });
+  
+
+  const response = jobVehicleSchema.safeParse({
+    _id: _id,
+    vehicle: new ObjectId(vehicle),
+  });
+
+  if (!response.success) {
+    return { message: "Error", errors: response.error.flatten().fieldErrors };
+  }
+
+  const filter = { _id: new ObjectId(response.data._id) };
+  const update = { vehicle: response.data.vehicle };
+  await Job.findOneAndUpdate(filter, update);
+  revalidatePath("/staff/schedule");
+
+  return { message: "Job updated successfully" };
+};
+
+const updateJobStatus = async (
+  _id: string,
+  status: string
+): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
+  const jobStatusSchema = z.object({
+    _id: z.string().min(1),
+    status: z.string().min(1),
+  });
+  
+
+  const response = jobStatusSchema.safeParse({
+    _id: _id,
+    status: status,
+  });
+
+  if (!response.success) {
+    return { message: "Error", errors: response.error.flatten().fieldErrors };
+  }
+
+  const filter = { _id: new ObjectId(response.data._id) };
+  const update = { status: response.data.status };
   await Job.findOneAndUpdate(filter, update);
   revalidatePath("/staff/schedule");
 
@@ -254,4 +309,23 @@ const getJobsByStaffId = async (staffId: string) => {
   return Job.find({ staff: staffId });
 };
 
-export { addJob, getJobs, getJobsWithServiceAndVehicle, updateJobStaff, updateJobVehicle, getJobsByStaffId, getSingleJob, updateJob, updateJobStatus };
+const getJobsByCustomerId = async (customerId: string) => {
+  return Job.find({ customer: customerId }).populate({ path: 'service', model: Service }).exec();
+};
+
+const getFutureJobsByVehicleId = async (vehicleId: string) => {
+  return Job.find({
+    vehicle: new ObjectId(vehicleId),
+    'schedule.timeStart': { $gte: new Date() },
+  });
+};
+
+export {
+  addJob,
+  getJobs,
+  getJobsWithService,
+  updateJobStaff,
+  getJobsByStaffId,
+  getJobsByCustomerId,
+  getFutureJobsByVehicleId,
+};

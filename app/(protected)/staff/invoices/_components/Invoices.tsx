@@ -46,6 +46,7 @@ interface Invoice {
   validityStatus: string;
   publicNote: string;
   customer: string;
+  job: string;
   payments: { paymentMethod: string }[] | never[];
   createdAt: string | Date;
   updatedAt: string | Date;
@@ -141,7 +142,8 @@ export default function Invoices({
           // console.log("search", resultInvoices);
           return (
             fullName.includes(query.toLowerCase()) ||
-            invoice.invoiceId.toString().includes(query.toLowerCase())
+            invoice.invoiceId.toString().includes(query.toLowerCase()) ||
+            invoice.job.toLowerCase().includes(query.toLowerCase())
           );
         });
       }
@@ -230,7 +232,9 @@ export default function Invoices({
             invoiceId={invoice.invoiceId.toString()}
             dateIssued={invoice.dateIssued.toString()}
             customer={fullName}
+            job={invoice.job}
             totalAmount={invoice.totalAmount.toString()}
+            remainingDue={invoice.remainingDue.toString()}
             lineItems={invoice.lineItems}
             paymentStatus={invoice.paymentStatus}
             validityStatus={invoice.validityStatus}
@@ -254,7 +258,9 @@ export default function Invoices({
             invoiceId={invoice.invoiceId.toString()}
             dateIssued={invoice.dateIssued.toString()}
             customer={fullName}
+            job={invoice.job}
             totalAmount={invoice.totalAmount.toString()}
+            remainingDue={invoice.remainingDue.toString()}
             lineItems={invoice.lineItems}
             paymentStatus={invoice.paymentStatus}
             validityStatus={invoice.validityStatus}
@@ -294,10 +300,12 @@ export default function Invoices({
                 <TableHead>Invoice</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Customer</TableHead>
-                <TableHead>Amount</TableHead>
+                <TableHead>Job</TableHead>
+                <TableHead>Total Amount</TableHead>
+                <TableHead>Remaining Due</TableHead>
                 <TableHead>Line Items</TableHead>
-                <TableHead>Validity Status</TableHead>
-                <TableHead>Payment Status</TableHead>
+                <TableHead>Validity</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Payment Method</TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
@@ -326,7 +334,7 @@ export default function Invoices({
       <SearchBar onSearch={handleSearchFilterSort} initialParams={searchParams}/>
 
       <div className="flex justify-between">
-        <div className="w-1/4 border-r pr-6 ">
+        <div className="w-1/6 border-r pr-4">
           <div className="p-4 border rounded shadow-sm">
             <h2 className="text-lg font-bold mb-4">SEARCH FILTER</h2>
 
@@ -503,7 +511,7 @@ export default function Invoices({
           </div>
         </div>
 
-        <div className="w-3/4 pl-6">
+        <div className="w-9/10 pl-0">
           {/* Sort selects */}
           <div className="flex items-center space-x-4 bg-secondary p-4 mb-2 rounded shadow-sm">
             <span className="text-sm font-bold">Sort by</span>
