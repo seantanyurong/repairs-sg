@@ -14,7 +14,6 @@ import { getServices } from '@/lib/actions/services';
 import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
 import { getVehicles } from '@/lib/actions/vehicles';
 
-
 type SearchParams = {
   filters?: string;
 };
@@ -24,8 +23,6 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
   const leaves = await getLeaves();
   getServices();
 
-  console.log(jobs[0]);
-
   const staff = await clerkClient().users.getUserList();
   const custClerk = createClerkClient({
     secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY,
@@ -34,7 +31,9 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
 
   const vehicles = await getVehicles();
 
-  const vehicleArray = vehicles.map((vehicle) => {
+  const vehicleArray = vehicles
+  .filter((vehicle) => vehicle.status === 'Active')
+  .map((vehicle) => {
     return { id: vehicle._id.toString(), licencePlate: vehicle.licencePlate };
   });
 
@@ -53,32 +52,16 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
   const filters = searchParams.filters;
   const filtersArray = filters ? filters.split(',') : [];
 
-  // converting jobs mongoose documents to json objects
-  jobs.map((job) => {
-    job = job.toJSON();
-  });
-
-  console.log("converting to json!");
-  console.log(jobs[0]);
-
   // convert the staff attribute in jobs to hold the name of the staff instead of the id
   jobs.map((job) => {
     job.staff = staffArray.find((staff) => staff.id === job.staff)?.name || '';
     job.customer = customerArray.find((customer) => customer.id === job.customer)?.name || '';
-    // job.vehicle = job.vehicle ? 
-    // vehicleArray.find((vehicle) => vehicle.id === job.vehicle._id)?.licencePlate
-    // : 'asasdasd';
-    job.vehicle = 'testing';
   });
-
-  console.log(jobs[0]);
 
   const jobTableDisplay = () => {
     if (jobs.length === 0) {
       return <div>No jobs found</div>;
     }
-
-    console.log("filtersArray: ", filtersArray);
 
     // return all if there is no filter param
     if (filtersArray[0] === 'all') {
@@ -93,7 +76,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             address={job.jobAddress}
             customerName={job.customer}
             staffName={job.staff}
-            vehicleLicencePlate={job.vehicle}
+            vehicleLicencePlate={job.vehicle?.licencePlate}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
@@ -103,8 +86,6 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
         );
       });
     }
-
-    console.log("filters all");
 
     // Filter by staff in filtersArray
     return jobs
@@ -120,7 +101,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             address={job.jobAddress}
             customerName={job.customer}
             staffName={job.staff}
-            vehicleLicencePlate={job.vehicle}
+            vehicleLicencePlate={job.vehicle?.licencePlate}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}

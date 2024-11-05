@@ -11,6 +11,11 @@ const jobSchema = new mongoose.Schema(
       required: [true, 'Quantity Is Required!'],
       min: [1, 'Quantity Must Be Greater Than 1'],
     },
+    price: {
+      type: Number,
+      // required: [true, 'Price Is Required!'],
+      // min: [1, 'Price Must Be Greater Than 1'],
+    },
     service: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Service',
@@ -51,7 +56,7 @@ const jobSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'Draft',
+      default: 'Pending',
       required: [true, 'Job Status Is Required!'],
     },
     schedule: {

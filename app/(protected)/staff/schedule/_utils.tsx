@@ -33,7 +33,53 @@ export interface Job extends Document {
     createdAt?: Date;  
   }
 
+  type Schedule = {
+    timeStart: Date;
+    timeEnd: Date;
+  };
+
+  type JobFromArray = {
+    schedule: Schedule;
+    status: string;
+    staff: string;
+  }
+  
+  type DateRange = {
+    start: Date;
+    end: Date;
+  }
+  
+  type LeaveFromArray = {
+    type: string;
+    status: string;
+    dateRange: DateRange;
+    requesterId: string;
+  }
+
 const findAvailableStaff = (staffArray: { id: string; name: string }[], jobs: Job[], leaves: Leave[], timeStart: Date, timeEnd: Date) => {
+    // 1. Filter jobs and leaves that overlap with the time range
+    const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
+    
+    timeStart = new Date(timeStart.toISOString().substring(0, 10));
+    timeEnd = new Date(timeEnd.toISOString().substring(0, 10));
+    const overlappingLeaves = leaves.filter((leave) => 
+      { const leaveStart = new Date(leave.dateRange.start.toISOString().substring(0, 10));
+        const leaveEnd = new Date(leave.dateRange.end.toISOString().substring(0, 10));        
+        return leaveStart <= timeEnd && leaveEnd >= timeStart && leave.status === 'APPROVED'});
+
+    // 2. Extract staff involved in jobs and leaves
+    const overlappingStaffFromJobs = overlappingJobs.map((job) => job.staff);  // Staff names from jobs
+    const overlappingStaffFromLeaves = overlappingLeaves.map((leave) => leave.requesterId).map((id) => id = staffArray.find((staff) => staff.id === id)?.name || '');  // Staff names from leaves
+
+    // 3. Combine staff from jobs and leaves
+    const overlappingStaff = [...overlappingStaffFromJobs, ...overlappingStaffFromLeaves];
+  
+    // 4. Filter available staff (those not in overlapping jobs or leaves)
+    const availableStaff = staffArray.filter((staff) => !overlappingStaff.includes(staff.name));
+    return availableStaff;
+  };
+
+  const findAvailableStaffForClientComponent = (staffArray: { id: string; name: string }[], jobs: JobFromArray[], leaves: LeaveFromArray[], timeStart: Date, timeEnd: Date) => {
     // 1. Filter jobs and leaves that overlap with the time range
     const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
     
@@ -72,4 +118,4 @@ const findAvailableStaff = (staffArray: { id: string; name: string }[], jobs: Jo
   };
   
 
-export { findAvailableStaff, findAvailableVehicles };
+export { findAvailableStaff, findAvailableVehicles, findAvailableStaffForClientComponent};

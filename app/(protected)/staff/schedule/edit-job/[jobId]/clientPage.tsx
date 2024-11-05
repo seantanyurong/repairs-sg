@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@/components/ui/select';
-import { addJob } from '@/lib/actions/jobs';
+import { updateJob } from '@/lib/actions/jobs';
 import { useUser } from '@clerk/clerk-react';
 import { format, addHours, startOfDay, addDays, isAfter } from 'date-fns';
 
@@ -24,6 +24,8 @@ const formSchema = z.object({
   schedule: z.string(),
   description: z.string(),
   customer: z.string(),
+  staff: z.string(),
+  vehicle: z.string(),
 });
 
 type Customer = {
@@ -40,16 +42,22 @@ type Service = {
   status: string;
 };
 
+type Schedule = {
+  timeStart: Date;
+  timeEnd: Date;
+};
+
 type Job = {
   id: string;
   service: string;
   quantity: number;
   jobAddress: string;
-  // schedule: string;
+  schedule: Schedule;
   description: string;
   status: string;
   customer: string;
   staff: string;
+  vehicle: string;
 };
 
 type Staff = {
@@ -57,13 +65,105 @@ type Staff = {
   name: string;
 }
 
+type VehicleFromArray = {
+  id: string;
+  licencePlate: string;
+}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function BookingClient({ job, services, customers, staff}: { job: Job, services: Service[], customers: Customer[], staff: Staff[] }) {
+type JobFromArray = {
+  schedule: Schedule;
+  status: string;
+  staff: string;
+  vehicle: string;
+}
+
+type DateRange = {
+  start: Date;
+  end: Date;
+}
+
+type LeaveFromArray = {
+  type: string;
+  status: string;
+  dateRange: DateRange;
+  requesterId: string;
+}
+
+const findAvailableStaffForClientComponent = (staffArray: Staff[], jobs: JobFromArray[], leaves: LeaveFromArray[], timeStart: Date, timeEnd: Date) => {
+  // 1. Filter jobs and leaves that overlap with the time range
+  const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
+  
+  timeStart = new Date(timeStart.toISOString().substring(0, 10));
+  timeEnd = new Date(timeEnd.toISOString().substring(0, 10));
+  const overlappingLeaves = leaves.filter((leave) => 
+    { const leaveStart = new Date(leave.dateRange.start.toISOString().substring(0, 10));
+      const leaveEnd = new Date(leave.dateRange.end.toISOString().substring(0, 10));        
+      return leaveStart <= timeEnd && leaveEnd >= timeStart && leave.status === 'APPROVED'});
+
+  // 2. Extract staff involved in jobs and leaves
+  const overlappingStaffFromJobs = overlappingJobs.map((job) => job.staff);  // Staff names from jobs
+  const overlappingStaffFromLeaves = overlappingLeaves.map((leave) => leave.requesterId).map((id) => id = staffArray.find((staff) => staff.id === id)?.name || '');  // Staff names from leaves
+
+  // 3. Combine staff from jobs and leaves
+  const overlappingStaff = [...overlappingStaffFromJobs, ...overlappingStaffFromLeaves];
+
+  // 4. Filter available staff (those not in overlapping jobs or leaves)
+  const availableStaff = staffArray.filter((staff) => !overlappingStaff.includes(staff.name));
+  return availableStaff;
+};
+
+const findAvailableVehiclesForClientComponent = (vehicleArray: VehicleFromArray[], jobs: JobFromArray[], timeStart: Date, timeEnd: Date) => {
+  // 1. Filter jobs that overlap with the time range
+  const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
+  
+  timeStart = new Date(timeStart.toISOString().substring(0, 10));
+  timeEnd = new Date(timeEnd.toISOString().substring(0, 10));
+
+  // 2. Extract staff involved in jobs and leaves
+  const overlappingVehicleFromJobs = overlappingJobs.map((job) => job.vehicle);  // vehicle licenceplates from jobs
+
+  // 4. Filter available vehicles
+  const availableVehicles = vehicleArray.filter((vehicle) => !overlappingVehicleFromJobs.includes(vehicle.licencePlate));
+  return availableVehicles;
+};
+
+export default function BookingClient({ 
+  job,
+  services,
+  customerArray,
+  staffArray,
+  vehicleArray,
+  jobs,
+  leaves,
+}:{
+  job: Job,
+  services: Service[],
+  customerArray: Customer[],
+  staffArray: Staff[],
+  vehicleArray: { id: string; licencePlate: string }[],
+  jobs: JobFromArray[],
+  leaves: LeaveFromArray[],
+}) {
+
   const originalService = services.find((service) => service.name === job.service);
-  const originalCustomer = customers.find((customer) => customer.id === job.customer) || customers[0];  // fallback value will not be used
-  const [service, setService] = useState(originalService || services[1]); // fallback value will not be used
+  const originalCustomer = customerArray.find((customer) => customer.id === job.customer) || customerArray[0];  // fallback value will not be used
+  const originalStaff = staffArray.find((staff) => staff.id === job.staff);
+  const originalVehicle = vehicleArray.find((vehicle) => vehicle.id === job.vehicle);
+  const filteredStaff = findAvailableStaffForClientComponent(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd);
+  const filteredVehicles = findAvailableVehiclesForClientComponent(vehicleArray, jobs, job.schedule.timeStart, job.schedule.timeEnd);
+  const originalSchedule = {
+    value: JSON.stringify({
+      timeStart: format(job.schedule.timeStart, "yyyy-MM-dd'T'HH:mm:ss"),
+      timeEnd: format(job.schedule.timeEnd, "yyyy-MM-dd'T'HH:mm:ss"),
+    }), // Pass both start and end time in the value
+    label: format(job.schedule.timeStart, 'MMMM d, yyyy HH:mm') + ' - ' + format(job.schedule.timeEnd, 'HH:mm'),
+  };
+
+  const [service, setService] = useState(originalService || services[0]); // fallback value will not be used
+  const [availableStaff, setAvailableStaff] = useState(filteredStaff);
+  const [availableVehicles, setAvailableVehicles] = useState(filteredVehicles);
   const [message, setMessage] = useState('');
+  const [schedule, setSchedule] = useState(originalSchedule.value);
   const [errors, setErrors] = useState({});
   const [priceQty, setPriceQty] = useState(job.quantity);
   const router = useRouter();
@@ -72,13 +172,18 @@ export default function BookingClient({ job, services, customers, staff}: { job:
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      service: originalService?.name || '',
+      service: job.service,
       quantity: job.quantity,
       jobAddress: job.jobAddress,
       description: job.description,
       customer: job.customer,
+      schedule: originalSchedule.label,
+      staff: job.staff || '',
+      vehicle: job.vehicle,
     },
   });
+
+  console.log(form.getValues());
 
   // Function to generate 2-hour intervals for the next 3 days
   const generateScheduleOptions = () => {
@@ -122,10 +227,14 @@ export default function BookingClient({ job, services, customers, staff}: { job:
     setMessage('');
     setErrors({});
     const formValues = form.getValues();
-    const result = await addJob({
+    console.log("formvalues");
+    console.log(formValues);
+    const result = await updateJob({
       ...formValues,
       serviceId: service._id.toString(),
+      schedule: schedule,
       price: totalPriceRounded,
+      _id: job.id,
     });
     if (result?.errors) {
       setMessage(result.message);
@@ -244,10 +353,22 @@ export default function BookingClient({ job, services, customers, staff}: { job:
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Booking Timing</FormLabel>
-                          <Select onValueChange={field.onChange}>
+                          <Select
+                              onValueChange={(selectedSchedule) => {
+                                  // update availableStaff for this schedule
+                                  const formattedSchedule = JSON.parse(selectedSchedule);
+                                  setAvailableStaff(findAvailableStaffForClientComponent(staffArray, jobs, leaves, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
+                                   // update availableVehicles for this schedule
+                                  setAvailableVehicles(findAvailableVehiclesForClientComponent(vehicleArray, jobs, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
+
+                                  // Change the state to the selected schedule
+                                  setSchedule(selectedSchedule);
+                                  field.onChange(selectedSchedule); // Update form field value
+                              }}
+                            >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder='Select a schedule' />
+                                <SelectValue placeholder={originalSchedule.label} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -277,7 +398,7 @@ export default function BookingClient({ job, services, customers, staff}: { job:
                           </FormItem>
                         )}
                       />
-                      {/* Service Field */}
+                      {/* Customer Field */}
                       <FormField
                         control={form.control}
                         name='customer'
@@ -291,7 +412,7 @@ export default function BookingClient({ job, services, customers, staff}: { job:
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {customers.map((customer) => (
+                                {customerArray.map((customer) => (
                                   <SelectItem key={customer.id} value={customer.id}>
                                     {customer.name}
                                   </SelectItem>
@@ -301,6 +422,58 @@ export default function BookingClient({ job, services, customers, staff}: { job:
                             <FormMessage />
                           </FormItem>
                         )}
+                      />
+                      {/* Staff Field */}
+                      <FormField
+                        control={form.control}
+                        name='staff'
+                        render={({ field }) => {
+                          return (
+                          <FormItem>
+                            <FormLabel>Staff</FormLabel>
+                            <Select onValueChange={field.onChange}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={originalStaff?.name || 'Select a Staff'} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {availableStaff.map((staff) => (
+                                  <SelectItem key={staff.id} value={staff.id}>
+                                    {staff.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}}
+                      />
+                      {/* Vehicle Field */}
+                      <FormField
+                        control={form.control}
+                        name='vehicle'
+                        render={({ field }) => {
+                          return (
+                          <FormItem>
+                            <FormLabel>Vehicle</FormLabel>
+                            <Select onValueChange={field.onChange}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={originalVehicle?.licencePlate || 'Select a Vehicle'} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {availableVehicles.map((vehicle) => (
+                                  <SelectItem key={vehicle.id} value={vehicle.id}>
+                                    {vehicle.licencePlate}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}}
                       />
                       <Button type='submit' className='w-full'>
                         Save Job

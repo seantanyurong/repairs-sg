@@ -10,11 +10,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { updateJobStaff, updateJobVehicle } from '@/lib/actions/jobs';
+import { updateJobStaff, updateJobStatus, updateJobVehicle } from '@/lib/actions/jobs';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
 
 export default function JobRow({
   id,
@@ -46,12 +45,23 @@ export default function JobRow({
 
   const router = useRouter();
 
+  const statusArray = ['Pending', 'Arrived', 'In Progress', 'Completed', 'Cancelled'];
+
   const handleAssignStaff = async (jobId: string, staffId: string) => {
     await updateJobStaff(jobId, staffId); // Call the parent function to update the job with selected staff
   };
 
   const handleAssignVehicle = async (jobId: string, vehicleId: string) => {
     await updateJobVehicle(jobId, vehicleId); // Call the parent function to update the job with selected vehicle
+  };
+
+  const handleUpdateStatus = async (jobId: string, status: string) => {
+    await updateJobStatus(jobId, status); // Call the parent function to update the job with selected vehicle
+  }
+
+  const openGoogleMaps = (searchTerm: string) => {
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchTerm)}`;
+    window.open(googleMapsUrl, "_blank"); // Opens in a new tab
   };
 
   return (
@@ -77,6 +87,28 @@ export default function JobRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              className='cursor-pointer'>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='ghost'>
+                    Update Status
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end'>
+                <DropdownMenuLabel>Job Status</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {statusArray.map((status) => (
+                    <DropdownMenuItem
+                      key={status}
+                      onClick={() => handleUpdateStatus(id, status)}
+                      className='cursor-pointer'>
+                      {status}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => router.push(`/staff/schedule/edit-job/${id}`)}
               className='cursor-pointer'>
@@ -135,6 +167,11 @@ export default function JobRow({
               onClick={() => router.push(`/staff/invoices?jobId=${id}`)}
               className='cursor-pointer'>
               View Invoices
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => openGoogleMaps(address)}
+              className='cursor-pointer'>
+              View Address
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
