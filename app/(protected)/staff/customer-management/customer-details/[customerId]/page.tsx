@@ -15,10 +15,6 @@ export default async function CustomerDetails({ params }: { params: { customerId
   const jobs = await getJobsByCustomerId(params.customerId);
   const invoices = await getInvoicesByCustomerId(params.customerId);
 
-  console.log(quotations);
-  console.log(jobs);
-  console.log(invoices);
-
   return (
     <CustomerDetailsClient
       customer={{
@@ -27,6 +23,7 @@ export default async function CustomerDetails({ params }: { params: { customerId
         lastName: customer.lastName || '',
         email: customer.emailAddresses[0].emailAddress || '',
         status: (customer.publicMetadata.status as string) || '',
+        comments: (customer.publicMetadata.comments as string[]) || [],
       }}
       jobs={jobs.map((job) => ({
         _id: job._id.toString(),
