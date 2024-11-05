@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import { z } from "zod";
+import { z } from 'zod';
 
-import Customers from "@/models/Customer";
-import { createClerkClient } from "@clerk/nextjs/server";
-import { revalidatePath } from "next/cache";
+import Customers from '@/models/Customer';
+import { createClerkClient } from '@clerk/nextjs/server';
+import { revalidatePath } from 'next/cache';
 
 const customerClerk = createClerkClient({
   secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY as string,
@@ -20,12 +20,12 @@ const getCustomerByEmail = async (email: string) => {
   });
 
   if (result.totalCount === 0) {
-    throw new Error("No customer found with that email address");
+    throw new Error('No customer found with that email address');
   }
   console.log(result.data[0]);
 
   if (result.data[0].banned) {
-    throw new Error("Customer is banned");
+    throw new Error('Customer is banned');
   }
   return JSON.stringify(result.data[0]);
 };
@@ -33,53 +33,49 @@ const getCustomerByEmail = async (email: string) => {
 const getCustomerById = async (id: string) => {
   const user = await customerClerk.users.getUser(id);
 
-  if (!user) throw new Error("No customer found with that id");
+  if (!user) throw new Error('No customer found with that id');
 
   return JSON.stringify(user);
 };
 
 const getAllCustomerEmail = async () => {
-  return (await customerClerk.users.getUserList()).data.map(
-    (customer) => customer.emailAddresses[0].emailAddress
-  );
+  return (await customerClerk.users.getUserList()).data.map((customer) => customer.emailAddresses[0].emailAddress);
 };
 
 const addCustomer = async (customer: {
-  firstName: string,
-  lastName: string,
-  email: string,
-  status: string,
-  password: string,
+  firstName: string;
+  lastName: string;
+  email: string;
+  status: string;
+  password: string;
 }): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const customerSchema = z.object({
     firstName: z.string().min(1),
     lastName: z.string().min(1),
     email: z.string().min(1),
-    status: z.enum(["whitelisted", "blacklisted"]),
+    status: z.enum(['whitelisted', 'blacklisted']),
     password: z.string().min(8),
   });
 
   const emails = await getAllCustomerEmail();
   if (emails.includes(customer.email)) {
     return {
-      message: "Error",
+      message: 'Error',
       errors: {
-        "Email error": "That email address is taken. Please try another.",
+        'Email error': 'That email address is taken. Please try another.',
       },
     };
   }
 
-  const response = customerSchema.safeParse(
-    {
-      firstName: customer.firstName,
-      lastName: customer.lastName,
-      email: customer.email,
-      status: customer.status,
-      password: customer.password,
-    }
-  );
+  const response = customerSchema.safeParse({
+    firstName: customer.firstName,
+    lastName: customer.lastName,
+    email: customer.email,
+    status: customer.status,
+    password: customer.password,
+  });
 
-  if (!response.success) return { message: "Error", errors: response.error.flatten().fieldErrors };
+  if (!response.success) return { message: 'Error', errors: response.error.flatten().fieldErrors };
 
   const params = {
     first_name: response.data.firstName,
@@ -89,21 +85,18 @@ const addCustomer = async (customer: {
     publicMetadata: {
       status: response.data.status,
     },
-  }
+  };
 
   await customerClerk.users.createUser(params);
-  revalidatePath("/customer/customer-management");
+  revalidatePath('/customer/customer-management');
 
-  return { message: "Customer created successfully" };
+  return { message: 'Customer created successfully' };
+};
 
-}
-
-// TO BE COMPLETED
 const deleteCustomer = async (customerId: string) => {
   await customerClerk.users.deleteUser(customerId);
 };
 
-// TO BE COMPLETED
 const updateCustomer = async (customer: {
   id: string;
   firstName: string;
@@ -114,20 +107,18 @@ const updateCustomer = async (customer: {
     id: z.string().min(1),
     firstName: z.string().min(1),
     lastName: z.string().min(1),
-    status: z.enum(["whitelisted", "blacklisted"]),
+    status: z.enum(['whitelisted', 'blacklisted']),
   });
 
-  const response = customerSchema.safeParse(
-    {
-      id: customer.id,
-      firstName: customer.firstName,
-      lastName: customer.lastName,
-      status: customer.status,
-    }
-  );
+  const response = customerSchema.safeParse({
+    id: customer.id,
+    firstName: customer.firstName,
+    lastName: customer.lastName,
+    status: customer.status,
+  });
 
   if (!response.success) {
-    return { message: "Error", errors: response.error.flatten().fieldErrors };
+    return { message: 'Error', errors: response.error.flatten().fieldErrors };
   }
 
   const userParams = {
@@ -144,9 +135,25 @@ const updateCustomer = async (customer: {
   await customerClerk.users.updateUser(customer.id, userParams);
   await customerClerk.users.updateUserMetadata(customer.id, metadataParams);
 
-  revalidatePath("/staff/customer-management");
+  revalidatePath('/staff/customer-management');
 
-  return { message: "Customer updated successfully" };
+  return { message: 'Customer updated successfully' };
 };
 
-export { getCustomers, getCustomerByEmail, getCustomerById, addCustomer, deleteCustomer, updateCustomer };
+const addCommentToCustomer = async (customerId: string, comment: string) => {
+  const customer = await customerClerk.users.getUser(customerId);
+  const comments = (customer.publicMetadata.comments as string[]) || [];
+  comments.push(comment);
+  await customerClerk.users.updateUserMetadata(customerId, { publicMetadata: { comments } });
+  revalidatePath('/staff/customer-management/customer-details/' + customerId);
+};
+
+export {
+  getCustomers,
+  getCustomerByEmail,
+  getCustomerById,
+  addCustomer,
+  deleteCustomer,
+  updateCustomer,
+  addCommentToCustomer,
+};

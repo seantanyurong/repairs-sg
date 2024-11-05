@@ -4,6 +4,7 @@ import Job from '@/models/Job';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { ObjectId } from 'mongodb';
+import Service from '@/models/Service';
 
 const addJob = async (job: {
   quantity: number;
@@ -116,7 +117,7 @@ const getJobsByStaffId = async (staffId: string) => {
 };
 
 const getJobsByCustomerId = async (customerId: string) => {
-  return Job.find({ customer: customerId }).populate('service').exec();
+  return Job.find({ customer: customerId }).populate({ path: 'service', model: Service }).exec();
 };
 
 const getFutureJobsByVehicleId = async (vehicleId: string) => {
