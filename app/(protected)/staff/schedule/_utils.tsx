@@ -29,7 +29,7 @@ export interface Job extends Document {
       id: string;  
       licencePlate: string;  
     };
-    status: 'PENDING' | 'ONGOING' | 'COMPLETED'; 
+    status: string; 
     createdAt?: Date;  
   }
 
@@ -58,7 +58,7 @@ export interface Job extends Document {
 
 const findAvailableStaff = (staffArray: { id: string; name: string }[], jobs: Job[], leaves: Leave[], timeStart: Date, timeEnd: Date) => {
     // 1. Filter jobs and leaves that overlap with the time range
-    const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
+    const overlappingJobs = jobs.filter((job) => (job.status !== 'Completed' && job.status !== 'Cancelled') && job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
     
     timeStart = new Date(timeStart.toISOString().substring(0, 10));
     timeEnd = new Date(timeEnd.toISOString().substring(0, 10));

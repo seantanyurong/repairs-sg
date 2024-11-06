@@ -276,5 +276,5 @@ export {
   getFutureJobsByVehicleId,
   updateJobVehicle,
   updateJobStatus,
-  updateJob,
+  updateJob, getSingleJob,
 };

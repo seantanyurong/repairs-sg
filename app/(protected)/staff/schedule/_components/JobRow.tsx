@@ -14,6 +14,7 @@ import { updateJobStaff, updateJobStatus, updateJobVehicle } from '@/lib/actions
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { addReward } from '@/lib/actions/rewards';
 
 export default function JobRow({
   id,
@@ -27,7 +28,8 @@ export default function JobRow({
   timeEnd,
   status,
   staffArray,
-  vehicleArray
+  vehicleArray,
+  referralCode
 }: {
   id: string;
   serviceName: string;
@@ -41,11 +43,13 @@ export default function JobRow({
   status: string;
   staffArray: { id: string; name: string }[]; // List of staff to assign
   vehicleArray: { id: string; licencePlate: string }[]; // List of vehicles to assign
+  referralCode?: { code: string; referrer: string; customer: string; };
 }) {
 
   const router = useRouter();
-
   const statusArray = ['Pending', 'Arrived', 'In Progress', 'Completed', 'Cancelled'];
+  const REFERRAL_REWARD = 15;
+  const REFERRAL_ACTIVE = "ACTIVE";
 
   const handleAssignStaff = async (jobId: string, staffId: string) => {
     await updateJobStaff(jobId, staffId); // Call the parent function to update the job with selected staff
@@ -55,8 +59,36 @@ export default function JobRow({
     await updateJobVehicle(jobId, vehicleId); // Call the parent function to update the job with selected vehicle
   };
 
-  const handleUpdateStatus = async (jobId: string, status: string) => {
+  const handleUpdateStatus = async (jobId: string, status: string, referralCode?: { code: string; referrer: string; customer: string; }) => {
+    if (status === 'Completed' || status === 'Cancelled') {
+      const confirmStatusChange = window.confirm(`Are you sure you want to change the status to ${status}? You will not be able to revert this action.`);
+      if (!confirmStatusChange) return;
+    }
     await updateJobStatus(jobId, status); // Call the parent function to update the job with selected vehicle
+
+    if (status === 'Completed' && referralCode ) {
+      console.log('Referral code:', referralCode);
+      // Add referral reward for referrer
+      await addReward({
+        userId: referralCode.referrer,
+        rewardCode: `REW${referralCode.code.slice(-6)}`,
+        type: 'REFERRAL',
+        amount: 15,
+        expiryDate: new Date(new Date().setDate(new Date().getDate() + 6 * 30)).toISOString(),
+        status: REFERRAL_ACTIVE,
+      });
+
+      // Add referral reward for customer
+      await addReward({
+        userId: referralCode.customer,
+        rewardCode: `REW${referralCode.code.slice(-6)}`,
+        type: 'REFERRAL',
+        amount: 15,
+        expiryDate: new Date(new Date().setDate(new Date().getDate() + 6 * 30)).toISOString(),
+        status: REFERRAL_ACTIVE,
+      });
+      console.log('Referral rewards added');
+    }
   }
 
   const openGoogleMaps = (searchTerm: string) => {
@@ -87,27 +119,35 @@ export default function JobRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            {/* only render this item if status is not completed or cancelled */}
+            {status !== 'Completed' && status !== 'Cancelled' && (
+                <DropdownMenuItem
+                className='cursor-pointer'>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant='ghost'>
+                      Update Status
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align='end'>
+                  <DropdownMenuLabel>Job Status</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {statusArray.map((status) => (
+                      <DropdownMenuItem
+                        key={status}
+                        onClick={() => handleUpdateStatus(id, status, referralCode, )}
+                        className='cursor-pointer'>
+                        {status}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
+              onClick={() => router.push(`/staff/vehicles/view-vehicle-location/${vehicleLicencePlate}`)}
               className='cursor-pointer'>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='ghost'>
-                    Update Status
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                <DropdownMenuLabel>Job Status</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {statusArray.map((status) => (
-                    <DropdownMenuItem
-                      key={status}
-                      onClick={() => handleUpdateStatus(id, status)}
-                      className='cursor-pointer'>
-                      {status}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              View Vehicle Location
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => router.push(`/staff/schedule/edit-job/${id}`)}

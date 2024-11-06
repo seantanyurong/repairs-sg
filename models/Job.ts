@@ -76,6 +76,18 @@ const jobSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Vehicle',
     },
+    referralCode: {
+      referrer: {
+        type: String,
+      },
+      code: {
+        type: String,
+      },
+      customer: {
+        type: String,
+      },
+    },
+
     
   },
   { versionKey: false, timestamps: true },

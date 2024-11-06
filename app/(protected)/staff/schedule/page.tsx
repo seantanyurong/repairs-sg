@@ -20,6 +20,8 @@ type SearchParams = {
 
 export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
   const jobs = await getJobsWithServiceAndVehicle();
+
+  console.log(jobs);
   const leaves = await getLeaves();
   getServices();
 
@@ -67,6 +69,8 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
     if (filtersArray[0] === 'all') {
       return jobs.map((job) => {
 
+        console.log(job.referralCode);
+
         return (
           <JobRow
             key={job._id.toString()}
@@ -82,6 +86,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             status={job.status}
             staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
             vehicleArray={findAvailableVehicles(vehicleArray, jobs, job.schedule.timeStart, job.schedule.timeEnd)}
+            referralCode={job.referralCode}
           />
         );
       });
@@ -107,6 +112,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             status={job.status}
             staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
             vehicleArray={findAvailableVehicles(vehicleArray, jobs, job.schedule.timeStart, job.schedule.timeEnd)}
+            referralCode={job.referralCode}
           />
         );
       });
