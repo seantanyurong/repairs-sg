@@ -1,36 +1,22 @@
-"use client";
+'use client';
 
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  Select,
-} from "@/components/ui/select";
-import { updateCustomer } from "@/lib/actions/customers";
-import { toast } from "sonner";
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@/components/ui/select';
+import { updateCustomer } from '@/lib/actions/customers';
+import { toast } from 'sonner';
 
 const customerSchema = z.object({
   id: z.string().min(1),
-  imageUrl: z.string().min(1),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  status: z.enum(["whitelisted", "blacklisted"]),
+  status: z.enum(['whitelisted', 'blacklisted']),
 });
 
 export default function EditCustomerClient({
@@ -40,11 +26,10 @@ export default function EditCustomerClient({
     id: string;
     firstName: string;
     lastName: string;
-    email: string;
     status: string;
   };
 }) {
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
   const router = useRouter();
 
@@ -54,12 +39,12 @@ export default function EditCustomerClient({
       id: customer.id,
       firstName: customer.firstName,
       lastName: customer.lastName,
-      status: customer.status as "whitelisted" | "blacklisted",
+      status: customer.status as 'whitelisted' | 'blacklisted',
     },
   });
 
   const onSubmit = async () => {
-    setMessage("");
+    setMessage('');
     setErrors({});
     console.log(form.getValues());
     const result = await updateCustomer(form.getValues());
@@ -70,8 +55,8 @@ export default function EditCustomerClient({
     } else {
       setMessage(result.message);
       form.reset(form.getValues());
-      toast("Customer updated successfully");
-      router.push("/staff/customer-management");
+      toast('Customer updated successfully');
+      router.push('/staff/customer-management');
       router.refresh();
     }
   };
@@ -83,17 +68,16 @@ export default function EditCustomerClient({
           e.preventDefault();
           form.handleSubmit(onSubmit)();
         }}
-        className="max-w-md w-full flex flex-col gap-4"
-      >
+        className='max-w-md w-full flex flex-col gap-4'>
         <FormField
           control={form.control}
-          name="id"
+          name='id'
           render={({ field }) => {
             return (
               <FormItem hidden>
                 <FormLabel>ID</FormLabel>
                 <FormControl>
-                  <Input placeholder="ID" {...field} />
+                  <Input placeholder='ID' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -102,7 +86,7 @@ export default function EditCustomerClient({
         />
         <FormField
           control={form.control}
-          name="firstName"
+          name='firstName'
           render={({ field }) => {
             return (
               <FormItem>
@@ -118,7 +102,7 @@ export default function EditCustomerClient({
 
         <FormField
           control={form.control}
-          name="lastName"
+          name='lastName'
           render={({ field }) => {
             return (
               <FormItem>
@@ -133,24 +117,21 @@ export default function EditCustomerClient({
         />
         <FormField
           control={form.control}
-          name="status"
+          name='status'
           render={({ field }) => {
             return (
               <FormItem>
                 <FormLabel>Status</FormLabel>
                 <FormControl>
-                  <Select
-                    defaultValue={customer.status}
-                    onValueChange={field.onChange}
-                  >
+                  <Select defaultValue={customer.status} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a customer status" />
+                        <SelectValue placeholder='Select a customer status' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="whitelisted">Whitelisted</SelectItem>
-                      <SelectItem value="blacklisted">Blacklisted</SelectItem>
+                      <SelectItem value='whitelisted'>Whitelisted</SelectItem>
+                      <SelectItem value='blacklisted'>Blacklisted</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -159,12 +140,12 @@ export default function EditCustomerClient({
             );
           }}
         />
-        <Button type="submit" className="w-full">
+        <Button type='submit' className='w-full'>
           Update Customer
         </Button>
         {message ? <h2>{message}</h2> : null}
         {errors ? (
-          <div className="mb-10 text-red-500">
+          <div className='mb-10 text-red-500'>
             {Object.keys(errors).map((key) => (
               <p key={key}>{`${key}: ${errors[key as keyof typeof errors]}`}</p>
             ))}
