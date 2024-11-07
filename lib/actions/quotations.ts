@@ -126,7 +126,10 @@ const sendQuoteEmail = async (id: string, attachment: string) => {
   await sendQuoteEmailPostmark(
     customerEmail,
     "Quotation from Repair.sg",
-    QUOTE_EMAIL_COPY.replace("{ customerName }", customerName),
+    QUOTE_EMAIL_COPY.replace("{ customerName }", customerName).replace(
+      "{ quoteLink }",
+      `http://localhost:8000/customer/quotations/view/${id}`
+    ),
     attachment
   );
 };
@@ -136,7 +139,7 @@ const getQuotationsByCustomerId = async (customerId: string) => {
 };
 
 const QUOTE_EMAIL_COPY =
-  "Hi { customerName },\n\nThank you considering Repair.sg. We help make repair, installation, and maintenance easy for more than 15,000 businesses and homeowners. Let us help you next!\nPlease find attached your quote.\nShould you require any further information, please do not hesitate to contact us.\n\nBest Regards,\nRepair.sg Team";
+  "Hi { customerName },\n\nThank you considering Repair.sg. We help make repair, installation, and maintenance easy for more than 15,000 businesses and homeowners. Let us help you next!\n\nPlease find attached your quote. You may also access it from { quoteLink }\n\nShould you require any further information, please do not hesitate to contact us.\n\nBest Regards,\nRepair.sg Team";
 
 export {
   addQuotation,
