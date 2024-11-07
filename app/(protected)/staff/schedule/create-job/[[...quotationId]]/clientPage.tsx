@@ -63,9 +63,11 @@ type Service = {
 export default function BookingClient({
   services,
   customers,
+  defaultValues,
 }: {
   services: Service[];
   customers: Customer[];
+  defaultValues?: { description: string; jobAddress: string; customer: string };
 }) {
   const [service, setService] = useState(services[0]);
   const [message, setMessage] = useState("");
@@ -79,8 +81,9 @@ export default function BookingClient({
     defaultValues: {
       service: services[0].name,
       quantity: 1,
-      jobAddress: "",
-      description: "",
+      jobAddress: defaultValues?.jobAddress ?? "",
+      description: defaultValues?.description ?? "",
+      customer: defaultValues?.customer ?? "",
     },
   });
 
@@ -192,6 +195,7 @@ export default function BookingClient({
                                 field.onChange(selectedServiceName); // Update form field value
                               }
                             }}
+                            disabled={!!defaultValues}
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -225,6 +229,7 @@ export default function BookingClient({
                               type="number"
                               min="1"
                               placeholder="Enter quantity"
+                              disabled={!!defaultValues}
                               {...field}
                               onChange={(event) => {
                                 field.onChange(+event.target.value);
@@ -308,7 +313,11 @@ export default function BookingClient({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Customer</FormLabel>
-                          <Select onValueChange={field.onChange}>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            disabled={!!defaultValues}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select a customer" />
