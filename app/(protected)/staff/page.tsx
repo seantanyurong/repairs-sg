@@ -53,11 +53,14 @@ export default async function StaffHome() {
   );
 
   return (
-    <div>
-      <KPIOverview
-        totalJobs={completedJobInMonthByStaff.length}
-        revenue={totalRevenueInMonthByStaff}
-      />
+    <div className="py-2">
+      <div className="mb-4">
+        <KPIOverview
+          totalJobs={completedJobInMonthByStaff.length}
+          revenue={totalRevenueInMonthByStaff}
+        />
+      </div>
+
       <WeeklyJob
         jobs={jobsMap}
         services={servicesMap}
