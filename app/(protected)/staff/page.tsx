@@ -1,4 +1,7 @@
-import { getJobs, getCompletedJobInMonthByStaff } from "@/lib/actions/jobs";
+import {
+  getCompletedJobInMonthByStaff,
+  getJobsByStaffId,
+} from "@/lib/actions/jobs";
 import WeeklyJob from "./_components/weeklyJob";
 import { getServices } from "@/lib/actions/services";
 import { getCustomers } from "@/lib/actions/customers";
@@ -9,7 +12,7 @@ export default async function StaffHome() {
   const { sessionClaims } = auth();
   const userId = sessionClaims?.userId as string;
 
-  const jobs = await getJobs();
+  const jobs = await getJobsByStaffId(userId);
   const jobsMap = jobs.map((job) => ({
     _id: job._id.toString(),
     jobAddress: job.jobAddress,
@@ -40,17 +43,14 @@ export default async function StaffHome() {
   const completedJobInMonthByStaff =
     await getCompletedJobInMonthByStaff(userId);
 
-  console.log("completed job", completedJobInMonthByStaff);
+  // console.log("completed job", completedJobInMonthByStaff);
 
   const totalRevenueInMonthByStaff = completedJobInMonthByStaff.reduce(
     (total, job) => {
-      console.log("job", job.price);
       return total + job.price;
     },
     0
   );
-
-  console.log("Total Revenue in Month by Staff:", totalRevenueInMonthByStaff);
 
   return (
     <div>

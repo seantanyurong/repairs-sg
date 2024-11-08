@@ -14,9 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useUser } from "@clerk/nextjs";
 import JobRow from "./JobRow";
-import { useEffect, useState } from "react";
 
 // Infer types from Mongoose models
 export interface Job {
@@ -51,44 +49,31 @@ export default async function WeeklyJob({
   services: Service[];
   customers: Customer[];
 }) {
-  const { user, isLoaded } = useUser();
-  const [userJobs, setUserJobs] = useState<Job[]>([]);
-
-  useEffect(() => {
-    if (isLoaded && user) {
-      // Get the current date
-      const today = new Date();
-
-      // Calculate the start of the week (Sunday)
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay());
-      startOfWeek.setHours(0, 0, 0, 0);
-
-      // Calculate the end of the week (Saturday)
-      const endOfWeek = new Date(today);
-      endOfWeek.setDate(today.getDate() + (6 - today.getDay()));
-      endOfWeek.setHours(23, 59, 59, 999);
-
-      // Filter jobs based on staff ID and whether the job is scheduled within this week
-      const filteredJobs = jobs.filter((job) => {
-        const jobDate = new Date(job.schedule.timeStart); // Convert timeStart to a Date object
-        return (
-          job.staff === user.id &&
-          jobDate >= startOfWeek &&
-          jobDate <= endOfWeek &&
-          job.status !== "Completed"
-        );
-      });
-
-      setUserJobs(filteredJobs);
-      //   console.log("Filtered jobs:", filteredJobs); // Check if jobs are correctly filtered
-    }
-  }, [isLoaded, user, jobs]);
-
-  if (!isLoaded) return <p>Loading...</p>;
-
   const jobRowDisplay = () => {
-    return userJobs.map((job) => {
+    // Get the current date
+    const today = new Date();
+
+    // Calculate the start of the week (Sunday)
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    // Calculate the end of the week (Saturday)
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(today.getDate() + (6 - today.getDay()));
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    // Filter jobs based on staff ID and whether the job is scheduled within this week
+    const filteredJobs = jobs.filter((job) => {
+      const jobDate = new Date(job.schedule.timeStart); // Convert timeStart to a Date object
+      return (
+        jobDate >= startOfWeek &&
+        jobDate <= endOfWeek &&
+        job.status !== "Completed"
+      );
+    });
+
+    return filteredJobs.map((job) => {
       const serviceId = job.service;
       const service = services.find((service) => service._id === serviceId);
       const serviceName = service ? service.name : "Unknown service";
