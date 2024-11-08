@@ -44,6 +44,7 @@ export default async function OutstandingInvoice({
       const customerEmail = customer ? customer.email : "Unknown email";
       return (
         <InvoiceRow
+          key={invoice.invoiceId}
           invoiceId={invoice.invoiceId}
           customerName={customerName}
           contact={customerEmail}
@@ -64,7 +65,7 @@ export default async function OutstandingInvoice({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table className="border ">
             <TableHeader>
               <TableRow>
                 <TableHead>Invoice</TableHead>
@@ -72,6 +73,7 @@ export default async function OutstandingInvoice({
                 <TableHead>Contact</TableHead>
                 <TableHead>Date Due</TableHead>
                 <TableHead>Remaining Due</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>{outstandingInvoiceRowDisplay()}</TableBody>

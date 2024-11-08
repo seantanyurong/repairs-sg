@@ -42,8 +42,19 @@ export default async function InvoiceRow({
     window.location.href = mailtoLink;
   };
 
+  // Define color based on remainingDue
+  const getBackgroundColor = () => {
+    if (remainingDue > 500) {
+      return "bg-red-300 hover: bg-red-300"; // High outstanding dues, red color
+    } else if (remainingDue > 100) {
+      return "bg-orange-300 hover:bg-orange-300"; // Medium outstanding dues, orange color
+    } else {
+      return "bg-green-300 hover:bg-green-300"; // Low outstanding dues, green color
+    }
+  };
+
   return (
-    <TableRow>
+    <TableRow className={getBackgroundColor()}>
       <TableCell className="font-medium">{invoiceId}</TableCell>
       <TableCell className="font-medium">{customerName}</TableCell>
       <TableCell className="font-medium">{contact}</TableCell>
