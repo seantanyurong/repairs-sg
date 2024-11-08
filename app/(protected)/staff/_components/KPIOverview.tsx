@@ -23,7 +23,7 @@ export default async function KPIOverview({
           <CardTitle>Total Jobs Completed This Month</CardTitle>
         </CardHeader>
         <CardContent>
-          <CardDescription className="text-3xl font-bold">
+          <CardDescription className="text-3xl font-bold text-center">
             {totalJobs}
           </CardDescription>
         </CardContent>
@@ -36,7 +36,7 @@ export default async function KPIOverview({
           <CardTitle>Revenue from Completed Jobs</CardTitle>
         </CardHeader>
         <CardContent>
-          <CardDescription className="text-3xl font-bold">
+          <CardDescription className="text-3xl font-bold text-center">
             ${revenue.toLocaleString()}
           </CardDescription>
         </CardContent>

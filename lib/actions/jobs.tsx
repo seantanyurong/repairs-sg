@@ -129,7 +129,7 @@ const getFutureJobsByVehicleId = async (vehicleId: string) => {
   });
 };
 
-const getNumOfCompletedJobInMonthByStaff = async (staffId: string) => {
+const getCompletedJobInMonthByStaff = async (staffId: string) => {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(
@@ -141,13 +141,11 @@ const getNumOfCompletedJobInMonthByStaff = async (staffId: string) => {
     59
   );
 
-  const completedJobs = await Job.find({
+  return Job.find({
     staff: staffId,
     status: "Completed",
     "schedule.timeEnd": { $gte: startOfMonth, $lte: endOfMonth },
   });
-
-  return completedJobs.length;
 };
 
 export {
@@ -158,5 +156,5 @@ export {
   getJobsByStaffId,
   getJobsByCustomerId,
   getFutureJobsByVehicleId,
-  getNumOfCompletedJobInMonthByStaff,
+  getCompletedJobInMonthByStaff,
 };

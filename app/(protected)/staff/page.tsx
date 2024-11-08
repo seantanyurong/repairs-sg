@@ -1,12 +1,9 @@
-import {
-  getJobs,
-  getNumOfCompletedJobInMonthByStaff,
-} from "@/lib/actions/jobs";
+import { getJobs, getCompletedJobInMonthByStaff } from "@/lib/actions/jobs";
 import WeeklyJob from "./_components/weeklyJob";
 import { getServices } from "@/lib/actions/services";
 import { getCustomers } from "@/lib/actions/customers";
 import KPIOverview from "./_components/KPIOverview";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function StaffHome() {
   const { sessionClaims } = auth();
@@ -40,12 +37,27 @@ export default async function StaffHome() {
   }));
   // console.log("customersMap", customersMap);
 
-  const numOfCompletedJobInMonthByStaff =
-    await getNumOfCompletedJobInMonthByStaff(userId);
+  const completedJobInMonthByStaff =
+    await getCompletedJobInMonthByStaff(userId);
+
+  console.log("completed job", completedJobInMonthByStaff);
+
+  const totalRevenueInMonthByStaff = completedJobInMonthByStaff.reduce(
+    (total, job) => {
+      console.log("job", job.price);
+      return total + job.price;
+    },
+    0
+  );
+
+  console.log("Total Revenue in Month by Staff:", totalRevenueInMonthByStaff);
 
   return (
     <div>
-      <KPIOverview totalJobs={numOfCompletedJobInMonthByStaff} revenue={10} />
+      <KPIOverview
+        totalJobs={completedJobInMonthByStaff.length}
+        revenue={totalRevenueInMonthByStaff}
+      />
       <WeeklyJob
         jobs={jobsMap}
         services={servicesMap}
