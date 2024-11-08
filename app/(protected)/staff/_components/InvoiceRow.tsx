@@ -45,7 +45,7 @@ export default async function InvoiceRow({
   // Define color based on remainingDue
   const getBackgroundColor = () => {
     if (remainingDue > 500) {
-      return "bg-red-300 hover: bg-red-300"; // High outstanding dues, red color
+      return "bg-red-300 hover:bg-red-300"; // High outstanding dues, red color
     } else if (remainingDue > 100) {
       return "bg-orange-300 hover:bg-orange-300"; // Medium outstanding dues, orange color
     } else {

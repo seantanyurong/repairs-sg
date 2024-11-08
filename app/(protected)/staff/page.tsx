@@ -72,6 +72,7 @@ export default async function StaffHome() {
         <KPIOverview
           totalJobs={completedJobInMonthByStaff.length}
           revenue={totalRevenueInMonthByStaff}
+          outstandingInvoices={overdueInvoicesMap}
         />
       </div>
 
