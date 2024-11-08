@@ -22,12 +22,12 @@ export interface Job {
   _id: string;                    // Converted to string
   timeStart: Date;               // Formatted date as a string
   timeEnd: Date;                 // Formatted date as a string
-  title: string;                   // Title for the job, corresponds to job.description
+  title: string;                 // Title for the job, corresponds to job.description
   staff: string;                 // Staff remains an array of strings
 }
 
-
-export default function CalendarClient({ filtersArray, jobs }: { filtersArray: string[]; jobs: Job[] }) {
+// optional to take in date
+export default function CalendarClient({ filtersArray, jobs}: { filtersArray: string[]; jobs: Job[]}) {
   const [filteredJobs, setFilteredJobs] = useState(jobs);
 
   useEffect(() => {
@@ -77,6 +77,7 @@ export default function CalendarClient({ filtersArray, jobs }: { filtersArray: s
           <CardDescription>Manage your job schedule Calendar</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* <Calendar key={filteredJobs.map((job) => job._id).join(',')} events={filteredJobs} defaultDate={new Date(date)}> */}
           <Calendar key={filteredJobs.map((job) => job._id).join(',')} events={filteredJobs}>
             <div className='h-dvh py-6 flex flex-col'>
               <div className='flex px-6 items-center gap-2 mb-6'>
