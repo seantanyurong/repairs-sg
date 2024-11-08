@@ -1,5 +1,4 @@
 import { TableCell, TableRow } from "@/components/ui/table";
-import { getCustomerName } from "@/lib/actions/customers";
 
 export default async function JobRow({
   serviceName,

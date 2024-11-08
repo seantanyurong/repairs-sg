@@ -29,6 +29,7 @@ export interface Job {
   };
   customer: string;
   staff: string; // Staff remains an array of strings
+  status: string;
 }
 
 export interface Service {
@@ -74,12 +75,13 @@ export default async function WeeklyJob({
         return (
           job.staff === user.id &&
           jobDate >= startOfWeek &&
-          jobDate <= endOfWeek
+          jobDate <= endOfWeek &&
+          job.status !== "Completed"
         );
       });
 
       setUserJobs(filteredJobs);
-      console.log("Filtered jobs:", filteredJobs); // Check if jobs are correctly filtered
+      //   console.log("Filtered jobs:", filteredJobs); // Check if jobs are correctly filtered
     }
   }, [isLoaded, user, jobs]);
 
@@ -92,8 +94,8 @@ export default async function WeeklyJob({
       const serviceName = service ? service.name : "Unknown service";
 
       const customerId = job.customer;
-      console.log("customer", customers);
-      console.log("customerId", customerId);
+      //   console.log("customer", customers);
+      //   console.log("customerId", customerId);
       const customer = customers.find(
         (customer) => customer._id === customerId
       );

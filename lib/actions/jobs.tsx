@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import Job from '@/models/Job';
-import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
-import { ObjectId } from 'mongodb';
-import Service from '@/models/Service';
+import Job from "@/models/Job";
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
+import { ObjectId } from "mongodb";
+import Service from "@/models/Service";
 
 const addJob = async (job: {
   quantity: number;
@@ -67,13 +67,13 @@ const addJob = async (job: {
   });
 
   if (!response.success) {
-    return { message: 'Error', errors: response.error.flatten().fieldErrors };
+    return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
 
   const newJob = new Job(response.data);
   newJob.save();
 
-  return { message: 'Job booked successfully' };
+  return { message: "Job booked successfully" };
 };
 
 const getJobs = async () => {
@@ -81,14 +81,14 @@ const getJobs = async () => {
 };
 
 const getJobsWithService = async () => {
-  const jobs = await Job.find().populate('service').exec();
+  const jobs = await Job.find().populate("service").exec();
 
   return jobs;
 };
 
 const updateJobStaff = async (
   _id: string,
-  staff: string,
+  staff: string
 ): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
   const jobSchema = z.object({
     _id: z.string().min(1),
@@ -101,15 +101,15 @@ const updateJobStaff = async (
   });
 
   if (!response.success) {
-    return { message: 'Error', errors: response.error.flatten().fieldErrors };
+    return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
 
   const filter = { _id: new ObjectId(response.data._id) };
   const update = { staff: response.data.staff };
   await Job.findOneAndUpdate(filter, update);
-  revalidatePath('/staff/schedule');
+  revalidatePath("/staff/schedule");
 
-  return { message: 'Job updated successfully' };
+  return { message: "Job updated successfully" };
 };
 
 const getJobsByStaffId = async (staffId: string) => {
@@ -117,14 +117,37 @@ const getJobsByStaffId = async (staffId: string) => {
 };
 
 const getJobsByCustomerId = async (customerId: string) => {
-  return Job.find({ customer: customerId }).populate({ path: 'service', model: Service }).exec();
+  return Job.find({ customer: customerId })
+    .populate({ path: "service", model: Service })
+    .exec();
 };
 
 const getFutureJobsByVehicleId = async (vehicleId: string) => {
   return Job.find({
     vehicle: new ObjectId(vehicleId),
-    'schedule.timeStart': { $gte: new Date() },
+    "schedule.timeStart": { $gte: new Date() },
   });
+};
+
+const getNumOfCompletedJobInMonthByStaff = async (staffId: string) => {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59
+  );
+
+  const completedJobs = await Job.find({
+    staff: staffId,
+    status: "Completed",
+    "schedule.timeEnd": { $gte: startOfMonth, $lte: endOfMonth },
+  });
+
+  return completedJobs.length;
 };
 
 export {
@@ -135,4 +158,5 @@ export {
   getJobsByStaffId,
   getJobsByCustomerId,
   getFutureJobsByVehicleId,
+  getNumOfCompletedJobInMonthByStaff,
 };

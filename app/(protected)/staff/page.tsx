@@ -1,9 +1,17 @@
-import { getJobs } from "@/lib/actions/jobs";
+import {
+  getJobs,
+  getNumOfCompletedJobInMonthByStaff,
+} from "@/lib/actions/jobs";
 import WeeklyJob from "./_components/weeklyJob";
 import { getServices } from "@/lib/actions/services";
 import { getCustomers } from "@/lib/actions/customers";
+import KPIOverview from "./_components/KPIOverview";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 
 export default async function StaffHome() {
+  const { sessionClaims } = auth();
+  const userId = sessionClaims?.userId as string;
+
   const jobs = await getJobs();
   const jobsMap = jobs.map((job) => ({
     _id: job._id.toString(),
@@ -15,6 +23,7 @@ export default async function StaffHome() {
     },
     customer: job.customer,
     staff: job.staff,
+    status: job.status,
   }));
 
   const services = await getServices();
@@ -24,15 +33,19 @@ export default async function StaffHome() {
   }));
 
   const customers = await getCustomers();
-  console.log("page customer", customers);
+  // console.log("page customer", customers);
   const customersMap = customers.data.map((customer) => ({
     _id: customer.id.toString(),
     name: `${customer.firstName ?? ""} ${customer.lastName ?? ""}`.trim(),
   }));
-  console.log("customersMap", customersMap);
+  // console.log("customersMap", customersMap);
+
+  const numOfCompletedJobInMonthByStaff =
+    await getNumOfCompletedJobInMonthByStaff(userId);
 
   return (
     <div>
+      <KPIOverview totalJobs={numOfCompletedJobInMonthByStaff} revenue={10} />
       <WeeklyJob
         jobs={jobsMap}
         services={servicesMap}
