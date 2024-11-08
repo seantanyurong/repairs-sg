@@ -51,28 +51,6 @@ const quotationSchema = new mongoose.Schema(
     declineDetails: {
       type: String,
     },
-    job: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Job",
-    },
-    jobAddress: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-    },
-    billingAddress: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-    },
-    files: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "File",
-      },
-    ],
-    accept: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Accept",
-    },
     quoteTemplate: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "QuoteTemplate",
