@@ -29,7 +29,7 @@ export interface Customer {
   email: string;
 }
 
-export default async function OutstandingInvoice({
+export default function OutstandingInvoice({
   invoices,
   customers,
 }: {

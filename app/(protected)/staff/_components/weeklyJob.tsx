@@ -40,7 +40,7 @@ export interface Customer {
   name: string;
 }
 
-export default async function WeeklyJob({
+export default function WeeklyJob({
   jobs,
   services,
   customers,
