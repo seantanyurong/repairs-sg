@@ -114,7 +114,7 @@ const findAvailableStaffForClientComponent = (staffArray: Staff[], jobs: JobFrom
 
 const findAvailableVehiclesForClientComponent = (vehicleArray: VehicleFromArray[], jobs: JobFromArray[], timeStart: Date, timeEnd: Date) => {
   // 1. Filter jobs that overlap with the time range
-  const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
+  const overlappingJobs = jobs.filter((job) => (job.status !== 'Completed' && job.status !== 'Cancelled') && job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
   
   timeStart = new Date(timeStart.toISOString().substring(0, 10));
   timeEnd = new Date(timeEnd.toISOString().substring(0, 10));
@@ -149,6 +149,7 @@ export default function BookingClient({
   const originalCustomer = customerArray.find((customer) => customer.id === job.customer) || customerArray[0];  // fallback value will not be used
   const originalStaff = staffArray.find((staff) => staff.id === job.staff);
   const originalVehicle = vehicleArray.find((vehicle) => vehicle.id === job.vehicle);
+
   const filteredStaff = findAvailableStaffForClientComponent(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd);
   const filteredVehicles = findAvailableVehiclesForClientComponent(vehicleArray, jobs, job.schedule.timeStart, job.schedule.timeEnd);
   const originalSchedule = {
@@ -159,7 +160,9 @@ export default function BookingClient({
     label: format(job.schedule.timeStart, 'MMMM d, yyyy HH:mm') + ' - ' + format(job.schedule.timeEnd, 'HH:mm'),
   };
 
-  const [service, setService] = useState(originalService || services[0]); // fallback value will not be used
+  const [selectedVehicle, setSelectedVehicle] = useState(originalVehicle);
+  const [selectedStaff, setSelectedStaff] = useState(originalStaff); 
+  const [service, setService] = useState(originalService);
   const [availableStaff, setAvailableStaff] = useState(filteredStaff);
   const [availableVehicles, setAvailableVehicles] = useState(filteredVehicles);
   const [message, setMessage] = useState('');
@@ -179,7 +182,7 @@ export default function BookingClient({
       customer: job.customer,
       schedule: originalSchedule.label,
       staff: job.staff || '',
-      vehicle: job.vehicle,
+      vehicle: job.vehicle || '',
     },
   });
 
@@ -214,7 +217,7 @@ export default function BookingClient({
 
   const scheduleOptions = generateScheduleOptions();
 
-  const itemPrice = service.price - (service.price * (priceQty - 1) * service.volumeDiscountPercentage) / 100;
+  const itemPrice = service!.price - (service!.price * (priceQty - 1) * service!.volumeDiscountPercentage) / 100;
   const itemPriceRounded = Math.round(itemPrice * 100) / 100;
   const subtotalPrice = itemPrice * priceQty;
   const subtotalPriceRounded = Math.round(subtotalPrice * 100) / 100;
@@ -227,11 +230,9 @@ export default function BookingClient({
     setMessage('');
     setErrors({});
     const formValues = form.getValues();
-    console.log("formvalues");
-    console.log(formValues);
     const result = await updateJob({
       ...formValues,
-      serviceId: service._id.toString(),
+      serviceId: service!._id.toString(),
       schedule: schedule,
       price: totalPriceRounded,
       _id: job.id,
@@ -260,7 +261,7 @@ export default function BookingClient({
               <Card x-chunk='dashboard-05-chunk-3'>
                 <CardHeader className='px-7'>
                   <CardTitle>Edit a Job</CardTitle>
-                  <CardDescription>Assign a Staff in the Table view</CardDescription>
+                  <CardDescription></CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Form {...form}>
@@ -292,7 +293,7 @@ export default function BookingClient({
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder={service.name} />
+                                  <SelectValue placeholder={service!.name} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -355,15 +356,16 @@ export default function BookingClient({
                           <FormLabel>Booking Timing</FormLabel>
                           <Select
                               onValueChange={(selectedSchedule) => {
-                                  // update availableStaff for this schedule
                                   const formattedSchedule = JSON.parse(selectedSchedule);
                                   setAvailableStaff(findAvailableStaffForClientComponent(staffArray, jobs, leaves, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
-                                   // update availableVehicles for this schedule
                                   setAvailableVehicles(findAvailableVehiclesForClientComponent(vehicleArray, jobs, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
+                                  setSelectedStaff(undefined);
+                                  setSelectedVehicle(undefined);
+                                  form.setValue('staff', '');
+                                  form.setValue('vehicle', '');
 
-                                  // Change the state to the selected schedule
                                   setSchedule(selectedSchedule);
-                                  field.onChange(selectedSchedule); // Update form field value
+                                  field.onChange(selectedSchedule);
                               }}
                             >
                             <FormControl>
@@ -431,10 +433,10 @@ export default function BookingClient({
                           return (
                           <FormItem>
                             <FormLabel>Staff</FormLabel>
-                            <Select onValueChange={field.onChange}>
+                            <Select onValueChange={(field.onChange)}>
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder={originalStaff?.name || 'Select a Staff'} />
+                                  <SelectValue placeholder={selectedStaff?.name || 'Select a Staff'} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -460,7 +462,7 @@ export default function BookingClient({
                             <Select onValueChange={field.onChange}>
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder={originalVehicle?.licencePlate || 'Select a Vehicle'} />
+                                  <SelectValue placeholder={selectedVehicle?.licencePlate || 'Select a Vehicle'} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -514,7 +516,7 @@ export default function BookingClient({
                   <ul className='grid gap-3'>
                     <li className='flex items-center justify-between'>
                       <span className='text-muted-foreground'>
-                        {service.name} x <span>{priceQty}</span> ($
+                        {service!.name} x <span>{priceQty}</span> ($
                         {itemPriceRounded} / service)
                       </span>
                       <span>${subtotalPriceRounded}</span>

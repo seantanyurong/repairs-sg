@@ -1,21 +1,4 @@
 'use client';
-
-import { Copy } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
-import * as z from 'zod';
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@/components/ui/select';
-import { updateJob } from '@/lib/actions/jobs';
-import { useUser } from '@clerk/clerk-react';
-import { format, addHours, startOfDay, addDays, isAfter } from 'date-fns';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const containerStyle = {

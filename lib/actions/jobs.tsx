@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { ObjectId } from 'mongodb';
 import Service from '@/models/Service';
 import mongoose from 'mongoose';
+import Invoice from '@/models/Invoice';
 
 const addJob = async (job: {
   quantity: number;
@@ -149,6 +150,18 @@ const updateJob = async (job: {
   }
 };
 
+const deleteJob = async (jobId: string): Promise<{ message: string; errors?: string | Record<string, unknown> }> => {
+
+  // voids related invoices
+  for (const invoice of await Invoice.find({ job: jobId })) {
+    await Invoice.findByIdAndUpdate(invoice._id, { validityStatus: "void" });
+  }
+  // deletes job
+  await Job.findByIdAndDelete(jobId);
+  revalidatePath('/staff/schedule');
+  return { message: 'Job deleted successfully' };
+}
+
 const getJobs = async () => {
   return Job.find();
 };
@@ -276,5 +289,7 @@ export {
   getFutureJobsByVehicleId,
   updateJobVehicle,
   updateJobStatus,
-  updateJob, getSingleJob,
+  updateJob,
+  getSingleJob,
+  deleteJob
 };

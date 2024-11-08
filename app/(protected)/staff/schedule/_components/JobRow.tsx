@@ -10,11 +10,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { updateJobStaff, updateJobStatus, updateJobVehicle } from '@/lib/actions/jobs';
+import { deleteJob, updateJobStaff, updateJobStatus, updateJobVehicle } from '@/lib/actions/jobs';
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { addReward } from '@/lib/actions/rewards';
+import crypto from "crypto";
+
 
 export default function JobRow({
   id,
@@ -29,7 +31,7 @@ export default function JobRow({
   status,
   staffArray,
   vehicleArray,
-  referralCode
+  referralCode,
 }: {
   id: string;
   serviceName: string;
@@ -47,7 +49,7 @@ export default function JobRow({
 }) {
 
   const router = useRouter();
-  const statusArray = ['Pending', 'Arrived', 'In Progress', 'Completed', 'Cancelled'];
+  const statusArray = ['Pending', 'On the way', 'Arrived', 'In Progress', 'Completed', 'Cancelled'];
   const REFERRAL_REWARD = 15;
   const REFERRAL_ACTIVE = "ACTIVE";
 
@@ -57,6 +59,15 @@ export default function JobRow({
 
   const handleAssignVehicle = async (jobId: string, vehicleId: string) => {
     await updateJobVehicle(jobId, vehicleId); // Call the parent function to update the job with selected vehicle
+  };
+
+  const generateRewardCode = (userId: string) => {
+    const hash = crypto.createHash("sha256").update(userId + new Date().toISOString()).digest("hex");
+    const referralCode = parseInt(hash, 16)
+      .toString(36)
+      .substring(0, 5)
+      .toUpperCase();
+    return `REW-${referralCode}`;
   };
 
   const handleUpdateStatus = async (jobId: string, status: string, referralCode?: { code: string; referrer: string; customer: string; }) => {
@@ -71,9 +82,9 @@ export default function JobRow({
       // Add referral reward for referrer
       await addReward({
         userId: referralCode.referrer,
-        rewardCode: `REW${referralCode.code.slice(-6)}`,
+        rewardCode: generateRewardCode(referralCode.referrer),
         type: 'REFERRAL',
-        amount: 15,
+        amount: REFERRAL_REWARD,
         expiryDate: new Date(new Date().setDate(new Date().getDate() + 6 * 30)).toISOString(),
         status: REFERRAL_ACTIVE,
       });
@@ -81,9 +92,9 @@ export default function JobRow({
       // Add referral reward for customer
       await addReward({
         userId: referralCode.customer,
-        rewardCode: `REW${referralCode.code.slice(-6)}`,
+        rewardCode: generateRewardCode(referralCode.customer),
         type: 'REFERRAL',
-        amount: 15,
+        amount: REFERRAL_REWARD,
         expiryDate: new Date(new Date().setDate(new Date().getDate() + 6 * 30)).toISOString(),
         status: REFERRAL_ACTIVE,
       });
@@ -95,6 +106,13 @@ export default function JobRow({
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchTerm)}`;
     window.open(googleMapsUrl, "_blank"); // Opens in a new tab
   };
+
+  const handleDeleteJob = async (id: string) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this job? This will void related invoices. This action cannot be reverted.');
+    if (confirmDelete) {
+      await deleteJob(id);
+    }
+  }
 
   return (
     <TableRow>
@@ -120,7 +138,7 @@ export default function JobRow({
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             {/* only render this item if status is not completed or cancelled */}
-            {status !== 'Completed' && status !== 'Cancelled' && (
+            {/* {status !== 'Completed' && status !== 'Cancelled' && ( */}
                 <DropdownMenuItem
                 className='cursor-pointer'>
                 <DropdownMenu>
@@ -143,12 +161,15 @@ export default function JobRow({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
+            {/* )} */}
+            {/* only render this item if vehicleLicencePlate is not null */}
+            {vehicleLicencePlate && status !== 'Completed' && status !== 'Cancelled' && status !== 'Pending' &&(
+              <DropdownMenuItem
               onClick={() => router.push(`/staff/vehicles/view-vehicle-location/${vehicleLicencePlate}`)}
               className='cursor-pointer'>
               View Vehicle Location
             </DropdownMenuItem>
+            )}
             <DropdownMenuItem
               onClick={() => router.push(`/staff/schedule/edit-job/${id}`)}
               className='cursor-pointer'>
@@ -213,6 +234,18 @@ export default function JobRow({
               className='cursor-pointer'>
               View Address
             </DropdownMenuItem>
+            {/* <Comments
+              comments={comments}
+              currentUser={currentUser}
+            /> */}
+             {/* only render this item if status is Draft or Pending */}
+             {status === 'Pending' || status === 'Draft' && (
+            <DropdownMenuItem
+              onClick={() => handleDeleteJob(id)}
+              className='cursor-pointer'>
+              Delete Job
+            </DropdownMenuItem>
+             )}
           </DropdownMenuContent>
         </DropdownMenu>
         

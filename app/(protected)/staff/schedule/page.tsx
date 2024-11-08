@@ -16,16 +16,19 @@ import { getVehicles } from '@/lib/actions/vehicles';
 
 type SearchParams = {
   filters?: string;
+  date?: string;
 };
 
 export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
   const jobs = await getJobsWithServiceAndVehicle();
 
-  console.log(jobs);
+  console.log(jobs[0]);
   const leaves = await getLeaves();
   getServices();
 
   const staff = await clerkClient().users.getUserList();
+  console.log(staff);
+
   const custClerk = createClerkClient({
     secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY,
   });
@@ -68,8 +71,12 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
     // return all if there is no filter param
     if (filtersArray[0] === 'all') {
       return jobs.map((job) => {
+        
+        const commentsArray = job.comments.map((comment: { sender: string; content: string; }) => {
+          return { sender: comment.sender, content: comment.content };
+        });
 
-        console.log(job.referralCode);
+        console.log(commentsArray);
 
         return (
           <JobRow
@@ -198,7 +205,8 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
         </div>
       </div>
       <TabsContent value='calendar'>
-        <CalendarClient filtersArray={filtersArray} jobs={tempJobs} />
+        {/* replace this with a real date value */}
+        <CalendarClient filtersArray={filtersArray} jobs={tempJobs}/>
       </TabsContent>
       <TabsContent value='table'>{tableDisplay()}</TabsContent>
     </Tabs>

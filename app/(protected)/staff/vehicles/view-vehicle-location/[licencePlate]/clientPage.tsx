@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Map from '../../_components/Map';
 
-export default function MapClient({ initialLat, initialLon, vehicle }: { initialLat: number, initialLon: number, vehicle: { gpsApi: string } }) {
+export default function MapClient({ initialLat, initialLon, gpsApi }: { initialLat: number, initialLon: number, gpsApi: string }) {
   const [liveLat, setLiveLat] = useState(initialLat);
   const [liveLon, setLiveLon] = useState(initialLon);
 
@@ -29,15 +29,21 @@ export default function MapClient({ initialLat, initialLon, vehicle }: { initial
         return json;
         });
 
-        let liveLocation = locationData.filter(function (location: { deviceId: number | null; }) {
-            return location.deviceId === parseInt(vehicle.gpsApi);
+        const liveLocation = locationData.filter(function (location: { deviceId: number | null; }) {
+            return location.deviceId === parseInt(gpsApi);
         })
 
         if (liveLocation) {
             console.log("Data refreshed");
             console.log(liveLocation);
-            setLiveLat(liveLocation.latitude);
-            setLiveLon(liveLocation.longitude);
+            console.log(liveLocation[0].latitude);
+            console.log(liveLocation[0].longitude);
+            console.log("before set state")
+            console.log(liveLat);
+            console.log(liveLon);
+
+            setLiveLat(liveLocation[0].latitude);
+            setLiveLon(liveLocation[0].longitude);
 
             console.log(liveLat);
             console.log(liveLon);
@@ -51,14 +57,20 @@ export default function MapClient({ initialLat, initialLon, vehicle }: { initial
     fetchLocationData();
     const interval = setInterval(fetchLocationData, 60000); // 60000 ms = 60 seconds
     return () => clearInterval(interval); // Cleanup on unmount
-  }, [vehicle.gpsApi]);
+  }, [gpsApi]);
+
+  useEffect(() => {
+    console.log("useeffect");
+    console.log(liveLat);
+    console.log(liveLon);
+  }
+  , [liveLat, liveLon]);
 
   return (
     <div>   
       {/* Render the map with the live location */}
       <p>Latitude: {liveLat}</p>
       <p>Longitude: {liveLon}</p>
-      {/* Render the map or any other components here */}
       <Map
         liveLat={liveLat}
         liveLon={liveLon}

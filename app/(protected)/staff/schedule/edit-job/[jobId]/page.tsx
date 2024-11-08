@@ -33,7 +33,11 @@ export default async function Booking({ params }: { params: { jobId: string } })
     job.customer = customerArray.find((customer) => customer.id === job.customer)?.name || '';
   });
 
-  const jobsArray = jobs.map((job) => {
+  console.log(jobs.length);
+
+  const jobsArray = jobs
+  .filter((job) => job._id.toString() !== params.jobId)
+  .map((job) => {
     return {
       schedule: job.schedule,
       status: job.status,
@@ -86,8 +90,6 @@ export default async function Booking({ params }: { params: { jobId: string } })
         status: service.status,
      };
   });
-
-
 
   return (
     <BookingClient

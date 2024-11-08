@@ -3,7 +3,7 @@ import MapClient from './clientPage';
 
 export default async function ViewLocation({ params }: { params: { licencePlate: string } }) {
   
-  let locationData = await fetch(
+  const locationData = await fetch(
     "https://server.traccar.org/api/positions",
     {
       method: "GET",
@@ -30,18 +30,15 @@ export default async function ViewLocation({ params }: { params: { licencePlate:
 
   liveLocation = liveLocation[0];
 
-  const liveLat = liveLocation.latitude;
-  const liveLon = liveLocation.longitude;
-
   console.log("liveLocation");
   console.log(liveLocation);
 
 
   return (
     <MapClient
-      initialLat={liveLat}
-      initialLon={liveLon}
-      vehicle={vehicle}
+      initialLat={0}
+      initialLon={0}
+      gpsApi={vehicle.gpsApi}
     />
   );
 }

@@ -87,8 +87,16 @@ const jobSchema = new mongoose.Schema(
         type: String,
       },
     },
-
-    
+    comments: [
+      {
+        sender: {
+          type: String,
+        },
+        content: {
+          type: String,
+        },
+      },
+    ],
   },
   { versionKey: false, timestamps: true },
 );
