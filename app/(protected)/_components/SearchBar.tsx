@@ -4,10 +4,11 @@ import { Input } from "@/components/ui/input";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
+  initialParams?: URLSearchParams;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-  const [query, setQuery] = useState("");
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, initialParams }) => {
+  const [query, setQuery] = useState(initialParams?.get("jobId") || "");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

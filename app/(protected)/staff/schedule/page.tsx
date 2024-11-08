@@ -2,34 +2,45 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import JobRow from './_components/JobRow';
-import { getJobsWithService } from '@/lib/actions/jobs';
+import { getJobsWithServiceAndVehicle } from '@/lib/actions/jobs';
 import { DropdownMenuCheckboxes } from './_components/DropdownMenuCheckboxes';
 import CalendarClient from './clientComponent';
-import { findAvailableStaff } from './_utils';
+import { findAvailableStaff, findAvailableVehicles } from './_utils';
 import { getLeaves } from '@/lib/actions/leave';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { getServices } from '@/lib/actions/services';
 import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
-
+import { getVehicles } from '@/lib/actions/vehicles';
 
 type SearchParams = {
   filters?: string;
+  date?: string;
 };
 
 export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
-  const jobs = await getJobsWithService();
-  await getServices();
+  const jobs = await getJobsWithServiceAndVehicle();
 
+  console.log(jobs[0]);
   const leaves = await getLeaves();
+  getServices();
 
   const staff = await clerkClient().users.getUserList();
+  console.log(staff);
 
   const custClerk = createClerkClient({
     secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY,
   });
   const customers = await custClerk.users.getUserList();
+
+  const vehicles = await getVehicles();
+
+  const vehicleArray = vehicles
+  .filter((vehicle) => vehicle.status === 'Active')
+  .map((vehicle) => {
+    return { id: vehicle._id.toString(), licencePlate: vehicle.licencePlate };
+  });
 
   // convert this PaginatedResourceResponse<User[]>into an array
   const staffArray = staff.data.map((staff) => {
@@ -60,6 +71,12 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
     // return all if there is no filter param
     if (filtersArray[0] === 'all') {
       return jobs.map((job) => {
+        
+        const commentsArray = job.comments.map((comment: { sender: string; content: string; }) => {
+          return { sender: comment.sender, content: comment.content };
+        });
+
+        console.log(commentsArray);
 
         return (
           <JobRow
@@ -70,10 +87,13 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             address={job.jobAddress}
             customerName={job.customer}
             staffName={job.staff}
+            vehicleLicencePlate={job.vehicle?.licencePlate}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
             staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
+            vehicleArray={findAvailableVehicles(vehicleArray, jobs, job.schedule.timeStart, job.schedule.timeEnd)}
+            referralCode={job.referralCode}
           />
         );
       });
@@ -93,10 +113,13 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             address={job.jobAddress}
             customerName={job.customer}
             staffName={job.staff}
+            vehicleLicencePlate={job.vehicle?.licencePlate}
             timeStart={job.schedule.timeStart.toLocaleString('en-GB')}
             timeEnd={job.schedule.timeEnd.toLocaleString('en-GB')}
             status={job.status}
             staffArray={findAvailableStaff(staffArray, jobs, leaves, job.schedule.timeStart, job.schedule.timeEnd)}
+            vehicleArray={findAvailableVehicles(vehicleArray, jobs, job.schedule.timeStart, job.schedule.timeEnd)}
+            referralCode={job.referralCode}
           />
         );
       });
@@ -128,6 +151,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
                 <TableHead>Address</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Staff</TableHead>
+                <TableHead>Vehicle</TableHead>
                 <TableHead>Start</TableHead>
                 <TableHead>End</TableHead>
                 <TableHead>Status</TableHead>
@@ -181,7 +205,8 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
         </div>
       </div>
       <TabsContent value='calendar'>
-        <CalendarClient filtersArray={filtersArray} jobs={tempJobs} />
+        {/* replace this with a real date value */}
+        <CalendarClient filtersArray={filtersArray} jobs={tempJobs}/>
       </TabsContent>
       <TabsContent value='table'>{tableDisplay()}</TabsContent>
     </Tabs>

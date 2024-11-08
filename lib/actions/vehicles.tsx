@@ -169,8 +169,12 @@ const getVehicle = async (vehicleId: string) => {
   return Vehicle.findById(vehicleId);
 };
 
+const getVehicleByLicencePlate = async (licencePlate: string) => {
+  return Vehicle.findOne({ licencePlate });
+};
+
 const getVehicles = async () => {
   return Vehicle.find();
 };
 
-export { addVehicle, updateVehicle, deleteVehicle, getVehicle, getVehicles };
+export { addVehicle, updateVehicle, deleteVehicle, getVehicle, getVehicles, getVehicleByLicencePlate };
