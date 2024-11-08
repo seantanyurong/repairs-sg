@@ -232,6 +232,17 @@ const QuoteActionsClient = ({
           <DeclineQuoteDialog />
         </>
       )}
+      {status === "Accepted" && (
+        <Button
+          type="button"
+          onClick={() =>
+            router.push(`/staff/schedule/create-job/${quotationId}`)
+          }
+          className="w-auto"
+        >
+          Create Job
+        </Button>
+      )}
     </div>
   );
 };
