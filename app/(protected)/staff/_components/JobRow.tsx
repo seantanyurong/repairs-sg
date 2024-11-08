@@ -21,7 +21,6 @@ export default async function JobRow({
       <TableCell className="font-medium">{address}</TableCell>
       <TableCell className="font-medium">{timeStart}</TableCell>
       <TableCell className="font-medium">{timeEnd}</TableCell>
-      <TableCell></TableCell>
     </TableRow>
   );
 }
