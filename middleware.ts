@@ -7,12 +7,12 @@ import { NextResponse } from "next/server";
 
 // Protected Routes
 const isTechnicianRoute = createRouteMatcher([
-  // To Be Updated When More Features Arrives In SR3 and Beyond
   "/staff",
   "/staff/invoices(.*)",
+  "/staff/leaves(.*)",
+  "/staff/schedule(.*)",
 ]);
 const isAdminRoute = createRouteMatcher([
-  // To Be Updated When More Features Arrives In SR3 and Beyond
   "/staff",
   "/staff/services(.*)",
   "/staff/invoices(.*)",
@@ -23,7 +23,6 @@ const isAdminRoute = createRouteMatcher([
   "/staff/staff-management(.*)",
 ]);
 const isSuperAdminRoute = createRouteMatcher([
-  // To Be Updated When More Features Arrives In SR3 and Beyond
   "/staff(.*)",
   "/public/analytics(.*)"
 ]);
