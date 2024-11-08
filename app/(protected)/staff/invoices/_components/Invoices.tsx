@@ -32,6 +32,7 @@ import {
 import InvoiceRow from "./InvoiceRow";
 import SearchBar from "@/app/(protected)/_components/SearchBar";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useSearchParams } from "next/navigation";
 
 interface Invoice {
   _id: string;
@@ -54,6 +55,7 @@ interface Invoice {
 interface InvoicesProps {
   initialInvoices: Invoice[];
   customerMap: { [key: string]: { firstName: string; lastName: string } };
+  searchParams?: URLSearchParams;
 }
 
 type ValidityStatus = "active" | "draft" | "void";
@@ -65,7 +67,8 @@ export default function Invoices({
   customerMap,
 }: InvoicesProps) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
-  const [query, setQuery] = useState<string>("");
+  const searchParams = useSearchParams(); // To read the current query parameters
+  const [query, setQuery] = useState<string>(searchParams.get("jobId") || "");
 
   // Sort states
   const [sortCriteria, setSortCriteria] = useState<string>("");
@@ -122,7 +125,7 @@ export default function Invoices({
   const handleSearchFilterSort = useCallback(
     (query: string) => {
       let resultInvoices = initialInvoices;
-
+      
       // Search
       setQuery(query);
       if (query.trim() === "") {
@@ -328,7 +331,7 @@ export default function Invoices({
 
   return (
     <>
-      <SearchBar onSearch={handleSearchFilterSort} />
+      <SearchBar onSearch={handleSearchFilterSort} initialParams={searchParams}/>
 
       <div className="flex justify-between">
         <div className="w-1/6 border-r pr-4">
