@@ -10,5 +10,6 @@ export const NAVIGATION_LABELS = {
   VEHICLES: "Vehicles",
   ANALYTICS: "Analytics",
   LEAVES: "Leaves",
+  STAFF: "Staff",
   SETTINGS: "Settings",
 } as const;
