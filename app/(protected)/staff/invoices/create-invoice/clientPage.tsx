@@ -2,7 +2,7 @@
 
 import * as z from 'zod';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Loader2 } from "lucide-react";
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -82,12 +82,12 @@ export default function CreateInvoiceClient({
     },
   });
 
-  const calculateTotalAmount = () => {
+  const calculateTotalAmount = useCallback(() => {
     const total = form.getValues('lineItems').reduce((sum, item) => {
       return sum + (item.amount || 0) * (item.quantity || 0);
     }, 0);
     form.setValue('totalAmount', total);
-  };
+  }, [form]);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -190,12 +190,16 @@ export default function CreateInvoiceClient({
     name: 'lineItems',
   });
 
+  const lineItemsRef = useRef(form.watch('lineItems'));
   useEffect(() => {
-    calculateTotalAmount();
-  }, [form.watch('lineItems')]);
+    const lineItems = form.watch('lineItems');
+    if (lineItems !== lineItemsRef.current) {
+      calculateTotalAmount();
+      lineItemsRef.current = lineItems; // Update ref when the value changes
+    }
+  }, [form, calculateTotalAmount]);
 
   const onSubmit = async () => {
-    console.log("onSubmit");
     setMessage('');
     setErrors({});
 
