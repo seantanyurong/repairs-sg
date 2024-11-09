@@ -286,7 +286,7 @@ export default function Invoices({
     }
 
     return (
-      <Card x-chunk="dashboard-06-chunk-0">
+      <Card x-chunk="overflow-x-auto w-full">
         <CardHeader>
           <CardTitle>Invoices</CardTitle>
           <CardDescription>
@@ -511,7 +511,7 @@ export default function Invoices({
           </div>
         </div>
 
-        <div className="w-9/10 pl-0">
+        <div className="overflow-x-auto w-full">
           {/* Sort selects */}
           <div className="flex items-center space-x-4 bg-secondary p-4 mb-2 rounded shadow-sm">
             <span className="text-sm font-bold">Sort by</span>

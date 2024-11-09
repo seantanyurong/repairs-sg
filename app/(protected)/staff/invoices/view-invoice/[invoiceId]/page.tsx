@@ -86,7 +86,7 @@ const ViewInvoice = async ({ params }: { params: { invoiceId: string } }) => {
       total_amount: `$ ${invoice.totalAmount.toFixed(2)}`,
       subtotal: `$ ${invoice.totalAmount.toFixed(2)}`,
       qrcode: invoice.qrCode,
-      taxes: `$ 0.00`,
+      taxes: `9% GST Inclusive`,
       customer_name: customerDetails.name ? customerDetails.name : "Customer Name",
       company_name: customerDetails.company ? customerDetails.company : "",
       address_line_1: customerDetails.addressLine1 ? customerDetails.addressLine1 : "",

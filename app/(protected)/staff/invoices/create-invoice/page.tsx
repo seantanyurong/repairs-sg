@@ -1,5 +1,6 @@
 import { createClerkClient, clerkClient } from "@clerk/nextjs/server";
 import { getJobs } from "@/lib/actions/jobs";
+import { getService } from "@/lib/actions/services";
 import CreateInvoiceClient from "./clientPage";
 
 
@@ -22,12 +23,20 @@ const CreateInvoice = async () => {
   const getJobsAction = async () => {
     "use server";
     const jobs = await getJobs();
-    return jobs.map(job => ({
-      id: job._id.toString(),
-      description: job.description,
-      quantity: job.quantity,
-      customer: job.customer,
-    }));
+    const allJobs = await Promise.all(jobs.map(async (job) => {
+      const service = await getService(job.service.toString());
+
+      return {
+        id: job._id.toString(),
+        service: service?.name || "Unknown",
+        quantity: job.quantity,
+        price: job.price,
+        customer: job.customer,
+        staff: job.staff,
+      };
+    }))
+    
+    return allJobs.reverse();
   }
 
   return (

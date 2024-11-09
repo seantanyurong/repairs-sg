@@ -26,7 +26,10 @@ const isSuperAdminRoute = createRouteMatcher([
   "/staff(.*)",
   "/public/analytics(.*)"
 ]);
-const isHomeRoute = createRouteMatcher(["/"]);
+const isHomeRoute = createRouteMatcher([
+  "/",
+  "/sign-in"
+]);
 
 export default clerkMiddleware(async (auth, req) => {
   if (
@@ -41,14 +44,14 @@ export default clerkMiddleware(async (auth, req) => {
   if (typeof userId === "string") {
     const user = await clerkClient().users.getUser(userId as string);
     const role = user.publicMetadata.role;
+    if (user && isHomeRoute(req)) {
+      return NextResponse.redirect(new URL("/staff", req.url));
+    }
+
     if (
       (role === "technician" && !isTechnicianRoute(req)) ||
       (role === "admin" && !isAdminRoute(req))
     ) {
-      return NextResponse.redirect(new URL("/staff", req.url));
-    }
-
-    if (user && isHomeRoute(req)) {
       return NextResponse.redirect(new URL("/staff", req.url));
     }
   }
