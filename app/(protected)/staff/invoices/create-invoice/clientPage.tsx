@@ -52,18 +52,20 @@ export default function CreateInvoiceClient({
   getStaffAction: (email: string) => Promise<string>,
   getJobsAction: () => Promise<{
     id: string,
-    description: string,
-    quantity: string,
-    customer: string
+    service: string,
+    quantity: number,
+    price: number,
+    customer: string,
+    staff: string,
   }[]>
 }) {
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
   const [isCustLoading, setIsCustLoading] = useState(false);
   const [isStaffLoading, setIsStaffLoading] = useState(false);
-  const [jobs, setJobs] = useState<{ id: string, description: string, quantity: string, customer: string }[]>([]);
+  const [jobs, setJobs] = useState<{ id: string, service: string, quantity: number, price: number, customer: string, staff: string }[]>([]);
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<{ id: string, description: string, quantity: string, customer: string } | null>(null);
+  const [selectedJob, setSelectedJob] = useState<{ id: string, service: string, quantity: number, price: number, customer: string, staff: string } | null>(null);
   const searchParams = useSearchParams(); // To read the current query parameters
   const router = useRouter();
 
@@ -72,7 +74,7 @@ export default function CreateInvoiceClient({
     defaultValues: {
       invoiceTemplate: '670befb8e46e44da50d1ceea',
       job: '',
-      lineItems: [{ description: 'Transport Fee', quantity: 1, amount: 40 }],
+      lineItems: [{ description: 'Transport Fee', quantity: 1, amount: 40 }, { description: '', quantity: 1, amount: 1 }],
       totalAmount: 0,
       publicNote: '',
       customer: '',
@@ -80,29 +82,44 @@ export default function CreateInvoiceClient({
     },
   });
 
-
-  const fetchJobs = async () => {
-    setIsLoadingJobs(true);
-    try {
-      const jobList = await getJobsAction();
-      setJobs(jobList);
-    } catch (err) {
-      console.error(err);
-      toast.error("An error occurred while fetching jobs.");
-    } finally {
-      setIsLoadingJobs(false);
-    }
+  const calculateTotalAmount = () => {
+    const total = form.getValues('lineItems').reduce((sum, item) => {
+      return sum + (item.amount || 0) * (item.quantity || 0);
+    }, 0);
+    form.setValue('totalAmount', total);
   };
 
   useEffect(() => {
-    fetchJobs();
-  }, []);
+    const fetchJobs = async () => {
+      setIsLoadingJobs(true);
+      try {
+        const jobList = await getJobsAction();
+        setJobs(jobList);
+      } catch (err) {
+        console.error(err);
+        toast.error("An error occurred while fetching jobs.");
+      } finally {
+        setIsLoadingJobs(false);
+      }
+    };
 
-  const jobInitialisedFrom = jobs.find(job => job.id === searchParams.get('jobId'));
-  if (jobInitialisedFrom && !form.getValues('job')) {
-    form.setValue('job', jobInitialisedFrom.id);
-    setSelectedJob(jobInitialisedFrom);
-  }
+    fetchJobs();
+  }, [getJobsAction]);
+
+  useEffect(() => {
+    const jobInitialisedFrom = jobs.find(job => job.id === searchParams.get('jobId'));
+    if (jobInitialisedFrom && !form.getValues('job')) {
+      form.setValue('job', jobInitialisedFrom.id);
+      form.setValue('lineItems.1.description', jobInitialisedFrom.service);
+      form.setValue('lineItems.1.quantity', jobInitialisedFrom.quantity);
+      form.setValue('lineItems.1.amount', jobInitialisedFrom.price);
+      form.setValue('customer', jobInitialisedFrom.customer);
+      form.setValue('staff', jobInitialisedFrom.staff);
+      
+      calculateTotalAmount();
+      setSelectedJob(jobInitialisedFrom);
+    }
+  }, [jobs, searchParams, form, calculateTotalAmount]);
 
   const getCustomerByEmail = async () => {
     const fieldState = form.getFieldState("customer");
@@ -173,13 +190,6 @@ export default function CreateInvoiceClient({
     name: 'lineItems',
   });
 
-  const calculateTotalAmount = () => {
-    const total = form.getValues('lineItems').reduce((sum, item) => {
-      return sum + (item.amount || 0) * (item.quantity || 0);
-    }, 0);
-    form.setValue('totalAmount', total);
-  };
-
   useEffect(() => {
     calculateTotalAmount();
   }, [form.watch('lineItems')]);
@@ -215,9 +225,8 @@ export default function CreateInvoiceClient({
     <Form {...form}>
       <form
         onSubmit={(e) => {
-          console.log("Form Submitting...")
           const formData = form.getValues();
-          console.log("Form Data Before Prevent Default:", formData);
+          console.log("Form Data:", formData);
           e.preventDefault();
           form.handleSubmit(onSubmit)();
         }}
@@ -237,6 +246,12 @@ export default function CreateInvoiceClient({
                     const selectedJob = jobs.find(job => job.id === value);
                     if (selectedJob) {
                       setSelectedJob(selectedJob);
+                      form.setValue('lineItems.1.description', selectedJob.service);
+                      form.setValue('lineItems.1.quantity', selectedJob.quantity);
+                      form.setValue('lineItems.1.amount', selectedJob.price);
+                      form.setValue('customer', selectedJob.customer);
+                      form.setValue('staff', selectedJob.staff);
+                      calculateTotalAmount();
                     }
                   }}
                 >
@@ -251,13 +266,9 @@ export default function CreateInvoiceClient({
                       </SelectItem>
                     ) : (
                       jobs.map(job => {
-                        const priceMatch = job.description.match(/Price:\s*\$(\d+(\.\d+)?)/);
-                        const price = priceMatch && priceMatch[1] ? parseFloat(priceMatch[1]) : 0;
-                        const quantityPrice = (price / Number(job.quantity)).toFixed(2);
-
-                        return (
+                          return (
                           <SelectItem key={job.id} value={job.id}>
-                            {job.id} (Desc: {job.description.replace(/Price:\s*\$(\d+(\.\d+)?)/, `Price: $ ${quantityPrice}`)} Qty: {job.quantity})
+                            {job.id} (Desc: {job.service} Price: ${job.price} Qty: {job.quantity})
                           </SelectItem>
                         );
                       })
