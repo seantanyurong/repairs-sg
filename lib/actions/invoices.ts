@@ -411,6 +411,15 @@ const getInvoicesByCustomerId = async (customerId: string) => {
   return Invoice.find({ customer: customerId });
 };
 
+const getOverdueInvoiceByStaffId = async (staffId: string) => {
+  return Invoice.find({
+    createdBy: staffId,
+    paymentStatus: "Unpaid",
+    validityStatus: "active",
+    dateDue: { $lt: new Date() },
+  });
+};
+
 export {
   addInvoice,
   updateInvoice,
@@ -419,4 +428,5 @@ export {
   getInvoices,
   voidInvoice,
   getInvoicesByCustomerId,
+  getOverdueInvoiceByStaffId,
 };

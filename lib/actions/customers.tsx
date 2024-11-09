@@ -1,17 +1,16 @@
-'use server';
+"use server";
 
-import { z } from 'zod';
+import { z } from "zod";
 
-import Customers from '@/models/Customer';
-import { createClerkClient } from '@clerk/nextjs/server';
-import { revalidatePath } from 'next/cache';
+import { createClerkClient } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
 const customerClerk = createClerkClient({
   secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY as string,
 });
 
 const getCustomers = async () => {
-  return Customers.find();
+  return await customerClerk.users.getUserList();
 };
 
 const getCustomerByEmail = async (email: string) => {
@@ -20,12 +19,12 @@ const getCustomerByEmail = async (email: string) => {
   });
 
   if (result.totalCount === 0) {
-    throw new Error('No customer found with that email address');
+    throw new Error("No customer found with that email address");
   }
   console.log(result.data[0]);
 
   if (result.data[0].banned) {
-    throw new Error('Customer is banned');
+    throw new Error("Customer is banned");
   }
   return JSON.stringify(result.data[0]);
 };
@@ -33,13 +32,15 @@ const getCustomerByEmail = async (email: string) => {
 const getCustomerById = async (id: string) => {
   const user = await customerClerk.users.getUser(id);
 
-  if (!user) throw new Error('No customer found with that id');
+  if (!user) throw new Error("No customer found with that id");
 
   return JSON.stringify(user);
 };
 
 const getAllCustomerEmail = async () => {
-  return (await customerClerk.users.getUserList()).data.map((customer) => customer.emailAddresses[0].emailAddress);
+  return (await customerClerk.users.getUserList()).data.map(
+    (customer) => customer.emailAddresses[0].emailAddress
+  );
 };
 
 const addCustomer = async (customer: {
@@ -53,16 +54,16 @@ const addCustomer = async (customer: {
     firstName: z.string().min(1),
     lastName: z.string().min(1),
     email: z.string().min(1),
-    status: z.enum(['whitelisted', 'blacklisted']),
+    status: z.enum(["whitelisted", "blacklisted"]),
     password: z.string().min(8),
   });
 
   const emails = await getAllCustomerEmail();
   if (emails.includes(customer.email)) {
     return {
-      message: 'Error',
+      message: "Error",
       errors: {
-        'Email error': 'That email address is taken. Please try another.',
+        "Email error": "That email address is taken. Please try another.",
       },
     };
   }
@@ -75,7 +76,8 @@ const addCustomer = async (customer: {
     password: customer.password,
   });
 
-  if (!response.success) return { message: 'Error', errors: response.error.flatten().fieldErrors };
+  if (!response.success)
+    return { message: "Error", errors: response.error.flatten().fieldErrors };
 
   const params = {
     first_name: response.data.firstName,
@@ -88,9 +90,9 @@ const addCustomer = async (customer: {
   };
 
   await customerClerk.users.createUser(params);
-  revalidatePath('/customer/customer-management');
+  revalidatePath("/customer/customer-management");
 
-  return { message: 'Customer created successfully' };
+  return { message: "Customer created successfully" };
 };
 
 const deleteCustomer = async (customerId: string) => {
@@ -107,7 +109,7 @@ const updateCustomer = async (customer: {
     id: z.string().min(1),
     firstName: z.string().min(1),
     lastName: z.string().min(1),
-    status: z.enum(['whitelisted', 'blacklisted']),
+    status: z.enum(["whitelisted", "blacklisted"]),
   });
 
   const response = customerSchema.safeParse({
@@ -118,7 +120,7 @@ const updateCustomer = async (customer: {
   });
 
   if (!response.success) {
-    return { message: 'Error', errors: response.error.flatten().fieldErrors };
+    return { message: "Error", errors: response.error.flatten().fieldErrors };
   }
 
   const userParams = {
@@ -135,17 +137,27 @@ const updateCustomer = async (customer: {
   await customerClerk.users.updateUser(customer.id, userParams);
   await customerClerk.users.updateUserMetadata(customer.id, metadataParams);
 
-  revalidatePath('/staff/customer-management');
+  revalidatePath("/staff/customer-management");
 
-  return { message: 'Customer updated successfully' };
+  return { message: "Customer updated successfully" };
 };
 
 const addCommentToCustomer = async (customerId: string, comment: string) => {
   const customer = await customerClerk.users.getUser(customerId);
   const comments = (customer.publicMetadata.comments as string[]) || [];
   comments.push(comment);
-  await customerClerk.users.updateUserMetadata(customerId, { publicMetadata: { comments } });
-  revalidatePath('/staff/customer-management/customer-details/' + customerId);
+  await customerClerk.users.updateUserMetadata(customerId, {
+    publicMetadata: { comments },
+  });
+  revalidatePath("/staff/customer-management/customer-details/" + customerId);
+};
+
+const getCustomerName = async (id: string) => {
+  const user = await customerClerk.users.getUser(id);
+
+  if (!user) throw new Error("No customer found with that id");
+
+  return JSON.stringify(user.fullName);
 };
 
 export {
@@ -156,4 +168,5 @@ export {
   deleteCustomer,
   updateCustomer,
   addCommentToCustomer,
+  getCustomerName,
 };

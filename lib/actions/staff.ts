@@ -122,7 +122,7 @@ const updateStaff = async (staff: {
 
 const getAllStaffEmail = async () => {
   return (await clerkClient().users.getUserList()).data.map(
-    (staff) => staff.emailAddresses[0].emailAddress
+    (staff) => staff.emailAddresses[0].emailAddress,
   );
 };
 
@@ -136,6 +136,6 @@ const getStaffById = async (id: string) => {
   if (!user) throw new Error("No staff found with that id");
 
   return JSON.stringify(user);
-}
+};
 
 export { addStaff, updateStaff, getAllStaffEmail, deleteStaff, getStaffById };
