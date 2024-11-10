@@ -1,8 +1,19 @@
 'use client';
 
 import { TableCell, TableRow } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { MoreHorizontal } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function JobRow({
+  id,
   serviceName,
   description,
   address,
@@ -16,6 +27,8 @@ export default function JobRow({
   timeStart: string;
   timeEnd: string;
 }) {
+  const router = useRouter();
+
   return (
     <TableRow>
       <TableCell className='font-medium'>{serviceName}</TableCell>
@@ -24,7 +37,7 @@ export default function JobRow({
       <TableCell className='font-medium'>{timeStart}</TableCell>
       <TableCell className='font-medium'>{timeEnd}</TableCell>
       <TableCell>
-        {/* <DropdownMenu>
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button aria-haspopup='true' size='icon' variant='ghost'>
               <MoreHorizontal className='h-4 w-4' />
@@ -33,16 +46,11 @@ export default function JobRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => router.push(`/staff/vehicles/edit-vehicle/${id}`)}
-              className='cursor-pointer'>
+            <DropdownMenuItem onClick={() => router.push(`/staff/schedule/edit-job/${id}`)} className='cursor-pointer'>
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => deleteVehicle(id)} className='cursor-pointer'>
-              Delete
-            </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu> */}
+        </DropdownMenu>
       </TableCell>
     </TableRow>
   );
