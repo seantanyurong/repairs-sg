@@ -16,6 +16,14 @@ import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@
 import { updateJob } from '@/lib/actions/jobs';
 import { useUser } from '@clerk/clerk-react';
 import { format, addHours, startOfDay, addDays, isAfter } from 'date-fns';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon } from "lucide-react"
+
 
 const formSchema = z.object({
   service: z.string().min(1),
@@ -26,6 +34,7 @@ const formSchema = z.object({
   customer: z.string(),
   staff: z.string(),
   vehicle: z.string(),
+  date: z.date(),
 });
 
 type Customer = {
@@ -127,6 +136,27 @@ const findAvailableVehiclesForClientComponent = (vehicleArray: VehicleFromArray[
   return availableVehicles;
 };
 
+  // Function to generate 2-hour intervals for the next 3 days
+  const generateScheduleOptionsForDay = (startDate : Date) => {
+    const options = [];
+
+    let currentDate = startOfDay(startDate); // Start at 00:00 tomorrow
+      // Create time slots from 10:00 to 20:00 each day
+      for (let hour = 10; hour < 20; hour += 2) {
+        const startTime = addHours(startOfDay(currentDate), hour);
+        const endTime = addHours(startTime, 2);
+
+        options.push({
+          value: JSON.stringify({
+            timeStart: format(startTime, "yyyy-MM-dd'T'HH:mm:ss"),
+            timeEnd: format(endTime, "yyyy-MM-dd'T'HH:mm:ss"),
+          }), // Pass both start and end time in the value
+          label: format(startTime, 'MMMM d, yyyy HH:mm') + ' - ' + format(endTime, 'HH:mm'),
+        });
+      }
+    return options;
+  };
+
 export default function BookingClient({ 
   job,
   services,
@@ -160,6 +190,7 @@ export default function BookingClient({
     label: format(job.schedule.timeStart, 'MMMM d, yyyy HH:mm') + ' - ' + format(job.schedule.timeEnd, 'HH:mm'),
   };
 
+  const [currentScheduleOptions, setCurrentScheduleOptions] = useState(generateScheduleOptionsForDay(job.schedule.timeStart));
   const [selectedVehicle, setSelectedVehicle] = useState(originalVehicle);
   const [selectedStaff, setSelectedStaff] = useState(originalStaff); 
   const [service, setService] = useState(originalService);
@@ -186,36 +217,8 @@ export default function BookingClient({
     },
   });
 
-  console.log(form.getValues());
-
-  // Function to generate 2-hour intervals for the next 3 days
-  const generateScheduleOptions = () => {
-    const options = [];
-    const startDate = addDays(new Date(), 1); // Start from tomorrow
-    const endDate = addDays(startDate, 3); // Up to 3 days from tomorrow
-
-    let currentDate = startOfDay(startDate); // Start at 00:00 tomorrow
-    while (isAfter(endDate, currentDate)) {
-      // Create time slots from 10:00 to 20:00 each day
-      for (let hour = 10; hour < 20; hour += 2) {
-        const startTime = addHours(startOfDay(currentDate), hour);
-        const endTime = addHours(startTime, 2);
-
-        options.push({
-          value: JSON.stringify({
-            timeStart: format(startTime, "yyyy-MM-dd'T'HH:mm:ss"),
-            timeEnd: format(endTime, "yyyy-MM-dd'T'HH:mm:ss"),
-          }), // Pass both start and end time in the value
-          label: format(startTime, 'MMMM d, yyyy HH:mm') + ' - ' + format(endTime, 'HH:mm'),
-        });
-      }
-      currentDate = addDays(currentDate, 1); // Move to the next day
-    }
-
-    return options;
-  };
-
-  const scheduleOptions = generateScheduleOptions();
+  // console.log(form.getValues());
+  console.log(currentScheduleOptions);
 
   const itemPrice = service!.price - (service!.price * (priceQty - 1) * service!.volumeDiscountPercentage) / 100;
   const itemPriceRounded = Math.round(itemPrice * 100) / 100;
@@ -275,35 +278,17 @@ export default function BookingClient({
                       <FormField
                         control={form.control}
                         name="service"
-                        render={({ field }) => (
+                        render={() => (
                           <FormItem>
                             <FormLabel>Service</FormLabel>
-                            <Select
-                              onValueChange={(selectedServiceName) => {
-                                // Find the selected service by name
-                                const selectedService = services.find(
-                                  (service) => service.name === selectedServiceName
-                                );
-                                // Change the state to the selected service
-                                if (selectedService) {
-                                  setService(selectedService);
-                                  field.onChange(selectedServiceName); // Update form field value
-                                }
-                              }}
-                            >
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder={service!.name} />
-                                </SelectTrigger>
+                              <Input
+                                type='String'
+                                min='1'
+                                placeholder={service!.name}
+                                readOnly // Makes the field non-editable
+                              />
                               </FormControl>
-                              <SelectContent>
-                                {services.map((service) => (
-                                  <SelectItem key={service.name} value={service.name}>
-                                    {service.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -319,12 +304,8 @@ export default function BookingClient({
                               <Input
                                 type='number'
                                 min='1'
-                                placeholder='Enter quantity'
                                 {...field}
-                                onChange={(event) => {
-                                  field.onChange(+event.target.value);
-                                  setPriceQty(+event.target.value);
-                                }}
+                                readOnly
                               />
                             </FormControl>
                             <FormMessage />
@@ -346,45 +327,133 @@ export default function BookingClient({
                           </FormItem>
                         )}
                       />
+                      {/* Calendar Field */}
+                      <FormField
+                        control={form.control}
+                        name="date"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Date of birth</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button>
+                                    {field.value ? (
+                                      format(field.value, "PPP")
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={(selectedDate) => { 
+                                    setCurrentScheduleOptions(generateScheduleOptionsForDay(selectedDate!));
+                                    field.onChange(selectedDate);
+                                    setSchedule('');
+                                    setSelectedStaff(undefined);
+                                    setSelectedVehicle(undefined);
+                                    form.setValue('staff', '');
+                                    form.setValue('vehicle', '');
+                                    form.setValue('schedule', '');
 
+                                    console.log(form.getValues());
+                                    }}
+                                  disabled={(date) =>
+                                    date < new Date()
+                                  }
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {/* Schedules Field
+                      <FormField
+                        control={form.control}
+                        name='schedule'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Booking Timing</FormLabel>
+                            <Select
+                                onValueChange={(selectedSchedule) => {
+                                    console.log(selectedSchedule);
+                                    const formattedSchedule = JSON.parse(selectedSchedule);
+                                    setAvailableStaff(findAvailableStaffForClientComponent(staffArray, jobs, leaves, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
+                                    setAvailableVehicles(findAvailableVehiclesForClientComponent(vehicleArray, jobs, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
+                                    setSelectedStaff(undefined);
+                                    setSelectedVehicle(undefined);
+                                    form.setValue('staff', '');
+                                    form.setValue('vehicle', '');
+
+                                    setSchedule(selectedSchedule);
+                                    field.onChange(selectedSchedule);
+                                }}
+                              >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={originalSchedule.label} />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {scheduleOptions.map((option) => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      /> */}
                       {/* Schedules Field */}
                       <FormField
-                      control={form.control}
-                      name='schedule'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Booking Timing</FormLabel>
-                          <Select
-                              onValueChange={(selectedSchedule) => {
-                                  const formattedSchedule = JSON.parse(selectedSchedule);
-                                  setAvailableStaff(findAvailableStaffForClientComponent(staffArray, jobs, leaves, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
-                                  setAvailableVehicles(findAvailableVehiclesForClientComponent(vehicleArray, jobs, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
-                                  setSelectedStaff(undefined);
-                                  setSelectedVehicle(undefined);
-                                  form.setValue('staff', '');
-                                  form.setValue('vehicle', '');
+                        control={form.control}
+                        name='schedule'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Booking Timing</FormLabel>
+                            <Select
+                                onValueChange={(selectedSchedule) => {
+                                    console.log(selectedSchedule);
+                                    const formattedSchedule = JSON.parse(selectedSchedule);
+                                    setAvailableStaff(findAvailableStaffForClientComponent(staffArray, jobs, leaves, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
+                                    setAvailableVehicles(findAvailableVehiclesForClientComponent(vehicleArray, jobs, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
+                                    setSelectedStaff(undefined);
+                                    setSelectedVehicle(undefined);
+                                    form.setValue('staff', '');
+                                    form.setValue('vehicle', '');
 
-                                  setSchedule(selectedSchedule);
-                                  field.onChange(selectedSchedule);
-                              }}
-                            >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder={originalSchedule.label} />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {scheduleOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                                    setSchedule(selectedSchedule);
+                                    field.onChange(selectedSchedule);
+                                }}
+                              >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder={
+                                    schedule !== '' ? `${format(new Date(JSON.parse(schedule).timeStart), 'MMMM d, yyyy HH:mm')} - ${format(new Date(JSON.parse(schedule).timeEnd), 'HH:mm')}` : 'Select a Schedule'
+                                    } />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {currentScheduleOptions.map((option) => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
                       {/* Description Field */}
                       <FormField
@@ -403,24 +472,18 @@ export default function BookingClient({
                       {/* Customer Field */}
                       <FormField
                         control={form.control}
-                        name='customer'
-                        render={({ field }) => (
+                        name="customer"
+                        render={() => (
                           <FormItem>
                             <FormLabel>Customer</FormLabel>
-                            <Select onValueChange={field.onChange}>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder={originalCustomer.name} />
-                                </SelectTrigger>
+                              <Input
+                                type='String'
+                                min='1'
+                                placeholder={originalCustomer.name}
+                                readOnly // Makes the field non-editable
+                              />
                               </FormControl>
-                              <SelectContent>
-                                {customerArray.map((customer) => (
-                                  <SelectItem key={customer.id} value={customer.id}>
-                                    {customer.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}

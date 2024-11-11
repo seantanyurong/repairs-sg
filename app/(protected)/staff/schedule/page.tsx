@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { getServices } from '@/lib/actions/services';
-import { clerkClient, createClerkClient } from "@clerk/nextjs/server";
+import { auth, clerkClient, createClerkClient } from "@clerk/nextjs/server";
 import { getVehicles } from '@/lib/actions/vehicles';
 
 type SearchParams = {
@@ -21,13 +21,14 @@ type SearchParams = {
 
 export default async function Schedule({ searchParams }: { searchParams: SearchParams }) {
   const jobs = await getJobsWithServiceAndVehicle();
-
-  console.log(jobs[0]);
   const leaves = await getLeaves();
-  getServices();
+
+  const userId = auth().userId;
+  console.log(userId);
+  const user = await clerkClient().users.getUser(userId as string);
+  const role = user.publicMetadata.role;
 
   const staff = await clerkClient().users.getUserList();
-  console.log(staff);
 
   const custClerk = createClerkClient({
     secretKey: process.env.CUSTOMER_CLERK_SECRET_KEY,
@@ -51,9 +52,6 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
     return { id: String(customer.id).trim(), name: customer.firstName + ' ' + customer.lastName };
   });
 
-  console.log(staffArray);
-  console.log(customerArray);
-
   const filters = searchParams.filters;
   const filtersArray = filters ? filters.split(',') : [];
 
@@ -75,8 +73,6 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
         const commentsArray = job.comments.map((comment: { sender: string; content: string; }) => {
           return { sender: comment.sender, content: comment.content };
         });
-
-        console.log(commentsArray);
 
         return (
           <JobRow
@@ -176,10 +172,16 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
   const tempJobs = jobs.map((job) => {
     return {
       _id: job._id.toString(),
+      service: job.service.name,
+      quantity: job.quantity,
+      address: job.jobAddress,
       timeStart: new Date(job.schedule.timeStart.toISOString().replace('.000', '')),
       timeEnd: new Date(job.schedule.timeEnd.toISOString().replace('.000', '')),
       title: job.description,
+      customer: job.customer,
       staff: job.staff,
+      vehicle: job.vehicle?.licencePlate || '',
+      status: job.status,
       color: 'blue',
     };
   });
@@ -206,7 +208,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
       </div>
       <TabsContent value='calendar'>
         {/* replace this with a real date value */}
-        <CalendarClient filtersArray={filtersArray} jobs={tempJobs}/>
+        <CalendarClient filtersArray={filtersArray} jobs={tempJobs} role={role as string}/>
       </TabsContent>
       <TabsContent value='table'>{tableDisplay()}</TabsContent>
     </Tabs>

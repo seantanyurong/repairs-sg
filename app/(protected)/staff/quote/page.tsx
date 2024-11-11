@@ -13,8 +13,14 @@ import { getQuotations } from "@/lib/actions/quotations";
 import { quotationColumns } from "./edit/[[...quotationId]]/_components/QuotationColumns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const Page = async () => {
+type SearchParams = {
+  tab?: string;
+};
+
+const Page = async ({searchParams} : {searchParams : SearchParams}) => {
   const quotations = await getQuotations();
+
+  const tab = searchParams.tab === "accepted" ? "accepted" : "all";
 
   const cardDisplay = (validityStatus?: string) => {
     const filteredQuotations = quotations.filter((quotation) => {
@@ -34,7 +40,8 @@ const Page = async () => {
   };
 
   return (
-    <Tabs defaultValue="active">
+    // tab should be either the quotationTab or active
+    <Tabs defaultValue={tab}>
       <h1 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-5xl">
         Quotations
       </h1>

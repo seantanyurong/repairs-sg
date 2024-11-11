@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { VariantProps, cva } from 'class-variance-authority';
 import {
@@ -76,7 +77,8 @@ type ContextType = {
   locale: Locale;
   setEvents: (date: CalendarEvent[]) => void;
   onChangeView?: (view: View) => void;
-  onEventClick?: (event: CalendarEvent) => void;
+  // display a jsx component when an event is clicked
+  onEventClick?: (event: CalendarEvent) => ReactNode; 
   enableHotkeys?: boolean;
   today: Date;
 };
@@ -84,11 +86,17 @@ type ContextType = {
 const Context = createContext<ContextType>({} as ContextType);
 
 export type CalendarEvent = {
-  _id: string;                    
-  timeStart: Date;              
+  _id: string;    
+  service: string;
+  quantity: number;
+  address: number;               
+  timeStart: Date;               
   timeEnd: Date;                 
-  title: string;                   
-  staff: string;                 
+  title: string;
+  status: string;
+  customer: string;                 
+  staff: string;   
+  vehicle: string;                 
   color?: VariantProps<typeof monthEventVariants>['variant'];
 };
 
@@ -100,7 +108,7 @@ type CalendarProps = {
   locale?: Locale;
   enableHotkeys?: boolean;
   onChangeView?: (view: View) => void;
-  onEventClick?: (event: CalendarEvent) => void;
+  onEventClick?: (event: CalendarEvent) => ReactNode; 
 };
 
 const Calendar = ({
@@ -189,9 +197,11 @@ CalendarViewTrigger.displayName = 'CalendarViewTrigger';
 const EventGroup = ({
   date,
   events,
+  onEventClick,
 }: {
   date: Date;
   events: CalendarEvent[];
+  onEventClick?: (event: CalendarEvent) => ReactNode;
 }) => {
   // Helper function to detect overlaps
   const areOverlapping = (eventA: CalendarEvent, eventB: CalendarEvent) => {
@@ -237,26 +247,43 @@ const EventGroup = ({
             const startPosition = event.timeStart.getMinutes() / 60 + event.timeStart.getHours();
   
             return (
-              <div
-                key={event._id}
-                className={cn(
-                  'absolute',
-                  'border',
-                  dayEventVariants({ variant: event.color })
-                )}
-                style={{
-                  top: `${startPosition * 100}%`,
-                  height: `${hoursDifference * 100}%`,
-                  width: `${100 / group.length}%`, // Distribute width evenly among overlapping events
-                  left: `${(index / group.length) * 100}%`, // Position events beside each other
-                }}
-              >
-                <div className="event-content p-2"> {/* Add padding for better readability */}
-                  <div className="event-title font-bold text-md overflow-hidden text-ellipsis whitespace-normal">
-                    {event.title}
+              <Sheet key={event._id}>
+                <SheetTrigger asChild>
+                  <div
+                    key={event._id}
+                    className={cn(
+                      'absolute',
+                      'border',
+                      dayEventVariants({ variant: event.color }),
+                      'cursor-pointer',
+                      'hover:bg-blue-100'
+                    )}
+                    style={{
+                      top: `${startPosition * 100}%`,
+                      height: `${hoursDifference * 100}%`,
+                      width: `${100 / group.length}%`, // Distribute width evenly among overlapping events
+                      left: `${(index / group.length) * 100}%`, // Position events beside each other
+                    }}
+                  >
+                    <div className="event-content p-2"> {/* Add padding for better readability */}
+                      <div className="event-title font-bold text-md overflow-hidden text-ellipsis whitespace-normal">
+                        {event.title}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </SheetTrigger>
+                  <SheetContent className="bg-white">
+                        <SheetHeader>
+                          <SheetTitle className="flex gap-2">
+                            Job Details
+                          </SheetTitle>
+                          <SheetDescription>
+                            View details of leave request. Only Admins are allowed to edit the job.
+                          </SheetDescription>
+                        </SheetHeader>
+                        {onEventClick!(event)}
+                  </SheetContent>
+              </Sheet>
             );
           })}
         </div>
@@ -267,7 +294,7 @@ const EventGroup = ({
 };
 
 const CalendarDayView = () => {
-  const { view, events, date } = useCalendar();
+  const { view, events, date, onEventClick } = useCalendar();
 
   if (view !== 'day') return null;
 
@@ -275,14 +302,14 @@ const CalendarDayView = () => {
     <div className="flex relative pt-2 overflow-auto h-full">
       <TimeTable />
       <div className="flex-1">
-          <EventGroup date={date} events={events} />
+          <EventGroup date={date} events={events} onEventClick={onEventClick}/>
       </div>
     </div>
   );
 };
 
 const CalendarWeekView = () => {
-  const { view, date, locale, events } = useCalendar();
+  const { view, date, locale, events, onEventClick } = useCalendar();
 
   const headerDays = useMemo(() => {
     const daysOfWeek = [];
@@ -337,6 +364,7 @@ const CalendarWeekView = () => {
                   <EventGroup
                     date={date}
                     events={events}
+                    onEventClick={onEventClick}
                   />
               </div>
             );
@@ -348,7 +376,7 @@ const CalendarWeekView = () => {
 };
 
 const CalendarMonthView = () => {
-  const { date, view, events, locale } = useCalendar();
+  const { date, view, events, locale, onEventClick } = useCalendar();
 
   const monthDates = useMemo(() => getDaysInMonth(date), [date]);
   const weekDays = useMemo(() => generateWeekdays(locale), [locale]);
@@ -395,21 +423,49 @@ const CalendarMonthView = () => {
 
               {currentEvents.map((event) => {
                 return (
-                  <div
-                    key={event._id}
-                    className="px-1 rounded text-sm flex items-center gap-1"
-                  >
-                    <div
-                      className={cn(
-                        'shrink-0',
-                        monthEventVariants({ variant: event.color })
-                      )}
-                    ></div>
-                    <span className="flex-1 truncate">{event.title}</span>
-                    <time className="tabular-nums text-muted-foreground/50 text-xs">
-                      {format(event.timeStart, 'HH:mm')}
-                    </time>
-                  </div>
+                  <Sheet key={event._id}>
+                    <SheetTrigger asChild>
+                      <div className="px-1 rounded text-sm flex items-center gap-1 cursor-pointer hover:outline hover:outline-2 hover:outline-blue-300">
+                        <div
+                          className={cn(
+                            'shrink-0',
+                            monthEventVariants({ variant: event.color })
+                          )}
+                        ></div>
+                        <span className="truncate">{event.title}</span>
+                        <time className="tabular-nums text-muted-foreground/50 text-xs">
+                          {format(event.timeStart, 'HH:mm')}
+                        </time>
+                      </div>
+                    </SheetTrigger>
+                    <SheetContent className="bg-white">
+                      <SheetHeader>
+                        <SheetTitle className="flex gap-2">
+                          Job Details
+                        </SheetTitle>
+                        <SheetDescription>
+                          View details of leave request. Only Admins are allowed to edit the job.
+                        </SheetDescription>
+                      </SheetHeader>
+                      {onEventClick!(event)}
+                    </SheetContent>
+                  </Sheet>
+                  // <div
+                  //   key={event._id} 
+                  //   className="px-1 rounded text-sm flex items-center gap-1"
+                  // >
+                  //   <div
+                  //     className={cn(
+                  //       'shrink-0',
+                  //       monthEventVariants({ variant: event.color })
+                  //     )}
+                  //   ></div>
+                  //   <span className="truncate">{event.title}</span>
+                  //   <time className="tabular-nums text-muted-foreground/50 text-xs">
+                  //     {format(event.timeStart, 'HH:mm')}
+                  //   </time>
+                  //   {onEventClick!(event)}
+                  // </div>
                 );
               })}
             </div>
