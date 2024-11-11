@@ -24,8 +24,8 @@ import {
 } from "@/components/ui/select";
 import { updateStaff } from "@/lib/actions/staff";
 import { useUser } from "@clerk/nextjs";
-import { PhoneInput } from "@/components/ui/phoneInput";
-import { isValidPhoneNumber } from "react-phone-number-input";
+// import { PhoneInput } from "@/components/ui/phoneInput";
+// import { isValidPhoneNumber } from "react-phone-number-input";
 import { toast } from "sonner";
 
 const staffSchema = z.object({
@@ -34,12 +34,12 @@ const staffSchema = z.object({
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),
   role: z.enum(["superadmin", "admin", "technician"]).optional(),
-  phone: z
-    .string()
-    .optional()
-    .refine((value) => !value || isValidPhoneNumber(value), {
-      message: "Invalid phone number",
-    }),
+  // phone: z
+  //   .string()
+  //   .optional()
+  //   .refine((value) => !value || isValidPhoneNumber(value), {
+  //     message: "Invalid phone number",
+  //   }),
 });
 
 export default function EditStaffClient({
@@ -66,7 +66,7 @@ export default function EditStaffClient({
       firstName: staff.firstName,
       lastName: staff.lastName,
       role: staff.role as "superadmin" | "admin" | "technician",
-      phone: "",
+      // phone: "",
     },
   });
   const { isLoaded, isSignedIn, user } = useUser();
@@ -78,13 +78,13 @@ export default function EditStaffClient({
   }
   console.log("role:", staff.role);
 
-  const handlePopulatePhone = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (staff.phone === "") {
-      toast("Staff does not currently have a phone number");
-    }
-    form.setValue("phone", staff.phone);
-  };
+  // const handlePopulatePhone = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   e.preventDefault();
+  //   if (staff.phone === "") {
+  //     toast("Staff does not currently have a phone number");
+  //   }
+  //   form.setValue("phone", staff.phone);
+  // };
 
   const onSubmit = async () => {
     setMessage("");
@@ -190,7 +190,7 @@ export default function EditStaffClient({
             );
           }}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="phone"
           render={({ field }) => {
@@ -214,7 +214,7 @@ export default function EditStaffClient({
               </FormItem>
             );
           }}
-        />
+        /> */}
         <Button type="submit" className="w-full">
           Update Staff
         </Button>
