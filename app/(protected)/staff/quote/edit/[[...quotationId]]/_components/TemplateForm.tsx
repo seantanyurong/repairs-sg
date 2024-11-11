@@ -56,8 +56,8 @@ export function QuoteTemplateForm({
     setTotal(currencyFormat.format(total));
 
     setTotals({
-      subtotal: subtotalState,
-      taxAmt: taxAmtState,
+      subtotal: currencyFormat.format(subtotal),
+      taxAmt: currencyFormat.format(taxAmt),
       total: total,
     });
   };
