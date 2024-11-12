@@ -35,6 +35,7 @@ import {
 import { addJob } from "@/lib/actions/jobs";
 import { useUser } from "@clerk/clerk-react";
 import { format, addHours, startOfDay, addDays, isAfter } from "date-fns";
+import Link from "next/link";
 
 const formSchema = z.object({
   service: z.string().min(1),
@@ -163,8 +164,15 @@ export default function BookingClient({
               <CardHeader className="px-7">
                 <CardTitle>Create a Job</CardTitle>
                 <CardDescription>
-                  Assign a Staff in the Table view
+                  Provide details to create a job.
                 </CardDescription>
+                <div className='items-center gap-2'>
+                  <Link href='/staff/quote?tab=accepted'>
+                    <Button className='h-8 gap-1'>
+                      <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Import from quotations</span>
+                    </Button>
+                  </Link>
+                </div>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
