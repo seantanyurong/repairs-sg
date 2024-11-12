@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { deleteJob, updateJobStaff, updateJobStatus, updateJobVehicle } from '@/lib/actions/jobs';
-import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { addReward } from '@/lib/actions/rewards';
