@@ -149,25 +149,23 @@ export default function JobRow({
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             {/* only render this item if status is not completed or cancelled */}
             {/* {status !== 'Completed' && status !== 'Cancelled' && ( */}
-            <DropdownMenuItem className='cursor-pointer'>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='ghost'>Update Status</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  <DropdownMenuLabel>Job Status</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <span>Update Status</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
                   {statusArray.map((status) => (
-                    <DropdownMenuItem
-                      key={status}
-                      onClick={() => handleUpdateStatus(id, status, referralCode)}
-                      className='cursor-pointer'>
+                      <DropdownMenuItem
+                        key={status}
+                        onClick={() => handleUpdateStatus(id, status, referralCode)}
+                        className='cursor-pointer'>
                       {status}
                     </DropdownMenuItem>
                   ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
             {/* )} */}
             {/* only render this item if vehicleLicencePlate is not null */}
             {vehicleLicencePlate && status !== 'Completed' && status !== 'Cancelled' && status !== 'Pending' && (
@@ -197,25 +195,23 @@ export default function JobRow({
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
-            <DropdownMenuItem className='cursor-pointer'>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='ghost'>Assign Staff</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  <DropdownMenuLabel>Available Staff</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <span>Assign Staff</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
                   {staffArray.map((staff) => (
-                    <DropdownMenuItem
-                      key={staff.id}
-                      onClick={() => handleAssignStaff(id, staff.id)}
-                      className='cursor-pointer'>
-                      {staff.name}
+                      <DropdownMenuItem
+                        key={staff.id}
+                        onClick={() => handleAssignStaff(id, staff.id)}
+                        className='cursor-pointer'>
+                        {staff.name}
                     </DropdownMenuItem>
                   ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
             <DropdownMenuItem
               onClick={() => router.push(`/staff/invoices/create-invoice?jobId=${id}`)}
               className='cursor-pointer'>
