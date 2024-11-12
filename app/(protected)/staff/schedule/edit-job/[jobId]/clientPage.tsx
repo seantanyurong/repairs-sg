@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { SelectValue, SelectTrigger, SelectContent, SelectItem, Select } from '@/components/ui/select';
 import { updateJob } from '@/lib/actions/jobs';
 import { useUser } from '@clerk/clerk-react';
-import { format, addHours, startOfDay, addDays, isAfter } from 'date-fns';
+import { format, addHours, startOfDay } from 'date-fns';
 import {
   Popover,
   PopoverContent,
@@ -29,7 +29,7 @@ const formSchema = z.object({
   service: z.string().min(1),
   quantity: z.number().min(1),
   jobAddress: z.string().min(1),
-  schedule: z.string(),
+  schedule: z.string().min(1),
   description: z.string(),
   customer: z.string(),
   staff: z.string(),
@@ -176,7 +176,7 @@ export default function BookingClient({
 }) {
 
   const originalService = services.find((service) => service.name === job.service);
-  const originalCustomer = customerArray.find((customer) => customer.id === job.customer) || customerArray[0];  // fallback value will not be used
+  const originalCustomer = customerArray.find((customer) => customer.id === job.customer)
   const originalStaff = staffArray.find((staff) => staff.id === job.staff);
   const originalVehicle = vehicleArray.find((vehicle) => vehicle.id === job.vehicle);
 
@@ -193,13 +193,13 @@ export default function BookingClient({
   const [currentScheduleOptions, setCurrentScheduleOptions] = useState(generateScheduleOptionsForDay(job.schedule.timeStart));
   const [selectedVehicle, setSelectedVehicle] = useState(originalVehicle);
   const [selectedStaff, setSelectedStaff] = useState(originalStaff); 
-  const [service, setService] = useState(originalService);
+  const service = originalService;
   const [availableStaff, setAvailableStaff] = useState(filteredStaff);
   const [availableVehicles, setAvailableVehicles] = useState(filteredVehicles);
   const [message, setMessage] = useState('');
   const [schedule, setSchedule] = useState(originalSchedule.value);
   const [errors, setErrors] = useState({});
-  const [priceQty, setPriceQty] = useState(job.quantity);
+  const priceQty = job.quantity;
   const router = useRouter();
   const { isLoaded } = useUser();
 
@@ -211,14 +211,15 @@ export default function BookingClient({
       jobAddress: job.jobAddress,
       description: job.description,
       customer: job.customer,
-      schedule: originalSchedule.label,
+      date: job.schedule.timeStart,
+      schedule: originalSchedule.value,
       staff: job.staff || '',
       vehicle: job.vehicle || '',
     },
   });
 
-  // console.log(form.getValues());
-  console.log(currentScheduleOptions);
+  console.log(form.getValues());
+  console.log(schedule);
 
   const itemPrice = service!.price - (service!.price * (priceQty - 1) * service!.volumeDiscountPercentage) / 100;
   const itemPriceRounded = Math.round(itemPrice * 100) / 100;
@@ -278,14 +279,14 @@ export default function BookingClient({
                       <FormField
                         control={form.control}
                         name="service"
-                        render={() => (
+                        render={({ field }) => (
                           <FormItem>
                             <FormLabel>Service</FormLabel>
                               <FormControl>
                               <Input
                                 type='String'
                                 min='1'
-                                placeholder={service!.name}
+                                {... field}
                                 readOnly // Makes the field non-editable
                               />
                               </FormControl>
@@ -333,7 +334,7 @@ export default function BookingClient({
                         name="date"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
-                            <FormLabel>Date of birth</FormLabel>
+                            <FormLabel>Date</FormLabel>
                             <Popover>
                               <PopoverTrigger asChild>
                                 <FormControl>
@@ -360,8 +361,6 @@ export default function BookingClient({
                                     form.setValue('staff', '');
                                     form.setValue('vehicle', '');
                                     form.setValue('schedule', '');
-
-                                    console.log(form.getValues());
                                     }}
                                   disabled={(date) =>
                                     date < new Date()
@@ -374,55 +373,15 @@ export default function BookingClient({
                           </FormItem>
                         )}
                       />
-                      {/* Schedules Field
                       <FormField
                         control={form.control}
                         name='schedule'
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Booking Timing</FormLabel>
+                            <FormLabel>Time</FormLabel>
                             <Select
+                                value={field.value || ''}
                                 onValueChange={(selectedSchedule) => {
-                                    console.log(selectedSchedule);
-                                    const formattedSchedule = JSON.parse(selectedSchedule);
-                                    setAvailableStaff(findAvailableStaffForClientComponent(staffArray, jobs, leaves, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
-                                    setAvailableVehicles(findAvailableVehiclesForClientComponent(vehicleArray, jobs, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
-                                    setSelectedStaff(undefined);
-                                    setSelectedVehicle(undefined);
-                                    form.setValue('staff', '');
-                                    form.setValue('vehicle', '');
-
-                                    setSchedule(selectedSchedule);
-                                    field.onChange(selectedSchedule);
-                                }}
-                              >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder={originalSchedule.label} />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {scheduleOptions.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      /> */}
-                      {/* Schedules Field */}
-                      <FormField
-                        control={form.control}
-                        name='schedule'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Booking Timing</FormLabel>
-                            <Select
-                                onValueChange={(selectedSchedule) => {
-                                    console.log(selectedSchedule);
                                     const formattedSchedule = JSON.parse(selectedSchedule);
                                     setAvailableStaff(findAvailableStaffForClientComponent(staffArray, jobs, leaves, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
                                     setAvailableVehicles(findAvailableVehiclesForClientComponent(vehicleArray, jobs, new Date(formattedSchedule.timeStart), new Date(formattedSchedule.timeEnd)));
@@ -480,7 +439,7 @@ export default function BookingClient({
                               <Input
                                 type='String'
                                 min='1'
-                                placeholder={originalCustomer.name}
+                                value={originalCustomer!.name}
                                 readOnly // Makes the field non-editable
                               />
                               </FormControl>
@@ -496,7 +455,14 @@ export default function BookingClient({
                           return (
                           <FormItem>
                             <FormLabel>Staff</FormLabel>
-                            <Select onValueChange={(field.onChange)}>
+                            <Select 
+                            value={field.value || ''}
+                            onValueChange={(chosenStaff) =>
+                              {
+                                setSelectedStaff(staffArray.find((staff) => staff.id === chosenStaff));
+                                field.onChange(chosenStaff);
+                              }
+                            }>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder={selectedStaff?.name || 'Select a Staff'} />
@@ -522,10 +488,12 @@ export default function BookingClient({
                           return (
                           <FormItem>
                             <FormLabel>Vehicle</FormLabel>
-                            <Select onValueChange={field.onChange}>
+                            <Select 
+                            value={field.value || ''}
+                            onValueChange={field.onChange}>
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder={selectedVehicle?.licencePlate || 'Select a Vehicle'} />
+                                  <SelectValue placeholder={selectedVehicle ? selectedVehicle.licencePlate : 'Select a Vehicle'} />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
