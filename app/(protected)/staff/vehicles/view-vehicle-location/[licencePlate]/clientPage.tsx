@@ -38,15 +38,15 @@ export default function MapClient({ initialLat, initialLon, gpsApi }: { initialL
             console.log(liveLocation);
             console.log(liveLocation[0].latitude);
             console.log(liveLocation[0].longitude);
-            console.log("before set state")
-            console.log(liveLat);
-            console.log(liveLon);
+            // console.log("before set state")
+            // console.log(liveLat);
+            // console.log(liveLon);
 
             setLiveLat(liveLocation[0].latitude);
             setLiveLon(liveLocation[0].longitude);
 
-            console.log(liveLat);
-            console.log(liveLon);
+            // console.log(liveLat);
+            // console.log(liveLon);
         }
       } catch (error) {
         console.error("Failed to fetch location data:", error);
@@ -68,9 +68,6 @@ export default function MapClient({ initialLat, initialLon, gpsApi }: { initialL
 
   return (
     <div>   
-      {/* Render the map with the live location */}
-      <p>Latitude: {liveLat}</p>
-      <p>Longitude: {liveLon}</p>
       <Map
         liveLat={liveLat}
         liveLon={liveLon}

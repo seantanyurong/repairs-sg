@@ -16,18 +16,44 @@ import {
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ModeToggle } from '@/components/ui/theme-toggle';
 import { useEffect, useState } from 'react';
+import JobDetails from './_components/JobDetails';
 
 // Infer types from Mongoose models
 export interface Job {
-  _id: string;                    // Converted to string
-  timeStart: Date;               // Formatted date as a string
-  timeEnd: Date;                 // Formatted date as a string
-  title: string;                 // Title for the job, corresponds to job.description
-  staff: string;                 // Staff remains an array of strings
+  _id: string;    
+  service: string;
+  quantity: number;
+  address: number;               
+  timeStart: Date;               
+  timeEnd: Date;                 
+  title: string;
+  status: string;
+  customer: string;                 
+  staff: string;   
+  vehicle: string;              
 }
 
+const showJobDetails = (event: Job, role: string) => {
+    return (
+    <JobDetails 
+    _id={event._id}
+    service={event.service}
+    quantity={event.quantity}
+    address={event.address}
+    timeStart={event.timeStart}
+    timeEnd={event.timeEnd}
+    status={event.status}
+    title={event.title}
+    customer={event.customer}
+    staff={event.staff}
+    vehicle={event.vehicle}
+    role={role}
+  />
+);
+};
+
 // optional to take in date
-export default function CalendarClient({ filtersArray, jobs}: { filtersArray: string[]; jobs: Job[]}) {
+export default function CalendarClient({ filtersArray, jobs, role, date}: { filtersArray: string[]; jobs: Job[], role: string, date?: string}) {
   const [filteredJobs, setFilteredJobs] = useState(jobs);
 
   useEffect(() => {
@@ -39,10 +65,16 @@ export default function CalendarClient({ filtersArray, jobs}: { filtersArray: st
         jobs.map((job) => {
           return {
             _id: job._id.toString(),
+            service: job.service,
+            quantity: job.quantity,
+            address: job.address,
             timeStart:job.timeStart,
             timeEnd: job.timeEnd,
             title: job.title,
+            status: job.status,
+            customer: job.customer,
             staff: job.staff,
+            vehicle: job.vehicle,
             color: 'blue',
           };
         }),
@@ -56,18 +88,26 @@ export default function CalendarClient({ filtersArray, jobs}: { filtersArray: st
       .map((job) => {
         return {
           _id: job._id.toString(),
-          timeStart: job.timeStart,
-          timeEnd: job.timeEnd,
-          title: job.title,
-          staff: job.staff,
-          color: 'blue',
+            service: job.service,
+            quantity: job.quantity,
+            address: job.address,
+            timeStart:job.timeStart,
+            timeEnd: job.timeEnd,
+            title: job.title,
+            status: job.status,
+            customer: job.customer,
+            staff: job.staff,
+            vehicle: job.vehicle,
+            color: 'blue',
         };
       }))
     }
   }, [filtersArray]);
 
-  console.log("filter");
-  console.log(filteredJobs);
+  const isDayView = date ? true : false;
+  // Converting DD/MM/YYYY date string to MM/DD/YYYY
+  const formattedDate = date ? date.split('/').reverse().join('/') : '';
+  
 
   const calendarDisplay = () => {
     return (
@@ -77,8 +117,11 @@ export default function CalendarClient({ filtersArray, jobs}: { filtersArray: st
           <CardDescription>Manage your job schedule Calendar</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* <Calendar key={filteredJobs.map((job) => job._id).join(',')} events={filteredJobs} defaultDate={new Date(date)}> */}
-          <Calendar key={filteredJobs.map((job) => job._id).join(',')} events={filteredJobs}>
+          <Calendar 
+          key={filteredJobs.map((job) => job._id).join(',')} 
+          events={filteredJobs} 
+          onEventClick={(event) => showJobDetails(event, role)} 
+          {...(isDayView ? { defaultDate: new Date(formattedDate), view: 'day' } : {})}>
             <div className='h-dvh py-6 flex flex-col'>
               <div className='flex px-6 items-center gap-2 mb-6'>
                 <CalendarViewTrigger className='aria-[current=true]:bg-accent' view='day'>

@@ -138,12 +138,12 @@ export default function JobRow({
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             {/* only render this item if status is not completed or cancelled */}
-            {/* {status !== 'Completed' && status !== 'Cancelled' && ( */}
+            {status !== 'Completed' && status !== 'Cancelled' && (
                 <DropdownMenuItem
                 className='cursor-pointer'>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant='ghost'>
+                  <Button variant='ghost' className="start p-0">
                       Update Status
                     </Button>
                   </DropdownMenuTrigger>
@@ -161,7 +161,7 @@ export default function JobRow({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </DropdownMenuItem>
-            {/* )} */}
+            )}
             {/* only render this item if vehicleLicencePlate is not null */}
             {vehicleLicencePlate && status !== 'Completed' && status !== 'Cancelled' && status !== 'Pending' &&(
               <DropdownMenuItem
@@ -171,6 +171,12 @@ export default function JobRow({
             </DropdownMenuItem>
             )}
             <DropdownMenuItem
+              onClick={() => 
+                router.push(`/staff/schedule/?filters=all&date=${timeStart.split(",")[0]}`)}
+              className='cursor-pointer'>
+              View Day in Calendar
+            </DropdownMenuItem>
+            <DropdownMenuItem
               onClick={() => router.push(`/staff/schedule/edit-job/${id}`)}
               className='cursor-pointer'>
               Edit Job
@@ -179,7 +185,7 @@ export default function JobRow({
               className='cursor-pointer'>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost'>
+                <Button variant='ghost' className="start p-0">
                     Assign Vehicle
                   </Button>
                 </DropdownMenuTrigger>
@@ -201,7 +207,7 @@ export default function JobRow({
               className='cursor-pointer'>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost'>
+                  <Button variant='ghost' className="start p-0">
                     Assign Staff
                   </Button>
                 </DropdownMenuTrigger>
