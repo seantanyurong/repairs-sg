@@ -8,6 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { deleteJob, updateJobStaff, updateJobStatus, updateJobVehicle } from '@/lib/actions/jobs';
@@ -15,8 +19,7 @@ import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { addReward } from '@/lib/actions/rewards';
-import crypto from "crypto";
-
+import crypto from 'crypto';
 
 export default function JobRow({
   id,
@@ -45,13 +48,12 @@ export default function JobRow({
   status: string;
   staffArray: { id: string; name: string }[]; // List of staff to assign
   vehicleArray: { id: string; licencePlate: string }[]; // List of vehicles to assign
-  referralCode?: { code: string; referrer: string; customer: string; };
+  referralCode?: { code: string; referrer: string; customer: string };
 }) {
-
   const router = useRouter();
   const statusArray = ['Pending', 'On the way', 'Arrived', 'In Progress', 'Completed', 'Cancelled'];
   const REFERRAL_REWARD = 15;
-  const REFERRAL_ACTIVE = "ACTIVE";
+  const REFERRAL_ACTIVE = 'ACTIVE';
 
   const handleAssignStaff = async (jobId: string, staffId: string) => {
     await updateJobStaff(jobId, staffId); // Call the parent function to update the job with selected staff
@@ -62,22 +64,28 @@ export default function JobRow({
   };
 
   const generateRewardCode = (userId: string) => {
-    const hash = crypto.createHash("sha256").update(userId + new Date().toISOString()).digest("hex");
-    const referralCode = parseInt(hash, 16)
-      .toString(36)
-      .substring(0, 5)
-      .toUpperCase();
+    const hash = crypto
+      .createHash('sha256')
+      .update(userId + new Date().toISOString())
+      .digest('hex');
+    const referralCode = parseInt(hash, 16).toString(36).substring(0, 5).toUpperCase();
     return `REW-${referralCode}`;
   };
 
-  const handleUpdateStatus = async (jobId: string, status: string, referralCode?: { code: string; referrer: string; customer: string; }) => {
+  const handleUpdateStatus = async (
+    jobId: string,
+    status: string,
+    referralCode?: { code: string; referrer: string; customer: string },
+  ) => {
     if (status === 'Completed' || status === 'Cancelled') {
-      const confirmStatusChange = window.confirm(`Are you sure you want to change the status to ${status}? You will not be able to revert this action.`);
+      const confirmStatusChange = window.confirm(
+        `Are you sure you want to change the status to ${status}? You will not be able to revert this action.`,
+      );
       if (!confirmStatusChange) return;
     }
     await updateJobStatus(jobId, status); // Call the parent function to update the job with selected vehicle
 
-    if (status === 'Completed' && referralCode ) {
+    if (status === 'Completed' && referralCode) {
       console.log('Referral code:', referralCode);
       // Add referral reward for referrer
       await addReward({
@@ -100,19 +108,21 @@ export default function JobRow({
       });
       console.log('Referral rewards added');
     }
-  }
+  };
 
   const openGoogleMaps = (searchTerm: string) => {
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchTerm)}`;
-    window.open(googleMapsUrl, "_blank"); // Opens in a new tab
+    window.open(googleMapsUrl, '_blank'); // Opens in a new tab
   };
 
   const handleDeleteJob = async (id: string) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this job? This will void related invoices. This action cannot be reverted.');
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this job? This will void related invoices. This action cannot be reverted.',
+    );
     if (confirmDelete) {
       await deleteJob(id);
     }
-  }
+  };
 
   return (
     <TableRow>
@@ -128,7 +138,7 @@ export default function JobRow({
         <Badge variant='outline'>{status}</Badge>
       </TableCell>
       <TableCell>
-      <DropdownMenu>
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button aria-haspopup='true' size='icon' variant='ghost'>
               <MoreHorizontal className='h-4 w-4' />
@@ -139,53 +149,43 @@ export default function JobRow({
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             {/* only render this item if status is not completed or cancelled */}
             {/* {status !== 'Completed' && status !== 'Cancelled' && ( */}
-                <DropdownMenuItem
-                className='cursor-pointer'>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant='ghost'>
-                      Update Status
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align='end'>
-                  <DropdownMenuLabel>Job Status</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {statusArray.map((status) => (
-                      <DropdownMenuItem
-                        key={status}
-                        onClick={() => handleUpdateStatus(id, status, referralCode, )}
-                        className='cursor-pointer'>
-                        {status}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </DropdownMenuItem>
-            {/* )} */}
-            {/* only render this item if vehicleLicencePlate is not null */}
-            {vehicleLicencePlate && status !== 'Completed' && status !== 'Cancelled' && status !== 'Pending' &&(
-              <DropdownMenuItem
-              onClick={() => router.push(`/staff/vehicles/view-vehicle-location/${vehicleLicencePlate}`)}
-              className='cursor-pointer'>
-              View Vehicle Location
-            </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              onClick={() => router.push(`/staff/schedule/edit-job/${id}`)}
-              className='cursor-pointer'>
-              Edit Job
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className='cursor-pointer'>
+            <DropdownMenuItem className='cursor-pointer'>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost'>
-                    Assign Vehicle
-                  </Button>
+                  <Button variant='ghost'>Update Status</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
-                <DropdownMenuLabel>Available Vehicles</DropdownMenuLabel>
+                  <DropdownMenuLabel>Job Status</DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  {statusArray.map((status) => (
+                    <DropdownMenuItem
+                      key={status}
+                      onClick={() => handleUpdateStatus(id, status, referralCode)}
+                      className='cursor-pointer'>
+                      {status}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </DropdownMenuItem>
+            {/* )} */}
+            {/* only render this item if vehicleLicencePlate is not null */}
+            {vehicleLicencePlate && status !== 'Completed' && status !== 'Cancelled' && status !== 'Pending' && (
+              <DropdownMenuItem
+                onClick={() => router.push(`/staff/vehicles/view-vehicle-location/${vehicleLicencePlate}`)}
+                className='cursor-pointer'>
+                View Vehicle Location
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onClick={() => router.push(`/staff/schedule/edit-job/${id}`)} className='cursor-pointer'>
+              Edit Job
+            </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <span>Assign Vehicle</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
                   {vehicleArray.map((vehicle) => (
                     <DropdownMenuItem
                       key={vehicle.id}
@@ -194,19 +194,16 @@ export default function JobRow({
                       {vehicle.licencePlate}
                     </DropdownMenuItem>
                   ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className='cursor-pointer'>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+            <DropdownMenuItem className='cursor-pointer'>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost'>
-                    Assign Staff
-                  </Button>
+                  <Button variant='ghost'>Assign Staff</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
-                <DropdownMenuLabel>Available Staff</DropdownMenuLabel>
+                  <DropdownMenuLabel>Available Staff</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {staffArray.map((staff) => (
                     <DropdownMenuItem
@@ -224,31 +221,25 @@ export default function JobRow({
               className='cursor-pointer'>
               Create Invoice
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => router.push(`/staff/invoices?jobId=${id}`)}
-              className='cursor-pointer'>
+            <DropdownMenuItem onClick={() => router.push(`/staff/invoices?jobId=${id}`)} className='cursor-pointer'>
               View Invoices
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => openGoogleMaps(address)}
-              className='cursor-pointer'>
+            <DropdownMenuItem onClick={() => openGoogleMaps(address)} className='cursor-pointer'>
               View Address
             </DropdownMenuItem>
             {/* <Comments
               comments={comments}
               currentUser={currentUser}
             /> */}
-             {/* only render this item if status is Draft or Pending */}
-             {status === 'Pending' || status === 'Draft' && (
-            <DropdownMenuItem
-              onClick={() => handleDeleteJob(id)}
-              className='cursor-pointer'>
-              Delete Job
-            </DropdownMenuItem>
-             )}
+            {/* only render this item if status is Draft or Pending */}
+            {status === 'Pending' ||
+              (status === 'Draft' && (
+                <DropdownMenuItem onClick={() => handleDeleteJob(id)} className='cursor-pointer'>
+                  Delete Job
+                </DropdownMenuItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        
       </TableCell>
     </TableRow>
   );
