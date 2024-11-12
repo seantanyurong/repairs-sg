@@ -40,7 +40,6 @@ const Page = async ({searchParams} : {searchParams : SearchParams}) => {
   };
 
   return (
-    // tab should be either the quotationTab or active
     <Tabs defaultValue={tab}>
       <h1 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-5xl">
         Quotations

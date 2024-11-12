@@ -34,7 +34,6 @@ export interface Job {
 }
 
 const showJobDetails = (event: Job, role: string) => {
-  console.log(role)
     return (
     <JobDetails 
     _id={event._id}
@@ -54,7 +53,7 @@ const showJobDetails = (event: Job, role: string) => {
 };
 
 // optional to take in date
-export default function CalendarClient({ filtersArray, jobs, role}: { filtersArray: string[]; jobs: Job[], role: string}) {
+export default function CalendarClient({ filtersArray, jobs, role, date}: { filtersArray: string[]; jobs: Job[], role: string, date?: string}) {
   const [filteredJobs, setFilteredJobs] = useState(jobs);
 
   useEffect(() => {
@@ -105,7 +104,10 @@ export default function CalendarClient({ filtersArray, jobs, role}: { filtersArr
     }
   }, [filtersArray]);
 
-  console.log(filteredJobs);
+  const isDayView = date ? true : false;
+  // Converting DD/MM/YYYY date string to MM/DD/YYYY
+  const formattedDate = date ? date.split('/').reverse().join('/') : '';
+  
 
   const calendarDisplay = () => {
     return (
@@ -115,8 +117,11 @@ export default function CalendarClient({ filtersArray, jobs, role}: { filtersArr
           <CardDescription>Manage your job schedule Calendar</CardDescription>
         </CardHeader>
         <CardContent>
-          {/* <Calendar key={filteredJobs.map((job) => job._id).join(',')} events={filteredJobs} defaultDate={new Date(date)}> */}
-          <Calendar key={filteredJobs.map((job) => job._id).join(',')} events={filteredJobs} onEventClick={(event) => showJobDetails(event, role)}>
+          <Calendar 
+          key={filteredJobs.map((job) => job._id).join(',')} 
+          events={filteredJobs} 
+          onEventClick={(event) => showJobDetails(event, role)} 
+          {...(isDayView ? { defaultDate: new Date(formattedDate), view: 'day' } : {})}>
             <div className='h-dvh py-6 flex flex-col'>
               <div className='flex px-6 items-center gap-2 mb-6'>
                 <CalendarViewTrigger className='aria-[current=true]:bg-accent' view='day'>

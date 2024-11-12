@@ -140,7 +140,7 @@ const findAvailableVehiclesForClientComponent = (vehicleArray: VehicleFromArray[
   const generateScheduleOptionsForDay = (startDate : Date) => {
     const options = [];
 
-    let currentDate = startOfDay(startDate); // Start at 00:00 tomorrow
+    const currentDate = startOfDay(startDate); // Start at 00:00 tomorrow
       // Create time slots from 10:00 to 20:00 each day
       for (let hour = 10; hour < 20; hour += 2) {
         const startTime = addHours(startOfDay(currentDate), hour);

@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function JobDetails({
    _id,  
@@ -30,6 +30,8 @@ export default function JobDetails({
   vehicle: string;  
   role: string;
 }) {
+  const router = useRouter();
+
   return (
         <div className="grid gap-6 py-6">
           <div className="grid grid-cols-4 items-center gap-4">
@@ -115,8 +117,10 @@ export default function JobDetails({
             </p>
           </div>
           {role === "admin" && (
-              <Button>
-                <Link href={`/staff/schedule/edit-job/${_id}`}>Edit</Link>
+              <Button
+                onClick={() => router.push(`/staff/schedule/edit-job/${_id}`)}
+              className='cursor-pointer'>
+              Edit Job
               </Button>
           )}
         </div>
