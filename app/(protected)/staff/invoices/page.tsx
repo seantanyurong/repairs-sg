@@ -1,5 +1,8 @@
-import { createClerkClient } from "@clerk/nextjs/server";
-import { getInvoices } from "@/lib/actions/invoices";
+import { auth, createClerkClient, EmailAddress } from "@clerk/nextjs/server";
+import {
+  getInvoices,
+  getOverdueInvoiceByStaffId,
+} from "@/lib/actions/invoices";
 import { getPayments } from "@/lib/actions/payments";
 import Invoices from "./_components/Invoices";
 
@@ -7,12 +10,15 @@ interface User {
   id: string;
   firstName: string | null;
   lastName: string | null;
+  emailAddresses: EmailAddress[];
 }
 
 interface CustomerMap {
   [key: string]: {
+    _id: string;
     firstName: string;
     lastName: string;
+    emailAddresses: string[];
   };
 }
 
@@ -37,6 +43,8 @@ interface Invoice {
 export default async function InvoicesPage() {
   const payment = await getPayments();
   console.log("payment", payment);
+
+  const { userId } = auth();
 
   // Fetch Invoices
   const invoices: Invoice[] = await getInvoices();
@@ -99,13 +107,30 @@ export default async function InvoicesPage() {
   const customerMap: CustomerMap = {};
   customers.data.forEach((user: User) => {
     customerMap[user.id] = {
+      _id: user.id.toString(),
       firstName: user.firstName || "",
       lastName: user.lastName || "",
+      emailAddresses: user.emailAddresses.map((email) => email.emailAddress),
     };
   });
   // console.log("custMap", customerMap);
 
+  // Outstanding Invoice
+  const overdueInvoicesByStaff = await getOverdueInvoiceByStaffId(
+    userId as string
+  );
+  const overdueInvoicesMap = overdueInvoicesByStaff.map((invoice) => ({
+    invoiceId: invoice.invoiceId,
+    customer: invoice.customer,
+    dateDue: invoice.dateDue,
+    remainingDue: invoice.remainingDue,
+  }));
+
   return (
-    <Invoices initialInvoices={serializedInvoices} customerMap={customerMap} />
+    <Invoices
+      initialInvoices={serializedInvoices}
+      customerMap={customerMap}
+      overdueInvoices={overdueInvoicesMap}
+    />
   );
 }

@@ -33,6 +33,7 @@ import InvoiceRow from "./InvoiceRow";
 import SearchBar from "@/app/(protected)/_components/SearchBar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSearchParams } from "next/navigation";
+import OutstandingInvoice from "../../_components/OutstandInvoice";
 
 interface Invoice {
   _id: string;
@@ -52,10 +53,31 @@ interface Invoice {
   updatedAt: string | Date;
 }
 
+interface OverstandingInvoice {
+  invoiceId: number;
+  customer: string;
+  dateDue: Date;
+  remainingDue: number;
+}
+
 interface InvoicesProps {
   initialInvoices: Invoice[];
-  customerMap: { [key: string]: { firstName: string; lastName: string } };
+  customerMap: {
+    [key: string]: {
+      _id: string;
+      firstName: string;
+      lastName: string;
+      emailAddresses: string[];
+    };
+  };
+  overdueInvoices: OverstandingInvoice[];
   searchParams?: URLSearchParams;
+}
+
+interface Customer {
+  _id: string;
+  name: string;
+  email: string;
 }
 
 type ValidityStatus = "active" | "draft" | "void";
@@ -65,6 +87,7 @@ type PaymentMethod = "cash" | "banktransfer" | "paynow" | "unknown";
 export default function Invoices({
   initialInvoices,
   customerMap,
+  overdueInvoices,
 }: InvoicesProps) {
   const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
   const searchParams = useSearchParams(); // To read the current query parameters
@@ -125,7 +148,7 @@ export default function Invoices({
   const handleSearchFilterSort = useCallback(
     (query: string) => {
       let resultInvoices = initialInvoices;
-      
+
       // Search
       setQuery(query);
       if (query.trim() === "") {
@@ -211,7 +234,7 @@ export default function Invoices({
       sortCriteria,
       sortDateDirection,
       sortPriceDirection,
-    ],
+    ]
   );
 
   useEffect(() => {
@@ -276,7 +299,7 @@ export default function Invoices({
     }
 
     return invoices.filter(
-      (invoice) => invoice.validityStatus === validityStatus,
+      (invoice) => invoice.validityStatus === validityStatus
     ).length;
   };
 
@@ -329,9 +352,20 @@ export default function Invoices({
     );
   };
 
+  const customerArray: Customer[] = Object.values(customerMap).map(
+    (customer) => ({
+      _id: customer._id,
+      name: `${customer.firstName} ${customer.lastName}`.trim(),
+      email: customer.emailAddresses[0],
+    })
+  );
+
   return (
     <>
-      <SearchBar onSearch={handleSearchFilterSort} initialParams={searchParams}/>
+      <SearchBar
+        onSearch={handleSearchFilterSort}
+        initialParams={searchParams}
+      />
 
       <div className="flex justify-between">
         <div className="w-1/6 border-r pr-4">
@@ -558,24 +592,32 @@ export default function Invoices({
             </Select>
           </div>
 
-          <Tabs defaultValue="all">
-            <div className="flex items-center">
-              <div className="ml-auto flex items-center gap-2">
-                <Link href="/staff/invoices/create-invoice">
-                  <Button size="sm" className="h-8 gap-1">
-                    <PlusCircle className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                      Create Invoices
-                    </span>
-                  </Button>
-                </Link>
+          <div className="m-4">
+            <Tabs defaultValue="all">
+              <div className="flex items-center">
+                <div className="ml-auto flex items-center gap-2 mb-4">
+                  <Link href="/staff/invoices/create-invoice">
+                    <Button size="sm" className="h-8 gap-1">
+                      <PlusCircle className="h-3.5 w-3.5" />
+                      <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                        Create Invoices
+                      </span>
+                    </Button>
+                  </Link>
+                </div>
               </div>
-            </div>
-            <TabsContent value="all">{cardDisplay("all")}</TabsContent>
-            <TabsContent value="active">{cardDisplay("active")}</TabsContent>
-            <TabsContent value="draft">{cardDisplay("draft")}</TabsContent>
-            <TabsContent value="void">{cardDisplay("void")}</TabsContent>
-          </Tabs>
+              <div className="mb-4">
+                <OutstandingInvoice
+                  invoices={overdueInvoices}
+                  customers={customerArray}
+                />
+              </div>
+              <TabsContent value="all">{cardDisplay("all")}</TabsContent>
+              <TabsContent value="active">{cardDisplay("active")}</TabsContent>
+              <TabsContent value="draft">{cardDisplay("draft")}</TabsContent>
+              <TabsContent value="void">{cardDisplay("void")}</TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
     </>
