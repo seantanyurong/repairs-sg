@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  BriefcaseBusiness,
   CalendarDays,
   Hammer,
   Home,
@@ -148,24 +147,6 @@ export default function PublicLayout({
             </TooltipTrigger>
             <TooltipContent side="right">
               {NAVIGATION_LABELS.SCHEDULE}
-            </TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="#"
-                className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                  pathname === "/staff/jobs"
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground"
-                } transition-colors hover:text-foreground md:h-8 md:w-8`}
-              >
-                <BriefcaseBusiness className="h-5 w-5" />
-                <span className="sr-only">{NAVIGATION_LABELS.JOBS}</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              {NAVIGATION_LABELS.JOBS}
             </TooltipContent>
           </Tooltip>
           <Tooltip>
@@ -383,18 +364,6 @@ export default function PublicLayout({
                 >
                   <CalendarDays className="h-5 w-5" />
                   {NAVIGATION_LABELS.SCHEDULE}
-                </Link>
-                <Link
-                  href="#"
-                  className={`flex items-center gap-4 px-2.5 ${
-                    pathname === "/staff/jobs"
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                  onClick={handleLinkClick}
-                >
-                  <BriefcaseBusiness className="h-5 w-5" />
-                  {NAVIGATION_LABELS.JOBS}
                 </Link>
                 <Link
                   href="/staff/invoices"
