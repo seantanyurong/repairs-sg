@@ -112,7 +112,7 @@ export default function CreateInvoiceClient({
       form.setValue('job', jobInitialisedFrom.id);
       form.setValue('lineItems.1.description', jobInitialisedFrom.service);
       form.setValue('lineItems.1.quantity', jobInitialisedFrom.quantity);
-      form.setValue('lineItems.1.amount', jobInitialisedFrom.price);
+      form.setValue('lineItems.1.amount', jobInitialisedFrom.price / jobInitialisedFrom.quantity);
       form.setValue('customer', jobInitialisedFrom.customer);
       form.setValue('staff', jobInitialisedFrom.staff);
       
@@ -252,7 +252,7 @@ export default function CreateInvoiceClient({
                       setSelectedJob(selectedJob);
                       form.setValue('lineItems.1.description', selectedJob.service);
                       form.setValue('lineItems.1.quantity', selectedJob.quantity);
-                      form.setValue('lineItems.1.amount', selectedJob.price);
+                      form.setValue('lineItems.1.amount', selectedJob.price / selectedJob.quantity);
                       form.setValue('customer', selectedJob.customer);
                       form.setValue('staff', selectedJob.staff);
                       calculateTotalAmount();
