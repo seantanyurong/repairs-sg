@@ -80,7 +80,7 @@ interface Customer {
   email: string;
 }
 
-type ValidityStatus = "active" | "draft" | "void";
+type ValidityStatus = "active" | "draft" | "void" | "approved";
 type PaymentStatus = "paid" | "unpaid";
 type PaymentMethod = "cash" | "banktransfer" | "paynow" | "unknown";
 
@@ -103,10 +103,12 @@ export default function Invoices({
     active: boolean;
     draft: boolean;
     void: boolean;
+    approved: boolean;
   }>({
     active: true,
     draft: true,
     void: true,
+    approved: true,
   });
   const [paymentStatus, setPaymentStatus] = useState<{
     paid: boolean;
@@ -378,23 +380,6 @@ export default function Invoices({
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="validityActive"
-                    defaultChecked={true}
-                    onCheckedChange={(checked) => {
-                      if (typeof checked === "boolean")
-                        handleValidityChange("active", checked);
-                    }}
-                  />
-                  <label
-                    htmlFor="validityActive"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Active
-                  </label>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
                     id="validityDraft"
                     defaultChecked={true}
                     onCheckedChange={(checked) => {
@@ -412,6 +397,23 @@ export default function Invoices({
 
                 <div className="flex items-center space-x-2">
                   <Checkbox
+                    id="validityActive"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handleValidityChange("active", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="validityActive"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Active
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
                     id="validityVoid"
                     defaultChecked={true}
                     onCheckedChange={(checked) => {
@@ -424,6 +426,23 @@ export default function Invoices({
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
                     Void
+                  </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="validityActive"
+                    defaultChecked={true}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean")
+                        handleValidityChange("approved", checked);
+                    }}
+                  />
+                  <label
+                    htmlFor="validityActive"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Approved
                   </label>
                 </div>
               </div>
