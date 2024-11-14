@@ -73,7 +73,7 @@ const EditQuote = async ({ params }: { params: { quoteId: string } }) => {
 
   const customerDetails = customer
     ? {
-        name: customer.fullName ?? `${customer.firstName} ${customer.lastName}`,
+        name: `${customer.firstName} ${customer.lastName}`,
         email: customer.emailAddresses[0].emailAddress,
         phone: customer.primaryPhoneNumber?.phoneNumber ?? "NA",
       }

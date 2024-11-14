@@ -16,14 +16,14 @@ import {
 } from "@/components/ui/table";
 import InvoiceRow from "./InvoiceRow";
 
-export interface Invoice {
+interface Invoice {
   invoiceId: number;
   customer: string;
   dateDue: Date;
   remainingDue: number;
 }
 
-export interface Customer {
+interface Customer {
   _id: string;
   name: string;
   email: string;
