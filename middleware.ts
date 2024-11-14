@@ -10,7 +10,7 @@ const isTechnicianRoute = createRouteMatcher([
   "/staff",
   "/staff/invoices(.*)",
   "/staff/leaves(.*)",
-  "/staff/schedule(.*)",
+  "/staff/admin(.*)",
 ]);
 const isAdminRoute = createRouteMatcher([
   "/staff",
@@ -18,7 +18,7 @@ const isAdminRoute = createRouteMatcher([
   "/staff/invoices(.*)",
   "/staff/quote(.*)",
   "/staff/vehicles(.*)",
-  "/staff/schedule(.*)",
+  "/staff/admin(.*)",
   "/staff/leaves(.*)",
   "/staff/staff-management(.*)",
 ]);

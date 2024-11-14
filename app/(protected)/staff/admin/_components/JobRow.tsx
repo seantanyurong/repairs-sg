@@ -177,7 +177,7 @@ export default function JobRow({
             )}
             {status === 'Pending' && (
               <>
-            <DropdownMenuItem onClick={() => router.push(`/staff/schedule/edit-job/${id}`)} className='cursor-pointer'>
+            <DropdownMenuItem onClick={() => router.push(`/staff/admin/edit-job/${id}`)} className='cursor-pointer'>
               Edit Job
             </DropdownMenuItem>
             <DropdownMenuSub>

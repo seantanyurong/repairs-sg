@@ -1,6 +1,6 @@
 "use server";
 
-import Schedule from "@/models/Schedule";
+import Schedule from "@/models/admin";
 
 const getSchedules = async () => {
   return Schedule.find();

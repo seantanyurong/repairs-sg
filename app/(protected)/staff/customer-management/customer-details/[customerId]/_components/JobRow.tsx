@@ -46,7 +46,7 @@ export default function JobRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => router.push(`/staff/schedule/edit-job/${id}`)} className='cursor-pointer'>
+            <DropdownMenuItem onClick={() => router.push(`/staff/admin/edit-job/${id}`)} className='cursor-pointer'>
               Edit
             </DropdownMenuItem>
           </DropdownMenuContent>

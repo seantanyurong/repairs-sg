@@ -138,7 +138,7 @@ const updateJob = async (job: {
 
   try {
     await Job.findOneAndUpdate(filter, update, context);
-    revalidatePath("/staff/schedule");
+    revalidatePath("/staff/admin");
     return { message: "Job updated successfully" };
   } catch (error: unknown) {
     if (error instanceof mongoose.Error.ValidationError && error.errors) {
@@ -173,7 +173,7 @@ const deleteJob = async (
   }
   // deletes job
   await Job.findByIdAndDelete(jobId);
-  revalidatePath("/staff/schedule");
+  revalidatePath("/staff/admin");
   return { message: "Job deleted successfully" };
 };
 
@@ -218,7 +218,7 @@ const updateJobStaff = async (
   const filter = { _id: new ObjectId(response.data._id) };
   const update = { staff: response.data.staff };
   await Job.findOneAndUpdate(filter, update);
-  revalidatePath("/staff/schedule");
+  revalidatePath("/staff/admin");
 
   return { message: "Job updated successfully" };
 };
@@ -244,7 +244,7 @@ const updateJobVehicle = async (
   const filter = { _id: new ObjectId(response.data._id) };
   const update = { vehicle: response.data.vehicle };
   await Job.findOneAndUpdate(filter, update);
-  revalidatePath("/staff/schedule");
+  revalidatePath("/staff/admin");
 
   return { message: "Job updated successfully" };
 };
@@ -270,7 +270,7 @@ const updateJobStatus = async (
   const filter = { _id: new ObjectId(response.data._id) };
   const update = { status: response.data.status };
   await Job.findOneAndUpdate(filter, update);
-  revalidatePath("/staff/schedule");
+  revalidatePath("/staff/admin");
 
   return { message: "Job updated successfully" };
 };

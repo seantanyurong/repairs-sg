@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  CalendarDays,
+  FileSliders,
   Hammer,
   Home,
   IdCard,
@@ -134,19 +134,19 @@ export default function PublicLayout({
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="/staff/schedule?filters=all"
+                href="/staff/admin?filters=all"
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                  pathname === "/staff/schedule?filters=all"
+                  pathname === "/staff/admin?filters=all"
                     ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground"
                 } transition-colors hover:text-foreground md:h-8 md:w-8`}
               >
-                <CalendarDays className="h-5 w-5" />
-                <span className="sr-only">{NAVIGATION_LABELS.SCHEDULE}</span>
+                <FileSliders className="h-5 w-5" />
+                <span className="sr-only">{NAVIGATION_LABELS.ADMIN}</span>
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right">
-              {NAVIGATION_LABELS.SCHEDULE}
+              {NAVIGATION_LABELS.ADMIN}
             </TooltipContent>
           </Tooltip>
           <Tooltip>
@@ -354,16 +354,16 @@ export default function PublicLayout({
                   {NAVIGATION_LABELS.SERVICES}
                 </Link>
                 <Link
-                  href="/staff/schedule?filters=all"
+                  href="/staff/admin?filters=all"
                   className={`flex items-center gap-4 px-2.5 ${
-                    pathname === "/staff/schedule?filters=all"
+                    pathname === "/staff/admin?filters=all"
                       ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                   onClick={handleLinkClick}
                 >
-                  <CalendarDays className="h-5 w-5" />
-                  {NAVIGATION_LABELS.SCHEDULE}
+                  <FileSliders className="h-5 w-5" />
+                  {NAVIGATION_LABELS.ADMIN}
                 </Link>
                 <Link
                   href="/staff/invoices"

@@ -249,7 +249,7 @@ export default function BookingClient({
       setMessage(result.message);
       router.refresh();
       form.reset(form.getValues());
-      router.push('/staff/schedule?filters=all');
+      router.push('/staff/admin?filters=all');
     }
   };
 
