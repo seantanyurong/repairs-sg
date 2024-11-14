@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { CalendarIcon } from "lucide-react"
-
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   service: z.string().min(1),
@@ -361,9 +361,10 @@ export default function BookingClient({
                                     form.setValue('staff', '');
                                     form.setValue('vehicle', '');
                                     form.setValue('schedule', '');
+                                    toast.error('Options for schedule, staff and vehicle have been reset. Please provide new inputs');
                                     }}
                                   disabled={(date) =>
-                                    date < new Date()
+                                    date < new Date(new Date().setHours(0, 0, 0, 0)) && date < new Date(new Date().setHours(0, 0, 0, 0))  
                                   }
                                   initialFocus
                                 />
@@ -392,6 +393,7 @@ export default function BookingClient({
 
                                     setSchedule(selectedSchedule);
                                     field.onChange(selectedSchedule);
+                                    toast.error('Options for staff and vehicle have been reset. Please provide new inputs');
                                 }}
                               >
                               <FormControl>

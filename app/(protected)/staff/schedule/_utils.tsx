@@ -104,7 +104,7 @@ const findAvailableStaff = (staffArray: { id: string; name: string }[], jobs: Jo
 
   const findAvailableVehicles = (vehicleArray: { id: string; licencePlate: string }[], jobs: Job[], timeStart: Date, timeEnd: Date) => {
     // 1. Filter jobs that overlap with the time range
-    const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart);
+    const overlappingJobs = jobs.filter((job) => job.schedule.timeStart < timeEnd && job.schedule.timeEnd > timeStart && job.status !== 'Completed' && job.status !== 'Cancelled');
     
     timeStart = new Date(timeStart.toISOString().substring(0, 10));
     timeEnd = new Date(timeEnd.toISOString().substring(0, 10));
