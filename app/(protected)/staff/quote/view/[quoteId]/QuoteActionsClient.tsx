@@ -236,7 +236,7 @@ const QuoteActionsClient = ({
         <Button
           type="button"
           onClick={() =>
-            router.push(`/staff/schedule/create-job/${quotationId}`)
+            router.push(`/staff/admin/create-job/${quotationId}`)
           }
           className="w-auto"
         >

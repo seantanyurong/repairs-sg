@@ -230,7 +230,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
       </DialogContent>
     </Dialog>
 
-          <Link href='/staff/schedule/create-job'>
+          <Link href='/staff/admin/create-job'>
             <Button size='sm' className='h-8 gap-1'>
               <PlusCircle className='h-3.5 w-3.5' />
               <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>Create Job</span>

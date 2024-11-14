@@ -118,7 +118,7 @@ export default function JobDetails({
           </div>
           {role === "admin" || role === "superadmin" && (
               <Button
-                onClick={() => router.push(`/staff/schedule/edit-job/${_id}`)}
+                onClick={() => router.push(`/staff/admin/edit-job/${_id}`)}
               className='cursor-pointer'>
               Edit Job
               </Button>

@@ -155,7 +155,7 @@ function ActionColumn({ row }: { row: Row<Quotation> }) {
         </Link>
       )}
       {row.original.status === "Accepted" && (
-        <Link href={`/staff/schedule/create-job/${row.original._id}`}>
+        <Link href={`/staff/admin/create-job/${row.original._id}`}>
           <Button>Create Job</Button>
         </Link>
       )}
