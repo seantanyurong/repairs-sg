@@ -13,7 +13,6 @@ import { PlusCircle } from 'lucide-react';
 import { auth, clerkClient, createClerkClient } from "@clerk/nextjs/server";
 import { getVehicles } from '@/lib/actions/vehicles';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 
 type SearchParams = {
   filters?: string;
@@ -216,8 +215,8 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
           <div></div>
           <DialogDescription>
             <ul className="list-disc list-inside">
-              <li>Only jobs with 'Pending' status can be edited and assigned a staff and vehicle.</li>
-              <li>Vehicle locations can be viewed only when jobs have a vehicle assigned and are not in 'Pending' status.</li>
+              <li>Only jobs with Pending status can be edited and assigned a staff and vehicle.</li>
+              <li>Vehicle locations can be viewed only when jobs have a vehicle assigned and are not in Pending status.</li>
               <li>Cancelled and Completed jobs cannot be edited.</li>
             </ul>
           </DialogDescription>
