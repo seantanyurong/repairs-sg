@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { auth, clerkClient, createClerkClient } from "@clerk/nextjs/server";
 import { getVehicles } from '@/lib/actions/vehicles';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 
 type SearchParams = {
   filters?: string;
@@ -137,7 +139,8 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
       <Card x-chunk='dashboard-06-chunk-0'>
         <CardHeader>
           <CardTitle>Jobs</CardTitle>
-          <CardDescription>Manage your Jobs and edit their details.</CardDescription>
+          <CardDescription>Manage your Jobs and edit their details.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -191,9 +194,6 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
 
   const date = searchParams.date;
   const view = searchParams.date ? 'calendar' : 'table';
-  console.log("now it is " + date);
-  console.log("now it is " + view);
-
   return (
     <Tabs defaultValue={view}>
       <div className='flex items-center'>
@@ -206,6 +206,31 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
             return { label: staff.name };
           })}></DropdownMenuCheckboxes>
         <div className='ml-auto flex items-center gap-2'>
+        <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Help</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Help</DialogTitle>
+          <div></div>
+          <DialogDescription>
+            <ul className="list-disc list-inside">
+              <li>Only jobs with 'Pending' status can be edited and assigned a staff and vehicle.</li>
+              <li>Vehicle locations can be viewed only when jobs have a vehicle assigned and are not in 'Pending' status.</li>
+              <li>Cancelled and Completed jobs cannot be edited.</li>
+            </ul>
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+         </div>
+        </div>
+        <DialogFooter>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
           <Link href='/staff/schedule/create-job'>
             <Button size='sm' className='h-8 gap-1'>
               <PlusCircle className='h-3.5 w-3.5' />

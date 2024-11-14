@@ -147,7 +147,7 @@ export default function JobRow({
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             {/* only render this item if status is not completed or cancelled */}
-            {/* {status !== 'Completed' && status !== 'Cancelled' && ( */}
+            {status !== 'Completed' && status !== 'Cancelled' && (
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 <span>Update Status</span>
@@ -165,6 +165,7 @@ export default function JobRow({
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
+            )}
             {/* )} */}
             {/* only render this item if vehicleLicencePlate is not null */}
             {vehicleLicencePlate && status !== 'Completed' && status !== 'Cancelled' && status !== 'Pending' && (
@@ -174,6 +175,8 @@ export default function JobRow({
                 View Vehicle Location
               </DropdownMenuItem>
             )}
+            {status === 'Pending' && (
+              <>
             <DropdownMenuItem onClick={() => router.push(`/staff/schedule/edit-job/${id}`)} className='cursor-pointer'>
               Edit Job
             </DropdownMenuItem>
@@ -211,6 +214,8 @@ export default function JobRow({
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
+            </>
+            )}
             <DropdownMenuItem
               onClick={() => router.push(`/staff/invoices/create-invoice?jobId=${id}`)}
               className='cursor-pointer'>
@@ -227,12 +232,11 @@ export default function JobRow({
               currentUser={currentUser}
             /> */}
             {/* only render this item if status is Draft or Pending */}
-            {status === 'Pending' ||
-              (status === 'Draft' && (
+            {status === 'Draft' || status === 'Pending' && (
                 <DropdownMenuItem onClick={() => handleDeleteJob(id)} className='cursor-pointer'>
                   Delete Job
                 </DropdownMenuItem>
-              ))}
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>

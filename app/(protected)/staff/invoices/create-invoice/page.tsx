@@ -2,6 +2,7 @@ import { createClerkClient, clerkClient } from "@clerk/nextjs/server";
 import { getJobs } from "@/lib/actions/jobs";
 import { getService } from "@/lib/actions/services";
 import CreateInvoiceClient from "./clientPage";
+import { getPayments } from "@/lib/actions/payments";
 
 
 const CreateInvoice = async () => {
@@ -38,6 +39,8 @@ const CreateInvoice = async () => {
     
     return allJobs.reverse();
   }
+
+  getPayments();
 
   return (
     <CreateInvoiceClient
