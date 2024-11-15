@@ -35,6 +35,7 @@ export default async function StaffHome() {
     dateDue: invoice.dateDue,
     remainingDue: invoice.remainingDue,
   }));
+  console.log("overdue invoices", overdueInvoicesByStaff);
 
   // Weekly Job
   const jobs = await getJobsByStaffId(userId);
