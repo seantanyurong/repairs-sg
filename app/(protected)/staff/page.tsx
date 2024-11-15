@@ -7,7 +7,10 @@ import { getServices } from "@/lib/actions/services";
 import { getCustomers } from "@/lib/actions/customers";
 import KPIOverview from "./_components/KPIOverview";
 import { auth } from "@clerk/nextjs/server";
-import { getOverdueInvoiceByStaffId } from "@/lib/actions/invoices";
+import {
+  getOverdueInvoiceByStaffId,
+  getRevenueGeneratingInvoiceFromJob,
+} from "@/lib/actions/invoices";
 import OutstandingInvoice from "./_components/OutstandInvoice";
 
 export default async function StaffHome() {
@@ -18,14 +21,36 @@ export default async function StaffHome() {
   const completedJobInMonthByStaff =
     await getCompletedJobInMonthByStaff(userId);
 
-  // console.log("completed job", completedJobInMonthByStaff);
+  console.log("completed job", completedJobInMonthByStaff);
 
-  const totalRevenueInMonthByStaff = completedJobInMonthByStaff.reduce(
-    (total, job) => {
-      return total + job.price;
-    },
-    0
+  async function calculateTotalRevenue(
+    completedJobInMonthByStaff: { _id: string }[]
+  ) {
+    const totalRevenue = (
+      await Promise.all(
+        completedJobInMonthByStaff.map(async (job) => {
+          // Fetch the invoices for each job
+          const invoices = await getRevenueGeneratingInvoiceFromJob(job._id);
+          // Sum the totalAmount of all invoices for this job
+          return invoices.reduce(
+            (sum, invoice) => sum + invoice.totalAmount,
+            0
+          );
+        })
+      )
+    ).reduce((sum, revenue) => sum + revenue, 0); // Sum up the revenues from each job
+
+    return totalRevenue;
+  }
+  const totalRevenueInMonthByStaff = await calculateTotalRevenue(
+    completedJobInMonthByStaff
   );
+  // const totalRevenueInMonthByStaff = paidInvoicesInMonthByStaff.reduce(
+  //   (total, invoice) => {
+  //     return total + invoice.totalAmount;
+  //   },
+  //   0
+  // );
 
   // Outstanding Invoice
   const overdueInvoicesByStaff = await getOverdueInvoiceByStaffId(userId);

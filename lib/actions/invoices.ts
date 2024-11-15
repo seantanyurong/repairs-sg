@@ -420,6 +420,14 @@ const getOverdueInvoiceByStaffId = async (staffId: string) => {
   });
 };
 
+const getRevenueGeneratingInvoiceFromJob = async (jobId: string) => {
+  return Invoice.find({
+    job: jobId,
+    paymentStatus: "Paid",
+    validityStatus: { $in: ["active", "approved"] },
+  });
+};
+
 export {
   addInvoice,
   updateInvoice,
@@ -429,4 +437,5 @@ export {
   voidInvoice,
   getInvoicesByCustomerId,
   getOverdueInvoiceByStaffId,
+  getRevenueGeneratingInvoiceFromJob,
 };
