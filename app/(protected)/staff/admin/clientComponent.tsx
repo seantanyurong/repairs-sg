@@ -113,8 +113,8 @@ export default function CalendarClient({ filtersArray, jobs, role, date}: { filt
     return (
       <Card x-chunk='dashboard-06-chunk-0'>
         <CardHeader>
-          <CardTitle>Scheduling</CardTitle>
-          <CardDescription>Manage your job schedule Calendar</CardDescription>
+          <CardTitle>Jobs</CardTitle>
+          <CardDescription>Manage your jobs.</CardDescription>
         </CardHeader>
         <CardContent>
           <Calendar 

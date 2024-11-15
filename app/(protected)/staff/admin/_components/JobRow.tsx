@@ -74,8 +74,15 @@ export default function JobRow({
   const handleUpdateStatus = async (
     jobId: string,
     status: string,
+    vehicleLicencePlate?: string,
     referralCode?: { code: string; referrer: string; customer: string },
   ) => {
+
+    if (status !== 'Pending' && status !== 'Cancelled' && !vehicleLicencePlate) {
+      window.confirm('Please assign a vehicle before updating the job to this status.',);
+      return;
+    }
+
     if (status === 'Completed' || status === 'Cancelled') {
       const confirmStatusChange = window.confirm(
         `Are you sure you want to change the status to ${status}? You will not be able to revert this action.`,
@@ -157,7 +164,7 @@ export default function JobRow({
                   {statusArray.map((status) => (
                       <DropdownMenuItem
                         key={status}
-                        onClick={() => handleUpdateStatus(id, status, referralCode)}
+                        onClick={() => handleUpdateStatus(id,status, vehicleLicencePlate, referralCode)}
                         className='cursor-pointer'>
                       {status}
                     </DropdownMenuItem>
@@ -166,7 +173,6 @@ export default function JobRow({
               </DropdownMenuPortal>
             </DropdownMenuSub>
             )}
-            {/* )} */}
             {/* only render this item if vehicleLicencePlate is not null */}
             {vehicleLicencePlate && status !== 'Completed' && status !== 'Cancelled' && status !== 'Pending' && (
               <DropdownMenuItem
