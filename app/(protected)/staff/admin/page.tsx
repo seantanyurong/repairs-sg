@@ -138,7 +138,7 @@ export default async function Schedule({ searchParams }: { searchParams: SearchP
       <Card x-chunk='dashboard-06-chunk-0'>
         <CardHeader>
           <CardTitle>Jobs</CardTitle>
-          <CardDescription>Manage your Jobs and edit their details.
+          <CardDescription>Manage your jobs.
           </CardDescription>
         </CardHeader>
         <CardContent>
