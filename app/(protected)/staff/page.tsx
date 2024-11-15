@@ -45,12 +45,6 @@ export default async function StaffHome() {
   const totalRevenueInMonthByStaff = await calculateTotalRevenue(
     completedJobInMonthByStaff
   );
-  // const totalRevenueInMonthByStaff = paidInvoicesInMonthByStaff.reduce(
-  //   (total, invoice) => {
-  //     return total + invoice.totalAmount;
-  //   },
-  //   0
-  // );
 
   // Outstanding Invoice
   const overdueInvoicesByStaff = await getOverdueInvoiceByStaffId(userId);
