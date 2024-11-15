@@ -415,7 +415,7 @@ const getOverdueInvoiceByStaffId = async (staffId: string) => {
   return Invoice.find({
     createdBy: staffId,
     paymentStatus: "Unpaid",
-    validityStatus: "active",
+    validityStatus: { $in: ["active", "approved"] },
     dateDue: { $lt: new Date() },
   });
 };
